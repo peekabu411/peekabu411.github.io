@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.luigimendoza.turntable",
+      "sha256_cert_fingerprints": [
+        "01:38:A4:6D:DC:F6:46:6D:DB:0A:D6:1A:98:06:A0:E9:5A:8B:9D:C5:D2:95:00:62:C3:DB:E9:2A:58:42:28:3A"
+      ]
+    }
+  }
+]
