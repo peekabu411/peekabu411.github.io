@@ -30,10 +30,15 @@
         <h1>Control the music<br>from your phone.</h1>
         <p class="pair-copy">Paste the Client ID from your Spotify developer application.</p>
         <div class="pin-row">
-          <input id="pin" inputmode="numeric" maxlength="12" autocomplete="one-time-code" placeholder="Spotify Client ID" aria-label="Remote PIN">
+          <input id="pin" inputmode="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Spotify Client ID" aria-label="Spotify Client ID">
           <button id="pair">Connect Spotify</button>
         </div>
-        <p class="pin-help"><a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener noreferrer">Open Spotify Developer Dashboard ↗</a><br>Add this redirect URL: <code>https://peekabu411.github.io/</code></p>
+        <div class="pin-help setup-help">
+          <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener noreferrer">Open Spotify Developer Dashboard ↗</a>
+          <p>Add this exact Redirect URI in your Spotify app settings:</p>
+          <div class="redirect-uri"><code>https://peekabu411.github.io/</code><button id="copy-redirect-uri" type="button">Copy URL</button></div>
+          <ol><li>Open the dashboard link and sign in if Spotify asks.</li><li>Create or open your Spotify app, then open its settings.</li><li>Add the copied Redirect URI and save.</li><li>Copy that app Client ID, paste it above, then connect.</li></ol>
+        </div>
         <small id="pair-error" role="alert"></small>
       </section>
 
@@ -384,6 +389,7 @@
     <script src="./bridge.js"></script>
   </body>
 </html>
+
 
 
 

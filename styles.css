@@ -554,3 +554,5 @@
 .spotify-disclaimer{margin:10px 2px 0;color:#6f6f6f;font-size:calc(8px * var(--ui-font-scale));line-height:1.35;text-align:center}
 @media (orientation:landscape) and (max-height:500px){.spotify-track-link{top:max(7px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));width:28px;height:28px}.spotify-track-link svg{width:21px;height:21px}.spotify-disclaimer{margin-top:7px;font-size:calc(7px * var(--ui-font-scale))}}
 @media (hover:hover) and (pointer:fine){.spotify-track-link:hover{color:#1ed760;opacity:1}}
+
+.setup-help p { margin: .75rem 0 .35rem; }.redirect-uri { display: flex; gap: .5rem; align-items: center; }.redirect-uri code { flex: 1; overflow-wrap: anywhere; }.copy-redirect { flex: 0 0 auto; }.setup-help ol { margin: .75rem 0 0; padding-left: 1.2rem; line-height: 1.45; }

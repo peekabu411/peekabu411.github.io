@@ -52,5 +52,11 @@
   }
   window.fetch = async (input, options) => { const url = new URL(typeof input === "string" ? input : input.url, location.href); if (url.pathname.startsWith("/api/")) { try { return await route(url.pathname + url.search, options); } catch (e) { return error(e.message, e.status || 500); } } return nativeFetch(input, options); };
   function load(src) { return new Promise((resolve,reject) => { const s=document.createElement("script"); s.src=src; s.onload=resolve; s.onerror=reject; document.body.append(s); }); }
+  document.getElementById("copy-redirect-uri")?.addEventListener("click", async () => {
+    const value = "https://peekabu411.github.io/";
+    try { await navigator.clipboard.writeText(value); } catch { window.prompt("Copy this Redirect URI:", value); return; }
+    const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
+  });
   callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
 })();
+
