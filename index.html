@@ -30,12 +30,15 @@
         <h1>Control the music<br>from your phone.</h1>
         <p class="pair-copy">Set up direct Spotify control on this device. No laptop or LAN server is needed.</p>
         <div class="setup-steps" role="list">
-          <section class="setup-step" role="listitem"><span>1</span><div><b>Open Spotify Dashboard</b><p>Sign in, then create a Spotify app or open the app you want Turntable to use.</p><a class="setup-action" href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener noreferrer">Open Dashboard <i>↗</i></a></div></section>
-          <li><span>2</span><div><b>Add the Redirect URI</b><p>Open your app settings, copy this exact URL, add it under Redirect URIs, then save.</p><div class="redirect-uri"><code>https://peekabu411.github.io/</code><button id="copy-redirect-uri" type="button">Copy URL</button></div></div></section>
-          <li><span>3</span><div><b>Paste your Client ID</b><p>Copy the Client ID from that Spotify app. Never paste a Client Secret here.</p><input id="pin" inputmode="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Spotify Client ID" aria-label="Spotify Client ID"></div></section>
-          <li><span>4</span><div><b>Connect Spotify</b><p>Approve access in Spotify. Turntable stores the connection only on this device.</p><button id="pair" class="setup-action primary-action">Connect Spotify <i>→</i></button></div></section>
-        </div>
-        <small id="pair-error" role="alert"></small>
+          <section class="setup-step" role="listitem"><span>1</span><div><b>Sign in to Spotify</b><p>Open the Spotify Developer Dashboard. If you are signed out, Spotify will show the login page first and then send you to the dashboard.</p><a class="setup-action" href="https://accounts.spotify.com/en/login?continue=https%3A%2F%2Fdeveloper.spotify.com%2Fdashboard" target="_blank" rel="noopener noreferrer">Sign in &amp; open Dashboard <i>↗</i></a></div></section>
+          <section class="setup-step" role="listitem"><span>2</span><div><b>Create or choose an app</b><p>In the dashboard, create a new Web API app or open the app you want Turntable to control.</p></div></section>
+          <section class="setup-step" role="listitem"><span>3</span><div><b>Open the app settings</b><p>Choose Settings or Edit settings for that Spotify app. Keep this Turntable page open.</p></div></section>
+          <section class="setup-step" role="listitem"><span>4</span><div><b>Copy the Redirect URI</b><p>Turntable uses this address to safely return after Spotify authorization.</p><div class="redirect-uri"><code>https://peekabu411.github.io/</code><button id="copy-redirect-uri" type="button">Copy URL</button></div></div></section>
+          <section class="setup-step" role="listitem"><span>5</span><div><b>Paste and save the Redirect URI</b><p>Back in Spotify app settings, add the copied address under Redirect URIs, then save your changes.</p></div></section>
+          <section class="setup-step" role="listitem"><span>6</span><div><b>Copy the Client ID</b><p>Copy the Client ID shown in the same Spotify app settings. Do not copy or paste the Client Secret.</p></div></section>
+          <section class="setup-step" role="listitem"><span>7</span><div><b>Paste the Client ID</b><p>Return here and paste the Client ID below.</p><input id="pin" inputmode="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Spotify Client ID" aria-label="Spotify Client ID"></div></section>
+          <section class="setup-step" role="listitem"><span>8</span><div><b>Connect Spotify</b><p>Approve access in Spotify. Turntable stores the connection only on this device.</p><button id="pair" class="setup-action primary-action">Connect Spotify <i>→</i></button></div></section>
+        </div>        <small id="pair-error" role="alert"></small>
       </section>
 
       <section id="remote" class="device topbar-hidden" data-current-view="player" hidden>
@@ -377,6 +380,7 @@
     <script src="./bridge.js"></script>
   </body>
 </html>
+
 
 
 
