@@ -1,6 +1,6 @@
 ﻿(() => {
   const API = "https://api.spotify.com/v1", ACCOUNTS = "https://accounts.spotify.com", KEY = "turntable-ios-oauth";
-  const nativeFetch = window.fetch.bind(window);
+  const nativeFetch = window.fetch.bind(window);`r`n  const telemetry = { startedAt: Date.now(), events: [] };`r`n  const recordRequest = path => { telemetry.events.push({ at: Date.now(), path: path.split("?")[0] }); if (telemetry.events.length > 250) telemetry.events.splice(0, telemetry.events.length - 250); };
   const read = () => JSON.parse(localStorage.getItem(KEY) || "{}");
   const save = value => localStorage.setItem(KEY, JSON.stringify(value));
   const redirectUri = new URL("./", location.href).href;
@@ -43,7 +43,7 @@
     if (path.startsWith("/api/lyrics")) { const q = path.split("?")[1] || ""; const r = await nativeFetch(`https://lrclib.net/api/get?${q}`); return new Response(await r.text(), { status:r.status, headers:{"Content-Type":"application/json"} }); }
     if (path.startsWith("/api/artwork")) return nativeFetch(new URL(path, location.href).searchParams.get("url"));
     if (path === "/api/pairing-info") return response({ address: location.origin + location.pathname, pin: "This device" });
-    if (path === "/api/diagnostics") return response({ spotify_requests:{last_minute:0,last_hour:0,cache_hits_since_start:0}, server:{uptime:0} });
+    if (path === "/api/diagnostics") { const now = Date.now(); const lastMinute = telemetry.events.filter(event => event.at >= now - 60_000); const lastHour = telemetry.events.filter(event => event.at >= now - 3_600_000); const paths = {}; for (const event of lastHour) paths[event.path] = (paths[event.path] || 0) + 1; return response({ requests: { last_minute: lastMinute.length, last_hour: lastHour.length, cache_hits_since_start: 0, total_since_start: telemetry.events.length, top_paths: Object.entries(paths).sort((a,b) => b[1] - a[1]).slice(0,5).map(([path,count]) => ({ path, count })) }, connection: { state: "direct", cooldown_seconds: 0, playback_cache_age_seconds: 0 }, uptime_seconds: Math.floor((now - telemetry.startedAt) / 1000) }); }
     if (path === "/api/player/playlist") { await spotify(`/me/player/play${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({context_uri:body.context_uri}) }); return response(null,204); }
     if (path === "/api/player/skip-count") { for(let i=0;i<body.count;i++) await spotify(`/me/player/next${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`, {method:"POST"}); return response({ requested:body.count, completed:body.count }); }
     if (path.startsWith("/api/player/")) { const action = path.split("/").pop(), endpoint = action === "next" || action === "previous" ? `/me/player/${action}` : `/me/player/${action}`; await spotify(`${endpoint}${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`, {method: action === "next" || action === "previous" ? "POST" : "PUT"}); return response(null,204); }
@@ -59,6 +59,7 @@
   });
   callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
 })();
+
 
 
 
