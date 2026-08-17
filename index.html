@@ -29,12 +29,12 @@
         <p class="kicker">GITHUB PAGES CONTROLLER</p>
         <h1>Control the music<br>from your phone.</h1>
         <p class="pair-copy">Set up direct Spotify control on this device. No laptop or LAN server is needed.</p>
-        <ol class="setup-steps">
-          <li><span>1</span><div><b>Open Spotify Dashboard</b><p>Sign in, then create a Spotify app or open the app you want Turntable to use.</p><a class="setup-action" href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener noreferrer">Open Dashboard <i>↗</i></a></div></li>
-          <li><span>2</span><div><b>Add the Redirect URI</b><p>Open your app settings, copy this exact URL, add it under Redirect URIs, then save.</p><div class="redirect-uri"><code>https://peekabu411.github.io/</code><button id="copy-redirect-uri" type="button">Copy URL</button></div></div></li>
-          <li><span>3</span><div><b>Paste your Client ID</b><p>Copy the Client ID from that Spotify app. Never paste a Client Secret here.</p><input id="pin" inputmode="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Spotify Client ID" aria-label="Spotify Client ID"></div></li>
-          <li><span>4</span><div><b>Connect Spotify</b><p>Approve access in Spotify. Turntable stores the connection only on this device.</p><button id="pair" class="setup-action primary-action">Connect Spotify <i>→</i></button></div></li>
-        </ol>
+        <div class="setup-steps" role="list">
+          <section class="setup-step" role="listitem"><span>1</span><div><b>Open Spotify Dashboard</b><p>Sign in, then create a Spotify app or open the app you want Turntable to use.</p><a class="setup-action" href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener noreferrer">Open Dashboard <i>↗</i></a></div></section>
+          <li><span>2</span><div><b>Add the Redirect URI</b><p>Open your app settings, copy this exact URL, add it under Redirect URIs, then save.</p><div class="redirect-uri"><code>https://peekabu411.github.io/</code><button id="copy-redirect-uri" type="button">Copy URL</button></div></div></section>
+          <li><span>3</span><div><b>Paste your Client ID</b><p>Copy the Client ID from that Spotify app. Never paste a Client Secret here.</p><input id="pin" inputmode="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Spotify Client ID" aria-label="Spotify Client ID"></div></section>
+          <li><span>4</span><div><b>Connect Spotify</b><p>Approve access in Spotify. Turntable stores the connection only on this device.</p><button id="pair" class="setup-action primary-action">Connect Spotify <i>→</i></button></div></section>
+        </div>
         <small id="pair-error" role="alert"></small>
       </section>
 
@@ -367,7 +367,7 @@
 
 
 
-          </ol>
+          </div>
           </div>
           <section id="diagnostics-panel" class="update-log-panel diagnostics-panel" role="tabpanel" aria-labelledby="diagnostics-tab" hidden>
             <div class="diagnostics-summary">
@@ -385,6 +385,7 @@
     <script src="./bridge.js"></script>
   </body>
 </html>
+
 
 
 
