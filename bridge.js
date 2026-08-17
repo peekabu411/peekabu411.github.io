@@ -1,6 +1,8 @@
 ﻿(() => {
   const API = "https://api.spotify.com/v1", ACCOUNTS = "https://accounts.spotify.com", KEY = "turntable-ios-oauth";
-  const nativeFetch = window.fetch.bind(window);`r`n  const telemetry = { startedAt: Date.now(), events: [] };`r`n  const recordRequest = path => { telemetry.events.push({ at: Date.now(), path: path.split("?")[0] }); if (telemetry.events.length > 250) telemetry.events.splice(0, telemetry.events.length - 250); };
+  const nativeFetch = window.fetch.bind(window);
+  const telemetry = { startedAt: Date.now(), events: [] };
+  const recordRequest = path => { telemetry.events.push({ at: Date.now(), path: path.split("?")[0] }); if (telemetry.events.length > 250) telemetry.events.splice(0, telemetry.events.length - 250); };
   const read = () => JSON.parse(localStorage.getItem(KEY) || "{}");
   const save = value => localStorage.setItem(KEY, JSON.stringify(value));
   const redirectUri = new URL("./", location.href).href;
@@ -18,6 +20,7 @@
     save({ ...auth, ...data, refresh_token: data.refresh_token || auth.refresh_token, expires_at: Date.now() + data.expires_in * 1000 }); return data.access_token;
   }
   async function spotify(path, options = {}) {
+    recordRequest(path);
     const r = await nativeFetch(`${API}${path}`, { ...options, headers: { Authorization: `Bearer ${await accessToken()}`, ...(options.headers || {}) } });
     if (r.status === 204) return null; const data = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(data.error?.message || `Spotify returned ${r.status}.`), { status: r.status }); return data;
   }
@@ -59,6 +62,7 @@
   });
   callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
 })();
+
 
 
 
