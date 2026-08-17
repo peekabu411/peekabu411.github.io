@@ -1,0 +1,88 @@
+/* Explicit Screen Fit profiles. Profiles change density without changing the
+   selected album, volume control, display, or playback design. */
+.controls-view{-webkit-text-size-adjust:none;text-size-adjust:none}
+.screen-fit-status{display:block;margin-top:3px;color:#858585;font-size:8px;font-weight:700;line-height:1.2;text-align:right}
+.controls-view .theme-picker{display:block!important;padding:8px 10px!important;margin-bottom:8px!important}
+.controls-view .settings-group{grid-template-columns:repeat(2,minmax(0,1fr));padding:6px 0 8px!important;gap:5px 10px!important}
+.controls-view .settings-group-heading{min-height:17px;margin:0 0 2px!important;line-height:1.2}
+.controls-view .settings-group-heading small{font-size:8px!important;line-height:1.2}
+.controls-view .settings-group-heading strong{font-size:9px!important;line-height:1.2;text-align:right}
+.controls-view .appearance-setting{min-width:0;padding:5px 0!important;margin:0!important}
+.controls-view .setting-title-row{justify-content:flex-start;gap:7px;margin:0 0 5px}
+.controls-view .setting-title-row>span,.controls-view .appearance-setting>span{font-size:8px!important;line-height:1.15;letter-spacing:.09em}
+.controls-view .appearance-setting>span{display:block;margin:0 0 5px}
+.controls-view .setting-info-button{width:15px;height:15px;font-size:9px}
+.controls-view .theme-options button{padding:5px 7px!important}
+.controls-view .theme-options button b{font-size:10px!important;line-height:1.15!important}
+.controls-view .theme-options button span{font-size:7px!important;line-height:1.15!important;margin-top:2px!important}
+.controls-view .settings-group-display{display:grid!important;margin-top:7px!important;padding:8px 10px!important;gap:4px 10px!important}
+.controls-view .settings-group-display .settings-group-heading{margin-bottom:1px!important}
+.controls-view .settings-group-display .appearance-setting{padding:5px 0!important}
+.controls-view .layout-profile-options{min-width:0}
+.controls-view .ui-font-control{min-height:28px;gap:10px}
+.controls-view .ui-font-control output{font-size:11px;line-height:1}
+
+.device[data-layout-resolved="compact"] .settings-group{padding:4px 0 6px!important;gap:3px 8px!important}
+.device[data-layout-resolved="compact"] .appearance-setting{padding:3px 0!important}
+.device[data-layout-resolved="compact"] .theme-options button{min-height:29px!important;padding:4px 6px!important}
+.device[data-layout-resolved="compact"] .theme-options button span{display:none!important}
+.device[data-layout-resolved="compact"] .playlist-grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr))!important;gap:8px!important}
+.device[data-layout-resolved="compact"] .queue-list,.device[data-layout-resolved="compact"] .device-list{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+.device[data-layout-resolved="compact"][data-current-view="player"] .art-stage{width:min(58vh,238px)!important;min-width:min(51vw,218px)!important}
+
+.device[data-layout-resolved="standard"] .settings-group{padding:6px 0 8px!important;gap:5px 10px!important}
+.device[data-layout-resolved="standard"] .theme-options button{min-height:34px!important;padding:5px 7px!important}
+.device[data-layout-resolved="standard"] .theme-options button span{display:block!important}
+.device[data-layout-resolved="standard"] .playlist-grid{grid-template-columns:repeat(auto-fill,minmax(125px,1fr))!important;gap:10px!important}
+.device[data-layout-resolved="standard"] .queue-list,.device[data-layout-resolved="standard"] .device-list{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+.device[data-layout-resolved="standard"][data-current-view="player"] .art-stage{width:min(64vh,255px)!important;min-width:min(54vw,228px)!important}
+
+.device[data-layout-resolved="wide"] .settings-group{padding:7px 0 9px!important;gap:6px 11px!important}
+.device[data-layout-resolved="wide"] .theme-options button{min-height:38px!important;padding:6px 8px!important}
+.device[data-layout-resolved="wide"] .theme-options button span{display:block!important;font-size:8px!important}
+.device[data-layout-resolved="wide"] .playlist-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important;gap:12px!important}
+.device[data-layout-resolved="wide"] .queue-list,.device[data-layout-resolved="wide"] .device-list{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+.device[data-layout-resolved="wide"][data-current-view="player"] .art-stage{width:min(70vh,285px)!important;min-width:min(57vw,240px)!important}
+
+@media(orientation:landscape) and (max-height:500px){
+  .controls-view .theme-picker{padding:6px 9px!important}
+  .controls-view .settings-group{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .controls-view .settings-group-display{padding:7px 9px!important}
+  .controls-view .theme-options button span{font-size:7px!important}
+  .screen-fit-status{margin-top:2px;font-size:7px}
+}
+@media(orientation:portrait) and (max-width:760px){
+  .controls-view .settings-group{grid-template-columns:1fr}
+  .device[data-layout-resolved="compact"] .queue-list,.device[data-layout-resolved="compact"] .device-list,.device[data-layout-resolved="standard"] .queue-list,.device[data-layout-resolved="standard"] .device-list,.device[data-layout-resolved="wide"] .queue-list,.device[data-layout-resolved="wide"] .device-list{grid-template-columns:1fr!important}
+}
+/* Devices uses one wide card column beside a compact pairing panel. */
+.device .devices-view .devices-layout{width:100%;grid-template-columns:minmax(0,1.48fr) minmax(215px,.52fr)!important;gap:9px!important;align-items:start}
+.device .devices-view .device-list{width:100%;min-width:0;grid-template-columns:minmax(0,1fr)!important;gap:8px!important}
+.device .devices-view .device-item{width:100%;min-width:0;grid-template-columns:42px minmax(0,1fr) auto;gap:10px;padding:11px 12px}
+.device .devices-view .device-item>div{min-width:0}
+.device .devices-view .pair-another{width:100%;min-width:0;padding:11px 12px}
+@media(orientation:landscape) and (max-height:500px){
+  .device .devices-view .devices-layout{grid-template-columns:minmax(0,1.55fr) minmax(205px,.45fr)!important;gap:7px!important}
+  .device .devices-view .device-item{min-height:58px;padding:9px 11px}
+  .device .devices-view .pair-another{padding:10px 11px}
+}
+@media(max-width:620px),(orientation:portrait){
+  .device .devices-view .devices-layout{grid-template-columns:1fr!important;gap:10px!important}
+}
+/* Display follows the same open divider layout as every other Settings group. */
+.controls-view .settings-group-display{margin:0!important;padding:6px 0 8px!important;border:0!important;border-top:1px solid #ffffff12!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+@media(orientation:landscape) and (max-height:500px){.controls-view .settings-group-display{padding:6px 0 8px!important}}
+/* Uniform Settings geometry while preserving the existing section order. */
+.controls-view .settings-group,.controls-view .settings-group-display{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px!important;padding:6px 0 8px!important;border:0!important;border-top:1px solid #ffffff12!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.controls-view .settings-group-display{width:auto;margin:0 10px!important}
+.controls-view .settings-group>.settings-group-heading,.controls-view .settings-group-display>.settings-group-heading{grid-column:1/-1;min-height:17px;margin:0 0 2px!important;padding:0!important}
+.controls-view .settings-group>.appearance-setting,.controls-view .settings-group-display>.appearance-setting{padding:5px 0!important;margin:0!important}
+.device[data-layout-resolved="compact"] .settings-group,.device[data-layout-resolved="compact"] .settings-group-display{padding:4px 0 6px!important;gap:3px 8px!important}
+.device[data-layout-resolved="standard"] .settings-group,.device[data-layout-resolved="standard"] .settings-group-display{padding:6px 0 8px!important;gap:5px 10px!important}
+.device[data-layout-resolved="wide"] .settings-group,.device[data-layout-resolved="wide"] .settings-group-display{padding:7px 0 9px!important;gap:6px 11px!important}
+@media(orientation:landscape) and (max-height:500px){.controls-view .settings-group-display{margin-left:9px!important;margin-right:9px!important}.controls-view .settings-group,.controls-view .settings-group-display{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(orientation:portrait) and (max-width:760px){.controls-view .settings-group,.controls-view .settings-group-display{grid-template-columns:1fr}.controls-view .settings-group-display{margin-left:10px!important;margin-right:10px!important}}
+/* All Settings section labels, including Display, share one heading weight. */
+.controls-view .settings-group-heading>small{color:var(--green)!important;font-weight:800!important;letter-spacing:.14em!important;text-transform:uppercase}
+/* Queue is always a single readable column. */
+.device .queue-drawer .queue-list{grid-template-columns:1fr!important}

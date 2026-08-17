@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-labelledby="title desc">
+  <title id="title">Turntable Radio sample artwork</title>
+  <desc id="desc">Abstract sunset artwork used in setting illustrations when no song artwork is loaded.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffb342"/><stop offset=".48" stop-color="#d65335"/><stop offset="1" stop-color="#311329"/></linearGradient>
+    <radialGradient id="sun"><stop stop-color="#fff4c9"/><stop offset="1" stop-color="#ffc857"/></radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="16"/></filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#sky)"/>
+  <circle cx="420" cy="176" r="92" fill="url(#sun)" opacity=".92"/>
+  <circle cx="420" cy="176" r="124" fill="#ffc857" opacity=".24" filter="url(#soft)"/>
+  <path d="M0 390C100 330 185 354 270 402s173 64 330-14v212H0Z" fill="#241827"/>
+  <path d="M0 436c127-45 210-20 300 31s184 30 300-13v146H0Z" fill="#111218" opacity=".86"/>
+  <text x="46" y="74" fill="#fff" font-family="Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="5">TURNTABLE RADIO</text>
+  <text x="46" y="532" fill="#fff" font-family="Arial,sans-serif" font-size="52" font-weight="700">SUNDAY</text>
+  <text x="47" y="574" fill="#ffd89c" font-family="Arial,sans-serif" font-size="30" letter-spacing="7">MORNING</text>
+</svg>

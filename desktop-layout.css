@@ -1,0 +1,54 @@
+/* Desktop-only player layout. Phone and tablet profiles intentionally remain untouched. */
+@media (min-width:1200px) and (min-height:650px) and (hover:hover) and (pointer:fine){
+  html,body,.shell{width:100%;height:100%;min-height:0;overflow:hidden}
+  .shell{display:block;padding:0;background:#050505}
+  .device{position:relative;display:block;width:100vw;height:100dvh;min-height:0;max-width:none;max-height:none;border:0;border-radius:0;box-shadow:none;overflow:hidden}
+
+  .preset-bar{position:absolute;z-index:20;left:0;right:0;top:0;height:73px;transform:translate3d(0,0,0);opacity:1;transition:transform .25s cubic-bezier(.2,.8,.2,1),opacity .2s ease}
+  .device.topbar-hidden .preset-bar{transform:translate3d(0,-115%,0);opacity:0;pointer-events:none}
+  .bar-handle{z-index:21;top:72px}
+  .device.topbar-hidden .bar-handle{top:3px}
+
+  .screen{position:absolute;z-index:1;inset:0;width:100%;height:100%;padding:0;overflow:hidden}
+  .player-view{position:relative;width:100%;height:100%;padding:clamp(60px,7vh,92px) clamp(145px,10vw,220px) 92px clamp(52px,5vw,96px);gap:clamp(38px,5vw,86px);align-items:center;justify-content:flex-start}
+  .art-stage{width:min(32vw,57.6vh,624px)!important;min-width:0!important;max-width:none;flex:none}
+  .player-info{position:static;min-width:0;max-width:min(52vw,920px);flex:1}
+  .player-info h2{box-sizing:content-box;font-size:clamp(46px,5vw,84px);line-height:1.06;max-height:2.12em;padding-bottom:.12em}
+  .player-info>p:not(.context){font-size:clamp(17px,1.35vw,24px)}
+  .timeline{max-width:none;margin-top:clamp(22px,3vh,40px);transform:translateY(5px)}
+
+  .transport{position:absolute;z-index:6;left:0;right:0;bottom:0;height:72px;min-height:72px;margin:0;padding:8px clamp(116px,9vw,180px) 8px clamp(28px,4vw,72px);border-top:1px solid #ffffff14;justify-content:space-around;gap:clamp(20px,5vw,80px)}
+  .transport button{position:relative;top:0;width:52px;height:52px;font-size:20px}
+  .transport .play-button{width:58px;height:58px}
+  .device[data-playback-bar="divider"] .timeline{position:absolute;z-index:7;left:0;right:0;bottom:71px;width:100%;height:28px;margin:0;max-width:none!important;pointer-events:none}
+  .device[data-playback-bar="divider"] .timeline input[type="range"]{position:absolute;left:0;right:0;bottom:-7px;width:100%;height:30px;margin:0;pointer-events:auto}
+  .device[data-playback-bar="divider"] .timeline>div{display:none}
+  .device[data-playback-bar="divider"] .transport{border-top:0}
+
+  .dial-rail{position:absolute;z-index:8;top:0;right:0;bottom:72px;width:112px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;overflow:visible}
+  .dial-readout,.dial-rail>p{display:none}
+  .device[data-control="dial"] .dial-rail{right:-118px;width:236px}
+  .device[data-control="dial"] .dial{width:236px;height:236px;flex:none}
+  .device[data-control="dial"] .dial-center{inset:47px}
+  .device[data-control="bar"] .dial-rail{right:18px;width:70px}
+  .device[data-control="bar"] .dial{width:56px;height:min(58vh,460px);max-height:460px}
+  .device[data-control="bar"] .dial-marker{bottom:12px}
+
+  .device:not([data-current-view="player"]) .dial-rail{display:none}
+  .device:not([data-current-view="player"]) .screen{padding:0}
+  .device:not([data-current-view="player"]) .list-view,.device:not([data-current-view="player"]) .controls-view{height:100%;padding:clamp(46px,7vh,86px) clamp(54px,5vw,96px) 44px;overflow-x:hidden;overflow-y:auto}
+  .device:not([data-current-view="player"]):not(.topbar-hidden) .list-view,.device:not([data-current-view="player"]):not(.topbar-hidden) .controls-view{padding-top:96px}
+  /* Keep the desktop Settings page readable instead of stretching its controls
+     across an ultrawide display. The view background still fills the screen. */
+  .controls-view>.section-heading,
+  .controls-view>.settings-columns,
+  .controls-view>.hint{width:min(1040px,100%);margin-left:auto;margin-right:auto}
+  .queue-toggle{right:18px;bottom:14px}
+  .message{left:30px;right:150px;bottom:74px}
+}
+
+/* Use viewport and platform detection so touch-enabled desktop computers still
+   receive the full-size artwork without changing phones or tablets. */
+@media (min-width:1200px) and (min-height:650px){
+  .device[data-platform="desktop"][data-current-view="player"] .art-stage{width:min(32vw,57.6vh,624px)!important;min-width:0!important;max-width:none;flex:none}
+}
