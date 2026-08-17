@@ -31,7 +31,7 @@
     const auth = read(), verifier = sessionStorage.getItem("tt.verifier"); if (!verifier || query.get("state") !== sessionStorage.getItem("tt.state")) throw new Error("Spotify sign-in could not be verified.");
     document.body.innerHTML = "<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>Connecting Turntable to Spotify…</main>";
     const r = await nativeFetch(`${ACCOUNTS}/api/token`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ client_id: auth.client_id, grant_type: "authorization_code", code, redirect_uri: redirectUri, code_verifier: verifier }) });
-    const data = await r.json(); if (!r.ok) throw new Error(data.error_description || "Spotify sign-in failed."); save({ ...auth, ...data, expires_at: Date.now() + data.expires_in * 1000 }); localStorage.setItem("turntable-session", "github-pages"); location.replace(redirectUri);
+    const data = await r.json(); if (!r.ok) throw new Error(data.error_description || "Spotify sign-in failed."); save({ ...auth, ...data, expires_at: Date.now() + data.expires_in * 1000 }); localStorage.setItem("turntable-session", "github-pages"); document.body.innerHTML = `<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#050505;color:#fff;font:16px system-ui"><section style="max-width:420px;text-align:center"><p style="color:#d9b664;letter-spacing:.12em;font-weight:700">TURNTABLE iOS</p><h1>Spotify connected.</h1><p>Your account is connected on this device. Return to the Turntable Home Screen icon to continue.</p><a href="${redirectUri}" style="display:inline-block;margin-top:12px;padding:12px 18px;border-radius:10px;background:#d9b664;color:#111;text-decoration:none;font-weight:700">Continue to Turntable</a></section></main>`;
   }
   async function route(path, options = {}) {
     const body = options.body ? JSON.parse(options.body) : {};
@@ -59,4 +59,5 @@
   });
   callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
 })();
+
 
