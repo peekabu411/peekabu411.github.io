@@ -1328,7 +1328,8 @@ async function loadPlaylists(force = false) {
   }
   try {
     const result = await api("/api/playlists");
-    renderPlaylists(result.items || []);
+    playlistLibrary = result.items || [];
+    renderPlaylists(playlistLibrary);
     playlistsLoaded = true;
     setMessage();
   } catch (error) {
