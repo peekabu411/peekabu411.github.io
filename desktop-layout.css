@@ -74,3 +74,22 @@
   -webkit-text-fill-color:#ff4f5d!important;opacity:1!important;
   font-size:11px!important;font-weight:800!important;line-height:1.4!important;
 }
+/* I.9.5 interaction-language refinements. */
+.device .bar-handle>.topbar-chevron{
+  display:block!important;color:#fff!important;font-size:29px!important;font-weight:700!important;
+  line-height:1!important;text-shadow:0 2px 8px #000,0 0 2px #000;opacity:.25!important;
+  transform:translateY(-10px)!important;
+}
+.device .topbar-hint,.device .dial-rail>.dial-swipe-hint{
+  color:#626262!important;font-size:9px!important;font-weight:400!important;
+  letter-spacing:.13em!important;line-height:1!important;text-transform:uppercase!important;
+}
+.device .topbar-hint{top:25px!important}
+.device[data-current-view="player"] .dial-rail>.dial-swipe-hint{
+  position:absolute!important;top:50%!important;right:2px!important;left:auto!important;
+  margin:0!important;white-space:nowrap!important;writing-mode:vertical-rl!important;
+  transform:translateY(-50%) rotate(180deg)!important;
+}
+@media (orientation:landscape) and (max-height:500px) and (max-width:1200px){
+  .lyrics-track-marquee{top:calc(max(7px,env(safe-area-inset-top)) + 2px)!important}
+}
