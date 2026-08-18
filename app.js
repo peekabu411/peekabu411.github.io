@@ -440,6 +440,7 @@ function syncDisplayPresentation() {
   const fallbackToInfo = displayStyle === "lyrics" && lyricsAvailability === "unavailable";
   remote.dataset.display = fallbackToInfo ? "info" : displayStyle;
   remote.dataset.lyricsFallback = String(fallbackToInfo);
+  if (fallbackToInfo) $("context").textContent = "LYRICS UNAVAILABLE";
 }
 function setLyricsAvailability(nextAvailability) {
   lyricsAvailability = nextAvailability;
@@ -1538,7 +1539,7 @@ function updateTrackCopy(track, context = playback?.context, updateContext = tru
     title.scrollTop = 0;
   }
   $("artist").textContent = track ? artists(track) : "Open Spotify on your PC and start a song";
-  if (updateContext) $("context").textContent = context?.type ? "PLAYING FROM " + context.type.toUpperCase() : "PLAYING FROM YOUR PC";
+  if (updateContext) $("context").textContent = displayStyle === "lyrics" && lyricsAvailability === "unavailable" ? "LYRICS UNAVAILABLE" : context?.type ? "PLAYING FROM " + context.type.toUpperCase() : "PLAYING FROM YOUR PC";
 }
 
 function spotifyTrackUrl(track) {
