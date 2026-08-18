@@ -601,3 +601,6 @@
 @keyframes lyrics-track-marquee{0%,18%{transform:translateX(0)}50%,68%{transform:translateX(var(--lyrics-marquee-shift))}100%{transform:translateX(0)}}
 @media (orientation:landscape) and (max-height:500px){.lyrics-track-marquee{top:max(13px,env(safe-area-inset-top));right:calc(47px + env(safe-area-inset-right));width:min(34vw,240px);font-size:9px;line-height:14px}}
 @media (prefers-reduced-motion:reduce){.lyrics-track-marquee.is-overflowing span{animation:none}}
+/* Match the volume reveal language with a restrained downward top-bar arrow. */
+.bar-handle span{display:none!important}
+.bar-handle::after{content:"\2304";display:block;color:#fff;font-size:29px;font-weight:700;line-height:1;text-shadow:0 2px 8px #000,0 0 2px #000;opacity:.25}
