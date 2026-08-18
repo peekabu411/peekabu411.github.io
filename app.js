@@ -1565,7 +1565,7 @@ function refreshLyricsTrackMarquee() {
   if (!marquee || !text) return;
   marquee.classList.remove("is-overflowing");
   const overflow = Math.ceil(text.scrollWidth - marquee.clientWidth);
-  marquee.style.setProperty("--lyrics-marquee-shift", `${-Math.max(0, overflow)}px`);
+  marquee.style.setProperty("--lyrics-marquee-shift", `${-Math.max(0, text.scrollWidth + 34)}px`);
   if (overflow <= 2) return;
   void text.offsetWidth;
   marquee.classList.add("is-overflowing");
@@ -1575,6 +1575,7 @@ function updateLyricsTrackMarquee(track) {
   if (!text) return;
   const label = track ? `${track.name || "Unknown title"} — ${artists(track)}` : "";
   if (text.textContent !== label) text.textContent = label;
+  text.dataset.loopText = label;
   requestAnimationFrame(refreshLyricsTrackMarquee);
 }
 
