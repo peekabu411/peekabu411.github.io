@@ -1965,6 +1965,15 @@ $("spotify-track-link").onclick = (event) => {
   else location.assign(destination);
 };
 $("bar-handle").onclick = () => { physicalFeedback("press"); setTopBarHidden(!remote.classList.contains("topbar-hidden")); };
+document.addEventListener("pointerup", (event) => {
+  if (!remote.classList.contains("topbar-hidden") || event.button !== 0 || event.target.closest("button,input,select,a[href],#fullscreen-prompt")) return;
+  const handleBounds = $("bar-handle").getBoundingClientRect();
+  const insideExpandedHandle = event.clientX >= handleBounds.left - 18 && event.clientX <= handleBounds.right + 18
+    && event.clientY >= Math.max(0, handleBounds.top - 64) && event.clientY <= handleBounds.bottom;
+  if (!insideExpandedHandle) return;
+  physicalFeedback("press");
+  setTopBarHidden(false);
+});
 $("queue-toggle").onclick = () => { physicalFeedback("press"); const opening = !remote.classList.contains("queue-open"); setQueueDrawer(opening); if (opening) loadQueue(); };
 $("queue-close").onclick = $("queue-backdrop").onclick = () => setQueueDrawer(false);
 $("queue-drawer").addEventListener("pointerdown", (event) => { queueDrawerGesture = { x: event.clientX, y: event.clientY }; });
