@@ -604,3 +604,8 @@
 /* Match the volume reveal language with a restrained downward top-bar arrow. */
 .bar-handle span{display:none!important}
 .bar-handle::after{content:"\2304";display:block;color:#fff;font-size:29px;font-weight:700;line-height:1;text-shadow:0 2px 8px #000,0 0 2px #000;opacity:.25}
+/* Dashboard shortcuts stay compact so setup instructions remain easy to scan. */
+.setup-step{position:relative}
+.dashboard-step>div{padding-right:44px}
+.setup-step .dashboard-action{position:absolute;top:12px;right:12px;width:34px;min-height:34px;padding:0;border-radius:10px;justify-content:center}
+.setup-step .dashboard-action i{font-size:18px}
