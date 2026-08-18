@@ -580,3 +580,6 @@
 .playlist-card.drop-before::before,.playlist-card.drop-after::after{content:"";position:absolute;z-index:4;left:0;right:0;height:3px;border-radius:999px;background:#1ed760;box-shadow:0 0 12px #1ed760}.playlist-card.drop-before::before{top:-9px}.playlist-card.drop-after::after{bottom:-9px}.playlist-card.drop-before .playlist-cover,.playlist-card.drop-after .playlist-cover{box-shadow:0 12px 25px #0008}
 /* Vertical insertion marker for playlist grid reordering. */
 .playlist-card.drop-before::before,.playlist-card.drop-after::after{top:0;bottom:0;width:3px;height:auto}.playlist-card.drop-before::before{left:-8px;right:auto}.playlist-card.drop-after::after{right:-8px;left:auto}
+
+/* Update history is always read as one vertical column. */
+.update-log-list{grid-template-columns:1fr!important;grid-template-rows:none!important;grid-auto-flow:row!important}
