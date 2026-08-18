@@ -1506,12 +1506,24 @@ function optimisticPlaybackDisplay(serverPlaying) {
   return optimisticPlaybackPlaying;
 }
 
+function updateTitleScroll() {
+  const title = $("title");
+  const viewport = $("title-viewport");
+  if (!title || !viewport) return;
+  viewport.classList.remove("is-overflowing");
+  const lineHeight = parseFloat(getComputedStyle(title).lineHeight);
+  const viewportHeight = Number.isFinite(lineHeight) ? Math.ceil(lineHeight * 2) : 0;
+  viewport.style.height = viewportHeight ? `${viewportHeight}px` : "";
+  const distance = Math.max(0, title.scrollHeight - viewport.clientHeight);
+  viewport.style.setProperty("--title-scroll-distance", `${distance}px`);
+  if (distance > 1) requestAnimationFrame(() => viewport.classList.add("is-overflowing"));
+}
 function updateTrackCopy(track, context = playback?.context, updateContext = true) {
   const title = $("title");
   const nextTitle = track?.name || "Nothing playing";
   if (title.textContent !== nextTitle) {
     title.textContent = nextTitle;
-    title.scrollTop = 0;
+    updateTitleScroll();
   }
   $("artist").textContent = track ? artists(track) : "Open Spotify on your PC and start a song";
   if (updateContext) $("context").textContent = context?.type ? "PLAYING FROM " + context.type.toUpperCase() : "PLAYING FROM YOUR PC";
@@ -2343,4 +2355,4 @@ applyLyricFontScale(lyricFontScale);
 setLyricOffset(lyricOffset);
 setTopBarHidden(localStorage.getItem("turntable-topbar-hidden") !== "false");
 if (session) { pairing.hidden = true; remote.hidden = false; hydrateClientSnapshot(); void startStatusRefreshCycle(); scheduleFullscreenPrompt(); }
-window.addEventListener("resize", () => applyLayoutProfile(layoutProfile));
+window.addEventListener("resize", () => { applyLayoutProfile(layoutProfile); updateTitleScroll(); });

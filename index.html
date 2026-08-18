@@ -92,7 +92,7 @@
             <div class="player-info">
               <div class="track-copy">
                 <p class="context" id="context">PLAYING FROM YOUR PC</p>
-                <h2 id="title" tabindex="0">Nothing playing</h2>
+                <div id="title-viewport" class="title-viewport"><h2 id="title" tabindex="0">Nothing playing</h2></div>
                 <p id="artist">Open Spotify on your PC and start a song</p>
               </div>
               <section id="lyrics-panel" class="lyrics-panel" aria-live="polite">
@@ -137,7 +137,7 @@
           </section>
 
           <section class="view controls-view" data-panel="settings">
-            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.15"><small>REMOTE VERSION</small><b>ver(I.9.15)</b></button></div>
+            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.16"><small>REMOTE VERSION</small><b>ver(I.9.16)</b></button></div>
             <div class="settings-columns">
               <div class="settings-controls">
                 <section class="theme-picker" aria-labelledby="theme-title">
@@ -352,6 +352,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
+            <li><b>ver(I.9.16)</b><span>Added a slow automatic scroll for Now Playing titles longer than two lines.</span></li>
             <li><b>ver(I.9.15)</b><span>Read the current Spotify playlist item count so song totals display correctly.</span></li>
             <li><b>ver(I.9.14)</b><span>Kept every playlist card to one title line and a small grey song-count line.</span></li>
             <li><b>ver(I.9.13)</b><span>Restored the original playlist layout and added a smooth floating album-cover preview while reordering.</span></li>
@@ -361,7 +362,6 @@
             <li><b>ver(I.9.09)</b><span>Fixed GitHub Pages diagnostics with live direct-API request counts and a clear direct connection status.</span></li>
             <li><b>ver(I.9.08)</b><span>Added the complete step-by-step Spotify dashboard setup, Redirect URI copy action, and consistent setup design.</span></li>
             <li><b>ver(0.9.07)</b><span>Added a current-track Spotify shortcut and legal disclosure, adjustable instant lyrics sizing, and reduced desktop artwork.</span></li>
-            <li><b>ver(0.9.06)</b><span>Added official app branding, rebalanced desktop artwork, and made long two-line titles scrollable on every platform.</span></li>
           </ol>
           </div>
           <section id="diagnostics-panel" class="update-log-panel diagnostics-panel" role="tabpanel" aria-labelledby="diagnostics-tab" hidden>

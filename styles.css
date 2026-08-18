@@ -576,3 +576,6 @@
 @media (orientation:portrait) and (max-width:760px){.playlist-play>b{font-size:14px}.playlist-play>small{font-size:11px}}
 /* Playlist cards always remain exactly two lines. */
 .playlist-play>b,.playlist-play>small{width:100%;max-width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.playlist-play>small{color:#8d8d8d}
+
+/* Two-line song-title viewport with a calm automatic scroll for longer titles. */
+.title-viewport{overflow:hidden;margin:0 0 10px}.title-viewport #title{margin:0!important;max-height:none!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;will-change:transform}.title-viewport.is-overflowing #title{animation:title-auto-scroll 16s ease-in-out infinite alternate}@keyframes title-auto-scroll{0%,12%{transform:translateY(0)}88%,100%{transform:translateY(calc(-1 * var(--title-scroll-distance,0px)))}}@media(prefers-reduced-motion:reduce){.title-viewport.is-overflowing #title{animation:none}}
