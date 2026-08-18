@@ -1530,18 +1530,6 @@ function optimisticPlaybackDisplay(serverPlaying) {
   return optimisticPlaybackPlaying;
 }
 
-function updateTitleScroll() {
-  const title = $("title");
-  const viewport = $("title-viewport");
-  if (!title || !viewport) return;
-  viewport.classList.remove("is-overflowing");
-  const lineHeight = parseFloat(getComputedStyle(title).lineHeight);
-  const viewportHeight = Number.isFinite(lineHeight) ? Math.ceil(lineHeight * 2) : 0;
-  viewport.style.height = viewportHeight ? `${viewportHeight}px` : "";
-  const distance = Math.max(0, title.scrollHeight - viewport.clientHeight);
-  viewport.style.setProperty("--title-scroll-distance", `${distance}px`);
-  if (distance > 1) requestAnimationFrame(() => viewport.classList.add("is-overflowing"));
-}
 function updateTrackCopy(track, context = playback?.context, updateContext = true) {
   const title = $("title");
   const nextTitle = track?.name || "Nothing playing";
