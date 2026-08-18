@@ -31,6 +31,7 @@ let playlistsLoading = false;
 let playlistLibrary = [];
 let playlistOrganizerMode = false;
 let playlistTouchDrag = null;
+let playlistAutoScrollFrame = 0;
 let suppressPlaylistPlayUntil = 0;
 const PLAYLIST_ORDER_KEY = "turntable-playlist-order";
 const PLAYLIST_PINNED_KEY = "turntable-playlist-pinned";
@@ -1254,7 +1255,31 @@ function setPlaylistDropGap(card, after) {
   card?.classList.remove("drop-before", "drop-after");
   card?.classList.add(after ? "drop-after" : "drop-before");
 }
+function stopPlaylistAutoScroll() {
+  if (!playlistAutoScrollFrame) return;
+  cancelAnimationFrame(playlistAutoScrollFrame);
+  playlistAutoScrollFrame = 0;
+}
+function updatePlaylistAutoScroll(drag, clientY) {
+  const view = document.querySelector(".playlist-view");
+  if (!view) return;
+  const bounds = view.getBoundingClientRect();
+  const edge = 82;
+  const topDistance = clientY - bounds.top;
+  const bottomDistance = bounds.bottom - clientY;
+  drag.autoScrollSpeed = topDistance < edge ? -Math.ceil((edge - topDistance) / edge * 15) : bottomDistance < edge ? Math.ceil((edge - bottomDistance) / edge * 15) : 0;
+  if (!drag.autoScrollSpeed) { stopPlaylistAutoScroll(); return; }
+  if (playlistAutoScrollFrame) return;
+  const scroll = () => {
+    const activeDrag = playlistTouchDrag;
+    if (!activeDrag?.moved || !activeDrag.autoScrollSpeed) { playlistAutoScrollFrame = 0; return; }
+    view.scrollTop += activeDrag.autoScrollSpeed;
+    playlistAutoScrollFrame = requestAnimationFrame(scroll);
+  };
+  playlistAutoScrollFrame = requestAnimationFrame(scroll);
+}
 function clearPlaylistDrag(drag) {
+  stopPlaylistAutoScroll();
   if (!drag) return;
   drag.card?.classList.remove("dragging");
   drag.hover?.classList.remove("drop-before", "drop-after");
@@ -1331,6 +1356,7 @@ function renderPlaylistCard(playlist, pins) {
       card.classList.add("dragging");
     }
     event.preventDefault();
+    updatePlaylistAutoScroll(drag, event.clientY);
     drag.preview.style.transform = `translate3d(${event.clientX - 44}px, ${event.clientY - 44}px, 0) rotate(3deg)`;
     const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(".playlist-card");
     const nextHover = target && target !== card ? target : null;
@@ -2105,7 +2131,7 @@ $("spotify-track-link").onclick = (event) => {
   if (opened) opened.opener = null;
   else location.assign(destination);
 };
-$("playlist-organize").onclick = () => { playlistOrganizerMode = !playlistOrganizerMode; $("playlist-organize").classList.toggle("active", playlistOrganizerMode); $("playlist-organize").setAttribute("aria-pressed", String(playlistOrganizerMode)); $("playlist-organize").textContent = playlistOrganizerMode ? "Done" : "Organize"; $("playlist-reorder-hint").hidden = !playlistOrganizerMode; renderPlaylists(playlistLibrary); };
+$("playlist-organize").onclick = () => { playlistOrganizerMode = !playlistOrganizerMode; $("playlist-organize").classList.toggle("active", playlistOrganizerMode); $("playlist-organize").setAttribute("aria-pressed", String(playlistOrganizerMode)); $("playlist-organize").textContent = playlistOrganizerMode ? "Done" : "Organize"; $("playlist-reorder-hint").hidden = !playlistOrganizerMode; document.querySelector(".playlist-view").classList.toggle("organizing", playlistOrganizerMode); renderPlaylists(playlistLibrary); };
 $("bar-handle").onclick = () => { physicalFeedback("press"); setTopBarHidden(!remote.classList.contains("topbar-hidden")); };
 document.addEventListener("pointerup", (event) => {
   if (!remote.classList.contains("topbar-hidden") || event.button !== 0 || event.target.closest("button,input,select,a[href],#fullscreen-prompt")) return;
