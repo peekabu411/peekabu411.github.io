@@ -594,13 +594,13 @@
 .dashboard-note{margin:8px 0 0!important;color:#ff6b6b!important;font-size:11px!important;font-weight:700;line-height:1.4!important}
 
 /* Lyrics-mode song identity stays visible without competing with the top controls. */
-.lyrics-track-marquee{position:absolute;z-index:9;top:max(20px,env(safe-area-inset-top));right:calc(50px + env(safe-area-inset-right));width:min(34vw,260px);overflow:hidden;display:none;opacity:.5;color:#f8f8f8;font-size:10px;font-weight:700;line-height:16px;letter-spacing:.015em;white-space:nowrap;text-align:right;pointer-events:none}
+.lyrics-track-marquee{position:absolute;z-index:9;top:calc(max(12px,env(safe-area-inset-top)) + 8px);right:calc(50px + env(safe-area-inset-right));width:min(34vw,260px);overflow:hidden;display:block;visibility:hidden;opacity:.5;color:#f8f8f8;font-size:10px;font-weight:700;line-height:16px;letter-spacing:.015em;white-space:nowrap;text-align:right;pointer-events:none}
 .lyrics-track-marquee span{display:block;width:max-content;min-width:100%;transform:translateX(0);text-align:right}
-.device[data-current-view="player"][data-display="lyrics"] .lyrics-track-marquee{display:block}
+.device[data-current-view="player"][data-display="lyrics"] .lyrics-track-marquee{visibility:visible}
 .lyrics-track-marquee.is-overflowing span{animation:lyrics-track-marquee 18s linear infinite}.lyrics-track-marquee.is-overflowing span::after{content:attr(data-loop-text);display:inline-block;margin-left:34px}
 @keyframes lyrics-track-marquee{from{transform:translateX(0)}to{transform:translateX(var(--lyrics-marquee-shift)}}}
-@media (orientation:landscape) and (max-height:500px){.lyrics-track-marquee{top:max(14px,env(safe-area-inset-top));right:calc(40px + env(safe-area-inset-right));width:min(34vw,240px);font-size:9px;line-height:14px}}
-@media (prefers-reduced-motion:reduce){.lyrics-track-marquee.is-overflowing span{animation:none}}
+@media (orientation:landscape) and (max-height:500px){.lyrics-track-marquee{top:calc(max(7px,env(safe-area-inset-top)) + 7px);right:calc(40px + env(safe-area-inset-right));width:min(34vw,240px);font-size:9px;line-height:14px}}
+
 /* Match the volume reveal language with a restrained downward top-bar arrow. */
 .bar-handle span{display:none!important}
 .bar-handle::after{content:"\2304";display:block;color:#fff;font-size:29px;font-weight:700;line-height:1;text-shadow:0 2px 8px #000,0 0 2px #000;opacity:.25;transform:translateY(-10px)}
@@ -624,3 +624,7 @@
 @media (orientation:landscape) and (max-width:1200px){.device[data-control="dial"] .dial-rail>.dial-swipe-hint{display:block!important;position:absolute;top:calc(50% + 105px);left:0;right:0;margin:0;text-align:center;color:#777;font-size:8px;font-weight:700;letter-spacing:.12em;line-height:1.3}}
 /* Dashboard actions are true square icon buttons. */
 .setup-steps .dashboard-step .dashboard-action{inline-size:36px!important;block-size:36px!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;aspect-ratio:1/1!important;border-radius:8px!important;overflow:hidden!important}
+/* Persistent direct labels: no tab state or optional-guide setting can hide them. */
+.device .topbar-hint{display:block!important;top:29px!important}
+.device .dial-rail>.dial-swipe-hint{display:block!important;margin:0;text-align:center;color:#777;font-size:8px;font-weight:700;letter-spacing:.12em;line-height:1.3}
+@media (orientation:landscape) and (max-width:1200px){.device .topbar-hint{top:25px!important}.device .dial-rail>.dial-swipe-hint{position:absolute;top:calc(50% + 105px);left:0;right:0}}
