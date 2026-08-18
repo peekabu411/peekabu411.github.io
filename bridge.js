@@ -1,4 +1,4 @@
-﻿(() => {
+(() => {
   const API = "https://api.spotify.com/v1", ACCOUNTS = "https://accounts.spotify.com", KEY = "turntable-ios-oauth";
   const nativeFetch = window.fetch.bind(window);
   const telemetry = { startedAt: Date.now(), events: [] };
@@ -42,7 +42,7 @@
     if (path.startsWith("/api/status")) return response({ playback: await spotify("/me/player"), connection: { fresh: true, cached: false, updated_at: Date.now() } });
     if (path.startsWith("/api/devices")) return response({ items: (await spotify("/me/player/devices"))?.devices || [] });
     if (path.startsWith("/api/queue")) return response({ items: (await spotify("/me/player/queue"))?.queue?.slice(0, 6) || [] });
-    if (path === "/api/playlists") { const data = await spotify("/me/playlists?limit=50"); return response({ items: (data.items || []).filter(Boolean).map(p => ({ id:p.id, uri:p.uri, name:p.name, description:p.description || "", image:p.images?.[0]?.url || "", owner:p.owner?.display_name || "Spotify", tracks:p.tracks?.total })) }); }
+    if (path === "/api/playlists") { const data = await spotify("/me/playlists?limit=50"); return response({ items: (data.items || []).filter(Boolean).map(p => ({ id:p.id, uri:p.uri, name:p.name, description:p.description || "", image:p.images?.[0]?.url || "", owner:p.owner?.display_name || "Spotify", tracks:p.items?.total ?? p.tracks?.total })) }); }
     if (path.startsWith("/api/lyrics")) { const q = path.split("?")[1] || ""; const r = await nativeFetch(`https://lrclib.net/api/get?${q}`); return new Response(await r.text(), { status:r.status, headers:{"Content-Type":"application/json"} }); }
     if (path.startsWith("/api/artwork")) return nativeFetch(new URL(path, location.href).searchParams.get("url"));
     if (path === "/api/pairing-info") return response({ address: location.origin + location.pathname, pin: "This device" });
