@@ -8,7 +8,11 @@
     controlBarBackground: "transparent", volumeWeight: "heavy",
     layoutProfile: "auto", uiFontScale: 100, lyricFontScale: 110, lyricOffset: -0.7
   };
-  const settingKeys = Object.keys(DEFAULT_SETTINGS);
+  const BUILT_IN_PRESETS = [
+    { id: "default", name: "Vinyl \u00b7 Default", settings: { ...DEFAULT_SETTINGS, album: "vinyl", control: "dial", display: "info", playbackBar: "default" } },
+    { id: "set-1", name: "Square \u00b7 Divider", settings: { ...DEFAULT_SETTINGS, album: "square", control: "bar", display: "info", playbackBar: "divider", controlBarBackground: "translucent" } },
+    { id: "set-2", name: "Vinyl \u00b7 Lyrics", settings: { ...DEFAULT_SETTINGS, album: "vinyl", control: "dial", display: "lyrics", lyricsBackground: "solid", lyricStyle: "scroll", playbackBar: "divider" } }
+  ];  const settingKeys = Object.keys(DEFAULT_SETTINGS);
   const topSelect = document.getElementById("top-preset-select");
   const settingsSelect = document.getElementById("settings-preset-select");
   const saveButton = document.getElementById("preset-save");
@@ -58,12 +62,7 @@
   }
 
   function initialLibrary() {
-    const current = normalizeSettings(currentSettings());
-    return [
-      { id: "default", name: "Default", settings: normalizeSettings(DEFAULT_SETTINGS) },
-      { id: "set-1", name: "Set 1", settings: current },
-      { id: "set-2", name: "Set 2", settings: current }
-    ];
+    return BUILT_IN_PRESETS.map((preset) => ({ ...preset, settings: normalizeSettings(preset.settings) }));
   }
 
   function loadLibrary() {
@@ -73,11 +72,10 @@
       const valid = parsed.filter((item) => item && typeof item.id === "string" && typeof item.name === "string").map((item) => ({
         id: item.id, name: item.name.trim().slice(0, 28) || "Preset", settings: normalizeSettings(item.settings)
       }));
-      if (!valid.some((item) => item.id === "default")) valid.unshift({ id: "default", name: "Default", settings: normalizeSettings(DEFAULT_SETTINGS) });
-      return valid;
+      const builtInIds = new Set(BUILT_IN_PRESETS.map((preset) => preset.id));
+      return [...initialLibrary(), ...valid.filter((item) => !builtInIds.has(item.id))];
     } catch { return initialLibrary(); }
   }
-
   let presets = loadLibrary();
   let activeId = localStorage.getItem(ACTIVE_KEY);
   if (!presets.some((item) => item.id === activeId)) activeId = presets.some((item) => item.id === "set-1") ? "set-1" : presets[0].id;
