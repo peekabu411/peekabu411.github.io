@@ -82,7 +82,7 @@
   color:#fff!important;font-size:29px!important;font-weight:700!important;line-height:1!important;
   text-shadow:0 2px 8px #000,0 0 2px #000;opacity:.25!important;transform:translateY(-10px)!important;
 }
-.device:not(.topbar-hidden) .bar-handle>.topbar-chevron{transform:translateY(-10px) rotate(180deg)!important}
+.device:not(.topbar-hidden) .bar-handle>.topbar-chevron{transform:translateY(5px) rotate(180deg)!important}
 .device .topbar-hint,.device .dial-rail>.dial-swipe-hint{
   color:#626262!important;font-size:9px!important;font-weight:400!important;
   letter-spacing:.13em!important;line-height:1!important;text-transform:uppercase!important;
@@ -99,7 +99,7 @@
 }
 .device .dial-rail>.dial-swipe-hint span{color:#999!important;padding:0 4px!important}
 .device[data-guides="hidden"] .topbar-hint,
-.device[data-guides="hidden"] .dial-swipe-hint{display:none!important}
+.device[data-guides="hidden"] .dial-rail>.dial-swipe-hint{display:none!important;visibility:hidden!important}
 @media (orientation:landscape) and (max-height:500px) and (max-width:1200px){
   .lyrics-track-marquee{top:calc(max(7px,env(safe-area-inset-top)) + 2px)!important}
 }
