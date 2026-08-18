@@ -30,14 +30,14 @@
         <h1>Control the music<br>from your phone.</h1>
         <p class="pair-copy">Set up direct Spotify control on this device. No laptop or LAN server is needed.</p>
         <div class="setup-steps" role="list">
-          <section class="setup-step" role="listitem"><span>1</span><div><b>Sign in to Spotify</b><p>Open the Spotify Developer Dashboard. If you are signed out, Spotify will show the login page first and then send you to the dashboard.</p><a class="setup-action" href="https://accounts.spotify.com/en/login?continue=https%3A%2F%2Fdeveloper.spotify.com%2Fdashboard" target="_blank" rel="noopener noreferrer">Sign in &amp; open Dashboard <i>?</i></a></div></section>
+          <section class="setup-step" role="listitem"><span>1</span><div><b>Sign in to Spotify</b><p>Open the Spotify Developer Dashboard. If you are signed out, Spotify will show the login page first and then send you to the dashboard.</p><a class="setup-action" href="https://accounts.spotify.com/en/login?continue=https%3A%2F%2Fdeveloper.spotify.com%2Fdashboard" target="_blank" rel="noopener noreferrer">Sign in &amp; open Dashboard <i>&#8599;</i></a></div></section>
           <section class="setup-step" role="listitem"><span>2</span><div><b>Create or choose an app</b><p>In the dashboard, create a new Web API app or open the app you want Turntable to control.</p></div></section>
           <section class="setup-step" role="listitem"><span>3</span><div><b>Open the app settings</b><p>Choose Settings or Edit settings for that Spotify app. Keep this Turntable page open.</p></div></section>
           <section class="setup-step" role="listitem"><span>4</span><div><b>Copy the Redirect URI</b><p>Turntable uses this address to safely return after Spotify authorization.</p><div class="redirect-uri"><code>https://peekabu411.github.io/</code><button id="copy-redirect-uri" type="button">Copy URL</button></div></div></section>
           <section class="setup-step" role="listitem"><span>5</span><div><b>Paste and save the Redirect URI</b><p>Back in Spotify app settings, add the copied address under Redirect URIs, then save your changes.</p></div></section>
           <section class="setup-step" role="listitem"><span>6</span><div><b>Copy the Client ID</b><p>Copy the Client ID shown in the same Spotify app settings. Do not copy or paste the Client Secret.</p></div></section>
           <section class="setup-step" role="listitem"><span>7</span><div><b>Paste the Client ID</b><p>Return here and paste the Client ID below.</p><input id="pin" inputmode="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Spotify Client ID" aria-label="Spotify Client ID"></div></section>
-          <section class="setup-step" role="listitem"><span>8</span><div><b>Connect Spotify</b><p>Approve access in Spotify. Turntable stores the connection only on this device.</p><button id="pair" class="setup-action primary-action">Connect Spotify <i>?</i></button></div></section>
+          <section class="setup-step" role="listitem"><span>8</span><div><b>Connect Spotify</b><p>Approve access in Spotify. Turntable stores the connection only on this device.</p><button id="pair" class="setup-action primary-action">Connect Spotify <i>&#8594;</i></button></div></section>
         </div>        <small id="pair-error" role="alert"></small>
       </section>
 
@@ -352,6 +352,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
+            <li><b>ver(I.9.10)</b><span>Expanded the invisible Now Playing top-tab reveal target while preserving the original bar size and position.</span></li>
             <li><b>ver(I.9.09)</b><span>Fixed GitHub Pages diagnostics with live direct-API request counts and a clear direct connection status.</span></li>
             <li><b>ver(I.9.08)</b><span>Added the complete step-by-step Spotify dashboard setup, Redirect URI copy action, and consistent setup design.</span></li>
             <li><b>ver(0.9.07)</b><span>Added a current-track Spotify shortcut and legal disclosure, adjustable instant lyrics sizing, and reduced desktop artwork.</span></li>
@@ -361,7 +362,6 @@
             <li><b>ver(0.9.03)</b><span>Added isolated desktop fullscreen layout, integrated volume controls, bottom transport, and hideable top tabs.</span></li>
             <li><b>ver(0.9.02)</b><span>Fixed Play Next after manual skips, raised the Divider progress line, and extended the top-tab handle hit area.</span></li>
             <li><b>ver(0.9.01)</b><span>Added Auto/Manual background colors, matched Solid control-bar colors, and fixed Queue to one column.</span></li>
-            <li><b>ver(0.9.00)</b><span>Refined the non-player top-bar handle with a higher visual position and downward-only touch area.</span></li>
           </ol>
           </div>
           <section id="diagnostics-panel" class="update-log-panel diagnostics-panel" role="tabpanel" aria-labelledby="diagnostics-tab" hidden>
