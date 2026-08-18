@@ -862,6 +862,71 @@ function switchView(view) {
   if (session) scheduleStatusRefresh(view === "player" ? 0 : undefined);
 }
 
+
+const TOUR_COMPLETE_KEY = "turntable-guided-tour-complete";
+const guidedTourSteps = [
+  { view: "player", selector: ".art-stage", kicker: "NOW PLAYING", title: "Your record is the song control", copy: "Swipe the album sleeve left or right to move through tracks. The artwork, title, artist, and lyrics all update here." },
+  { view: "player", selector: ".transport", kicker: "PLAYBACK", title: "Keep playback at your fingertips", copy: "Use these controls for shuffle, previous, play or pause, next, repeat, and the queue. The volume control sits on the right edge." },
+  { view: "playlists", selector: ".playlist-view .section-heading", kicker: "PLAYLISTS", title: "Choose what plays next", copy: "Browse your Spotify library here. Tap a playlist to play it, or use Organize to arrange your local playlist order." },
+  { view: "devices", selector: ".devices-layout", kicker: "DEVICES", title: "Choose the Spotify device", copy: "Select the speaker, TV, computer, or phone that should receive playback. This screen also shows the current connection status." },
+  { view: "settings", selector: ".theme-picker", kicker: "SETTINGS", title: "Make Turntable yours", copy: "Change album style, controls, lyrics, hints, and screen fit here. You can return to Guided tour at any time from this screen." }
+];
+let guidedTourIndex = -1;
+let guidedTourReturnView = "player";
+function clearGuidedTourSpotlight() {
+  const spotlight = $("guided-tour-spotlight");
+  if (!spotlight) return;
+  spotlight.style.width = "0";
+  spotlight.style.height = "0";
+  spotlight.style.transform = "translate3d(-9999px,-9999px,0)";
+}
+function positionGuidedTourSpotlight(selector) {
+  const spotlight = $("guided-tour-spotlight");
+  const target = document.querySelector(selector);
+  if (!spotlight || !target) return clearGuidedTourSpotlight();
+  const rect = target.getBoundingClientRect();
+  const inset = 8;
+  spotlight.style.width = `${Math.max(0, rect.width + inset * 2)}px`;
+  spotlight.style.height = `${Math.max(0, rect.height + inset * 2)}px`;
+  spotlight.style.transform = `translate3d(${Math.max(6, rect.left - inset)}px,${Math.max(6, rect.top - inset)}px,0)`;
+}
+function closeGuidedTour(completed = false) {
+  const tour = $("guided-tour");
+  if (!tour || tour.hidden) return;
+  tour.hidden = true;
+  remote.classList.remove("guided-tour-active");
+  clearGuidedTourSpotlight();
+  if (completed) localStorage.setItem(TOUR_COMPLETE_KEY, "true");
+  if (guidedTourReturnView) switchView(guidedTourReturnView);
+  setTopBarHidden(true);
+  guidedTourIndex = -1;
+}
+function showGuidedTourStep(index) {
+  guidedTourIndex = Math.max(0, Math.min(guidedTourSteps.length - 1, index));
+  const step = guidedTourSteps[guidedTourIndex];
+  switchView(step.view);
+  setTopBarHidden(false);
+  $("guided-tour-kicker").textContent = step.kicker;
+  $("guided-tour-count").textContent = `${guidedTourIndex + 1} / ${guidedTourSteps.length}`;
+  $("guided-tour-title").textContent = step.title;
+  $("guided-tour-copy").textContent = step.copy;
+  $("guided-tour-back").hidden = guidedTourIndex === 0;
+  $("guided-tour-next").textContent = guidedTourIndex === guidedTourSteps.length - 1 ? "Finish" : "Next";
+  requestAnimationFrame(() => requestAnimationFrame(() => positionGuidedTourSpotlight(step.selector)));
+}
+function startGuidedTour() {
+  const tour = $("guided-tour");
+  if (!tour || remote.hidden) return;
+  guidedTourReturnView = currentView || "player";
+  tour.hidden = false;
+  remote.classList.add("guided-tour-active");
+  showGuidedTourStep(0);
+  requestAnimationFrame(() => $("guided-tour-card")?.focus({ preventScroll: true }));
+}
+function maybeStartGuidedTour() {
+  if (session && !localStorage.getItem(TOUR_COMPLETE_KEY)) setTimeout(startGuidedTour, 1200);
+}
+
 async function restoreNowPlayingMotion() {
   if (albumStyle === "vinyl") {
     vinylTransitionToken += 1;
@@ -2038,6 +2103,11 @@ $("pair").onclick = async () => {
 };$("pin").addEventListener("keydown", (event) => { if (event.key === "Enter") $("pair").click(); });
 document.querySelectorAll("[data-view]").forEach((button) => button.onclick = () => { switchView(button.dataset.view); setTopBarHidden(true); });
 if ($("back")) $("back").onclick = () => { switchView("player"); setTopBarHidden(true); };
+$("start-guided-tour")?.addEventListener("click", () => { physicalFeedback("press"); startGuidedTour(); });
+$("guided-tour-next")?.addEventListener("click", () => { physicalFeedback("press"); if (guidedTourIndex >= guidedTourSteps.length - 1) closeGuidedTour(true); else showGuidedTourStep(guidedTourIndex + 1); });
+$("guided-tour-back")?.addEventListener("click", () => { physicalFeedback("press"); showGuidedTourStep(guidedTourIndex - 1); });
+$("guided-tour-skip")?.addEventListener("click", () => { physicalFeedback("press"); closeGuidedTour(true); });
+window.addEventListener("resize", () => { if (guidedTourIndex >= 0) positionGuidedTourSpotlight(guidedTourSteps[guidedTourIndex].selector); });
 $("refresh").onclick = async () => {
   const button = $("refresh");
   if (button.classList.contains("refreshing")) return;
@@ -2444,5 +2514,5 @@ applyUIFontScale(uiFontScale);
 applyLyricFontScale(lyricFontScale);
 setLyricOffset(lyricOffset);
 setTopBarHidden(localStorage.getItem("turntable-topbar-hidden") !== "false");
-if (session) { pairing.hidden = true; remote.hidden = false; hydrateClientSnapshot(); void startStatusRefreshCycle(); scheduleFullscreenPrompt(); }
+if (session) { pairing.hidden = true; remote.hidden = false; hydrateClientSnapshot(); void startStatusRefreshCycle(); scheduleFullscreenPrompt(); maybeStartGuidedTour(); }
 window.addEventListener("resize", () => applyLayoutProfile(layoutProfile));
