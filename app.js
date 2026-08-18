@@ -1347,7 +1347,7 @@ function renderPlaylistCard(playlist, pins) {
     if (drag.moved) suppressPlaylistPlayUntil = Date.now() + 350;
     const targetId = drag.hover?.dataset.playlistId;
     clearPlaylistDrag(drag);
-    if (drag.moved && targetId) movePlaylistBefore(drag.id, targetId);
+    if (drag.moved && targetId) movePlaylistBefore(drag.id, targetId, drag.placeAfter);
   });
   card.addEventListener("pointercancel", () => { clearPlaylistDrag(playlistTouchDrag); playlistTouchDrag = null; });
   return card;
@@ -2105,7 +2105,7 @@ $("spotify-track-link").onclick = (event) => {
   if (opened) opened.opener = null;
   else location.assign(destination);
 };
-$("playlist-organize").onclick = () => { playlistOrganizerMode = !playlistOrganizerMode; $("playlist-organize").classList.toggle("active", playlistOrganizerMode); $("playlist-organize").setAttribute("aria-pressed", String(playlistOrganizerMode)); $("playlist-organize").textContent = playlistOrganizerMode ? "Done" : "Organize"; renderPlaylists(playlistLibrary); };
+$("playlist-organize").onclick = () => { playlistOrganizerMode = !playlistOrganizerMode; $("playlist-organize").classList.toggle("active", playlistOrganizerMode); $("playlist-organize").setAttribute("aria-pressed", String(playlistOrganizerMode)); $("playlist-organize").textContent = playlistOrganizerMode ? "Done" : "Organize"; $("playlist-reorder-hint").hidden = !playlistOrganizerMode; renderPlaylists(playlistLibrary); };
 $("bar-handle").onclick = () => { physicalFeedback("press"); setTopBarHidden(!remote.classList.contains("topbar-hidden")); };
 document.addEventListener("pointerup", (event) => {
   if (!remote.classList.contains("topbar-hidden") || event.button !== 0 || event.target.closest("button,input,select,a[href],#fullscreen-prompt")) return;
