@@ -863,7 +863,7 @@ function switchView(view) {
 }
 
 
-const TOUR_COMPLETE_KEY = "turntable-guided-tour-complete";
+const TOUR_COMPLETE_KEY = "turntable-guided-tour-complete-v2";
 const guidedTourSteps = [
   { view: "player", selector: ".art-stage", kicker: "NOW PLAYING", title: "Your record is the song control", copy: "Swipe the album sleeve left or right to move through tracks. The artwork, title, artist, and lyrics all update here." },
   { view: "player", selector: ".transport", kicker: "PLAYBACK", title: "Keep playback at your fingertips", copy: "Use these controls for shuffle, previous, play or pause, next, repeat, and the queue. The volume control sits on the right edge." },
@@ -2100,6 +2100,7 @@ $("pair").onclick = async () => {
     switchView("player");
     void startStatusRefreshCycle();
     scheduleFullscreenPrompt(500);
+    maybeStartGuidedTour();
   } catch (error) {
     $("pair-error").textContent = error.message;
   } finally {
