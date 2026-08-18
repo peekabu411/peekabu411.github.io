@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="./settings-help-previews.css">
     <link rel="stylesheet" href="./screen-fit.css">
     <link rel="stylesheet" href="./preset-controls.css">
-    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.7-desktop-scale-1">
+    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.7-now-playing-guide-1">
   </head>
   <body>
     <main class="shell">
@@ -253,6 +253,10 @@
                         <button data-guide-choice="hidden" aria-label="Hide control hint text"><b>Hide text</b><span>Clean display</span></button>
                       </div>
                     </div>
+                    <div class="appearance-setting guide-replay-setting">
+                      <span>OVERVIEW</span>
+                      <button id="start-now-playing-guide" class="guide-replay-button" type="button"><b>Now Playing guide</b><span>Replay the visual walkthrough</span><i aria-hidden="true">&#8594;</i></button>
+                    </div>
                   </section>
                 </section>
                 <section class="settings-group settings-group-display" aria-labelledby="display-settings-title">
@@ -305,6 +309,15 @@
         </aside>
         <p id="message" class="message" role="status"></p>
       </section>
+      <div id="now-playing-guide" class="now-playing-guide" role="dialog" aria-modal="true" aria-labelledby="now-playing-guide-title" hidden>
+        <div class="now-playing-guide-backdrop" aria-hidden="true"></div>
+        <section class="now-playing-guide-card" tabindex="-1">
+          <header><div><small id="now-playing-guide-kicker">WELCOME TO TURNTABLE</small><h2 id="now-playing-guide-title">A quick Now Playing tour</h2></div><span id="now-playing-guide-count" aria-live="polite">Overview</span></header>
+          <div id="now-playing-guide-visual" class="now-playing-guide-visual" aria-hidden="true"></div>
+          <p id="now-playing-guide-copy"></p>
+          <div class="now-playing-guide-actions"><button id="now-playing-guide-dismiss" type="button">Not now</button><button id="now-playing-guide-back" type="button" hidden>Back</button><button id="now-playing-guide-next" class="primary" type="button">Start guide</button></div>
+        </section>
+      </div>
       <input id="haptic-switch" class="haptic-switch" type="checkbox" switch tabindex="-1" aria-hidden="true">
       <div class="rotate-notice"><strong>Turn your device sideways</strong><span>Landscape provides the full dashboard layout.</span></div>
       <div id="fullscreen-prompt" class="fullscreen-prompt" role="dialog" aria-modal="true" aria-labelledby="fullscreen-title" hidden>
