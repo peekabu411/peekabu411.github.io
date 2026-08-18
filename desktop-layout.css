@@ -97,6 +97,8 @@
   writing-mode:vertical-rl!important;transform:translateY(-50%) rotate(180deg)!important;
 }
 .device .dial-rail>.dial-swipe-hint span{color:#999!important;padding:0 4px!important}
+.device[data-guides="hidden"] .topbar-hint,
+.device[data-guides="hidden"] .dial-swipe-hint{display:none!important}
 @media (orientation:landscape) and (max-height:500px) and (max-width:1200px){
   .lyrics-track-marquee{top:calc(max(7px,env(safe-area-inset-top)) + 2px)!important}
 }
