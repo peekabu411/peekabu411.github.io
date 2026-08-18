@@ -588,7 +588,7 @@
 /* Readable single-column update history; override all legacy grid flows. */
 .update-log-list{display:block!important;margin:0!important;padding:6px 12px 12px!important;max-height:calc(100dvh - 145px)!important;overflow:auto!important;list-style:none!important}.update-log-list li{display:block!important;width:100%!important;padding:11px 7px!important;border-bottom:1px solid #ffffff14!important}.update-log-list li>b{display:block!important;margin:0 0 4px!important;white-space:nowrap!important;color:var(--green)!important;font-size:9px!important;line-height:1.2!important}.update-log-list li>span{display:block!important;margin:0!important;color:#d0d0d0!important;font-size:10px!important;line-height:1.45!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important}
 /* Organizer drags stay anchored; only the edge zone auto-scrolls the playlist view. */
-.playlist-view.organizing{touch-action:none;overscroll-behavior:contain}
+.playlist-view.organizing{touch-action:pan-y;overscroll-behavior:contain}
 
 /* Clear recovery guidance for the zoom-sensitive Spotify dashboard. */
 .dashboard-note{margin:8px 0 0!important;color:#ff6b6b!important;font-size:11px!important;font-weight:700;line-height:1.4!important}
