@@ -1,5 +1,5 @@
-const CACHE = "turntable-ios-i10-guided-tour-v4";
-const ASSETS = ["./", "./index.html", "./styles.css?v=I.10-guided-tour-2", "./bridge.js?v=I.10-guided-tour-runtime-4", "./app.js?v=I.10-guided-tour-runtime-4", "./manifest.webmanifest"];
+const CACHE = "turntable-ios-i10-guided-tour-v5";
+const ASSETS = ["./", "./index.html", "./styles.css?v=I.10-guided-tour-layer-5", "./bridge.js?v=I.10-guided-tour-layer-5", "./app.js?v=I.10-guided-tour-layer-5", "./manifest.webmanifest"];
 self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener("activate", event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
 self.addEventListener("fetch", event => {

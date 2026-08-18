@@ -885,10 +885,11 @@ function positionGuidedTourSpotlight(selector) {
   const target = document.querySelector(selector);
   if (!spotlight || !target) return clearGuidedTourSpotlight();
   const rect = target.getBoundingClientRect();
+  const host = remote.getBoundingClientRect();
   const inset = 8;
   spotlight.style.width = `${Math.max(0, rect.width + inset * 2)}px`;
   spotlight.style.height = `${Math.max(0, rect.height + inset * 2)}px`;
-  spotlight.style.transform = `translate3d(${Math.max(6, rect.left - inset)}px,${Math.max(6, rect.top - inset)}px,0)`;
+  spotlight.style.transform = `translate3d(${Math.max(6, rect.left - host.left - inset)}px,${Math.max(6, rect.top - host.top - inset)}px,0)`;
 }
 function closeGuidedTour(completed = false) {
   const tour = $("guided-tour");
