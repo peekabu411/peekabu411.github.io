@@ -911,7 +911,7 @@ const nowPlayingGuidePages = [
     kicker: "NOW PLAYING · 3 OF 5",
     title: "Press for tabs. Swipe for volume.",
     copy: "Press the small top arrow to reveal the tab row. On the right, swipe the partially visible dial vertically to adjust volume.",
-    visual: '<div class="guide-demo guide-demo-volume-stage"><div class="guide-demo-trigger"><i>&#8964;</i><small>PRESS FOR TABS</small></div><div class="guide-demo-art-panel"><span>NOW PLAYING</span><div class="guide-demo-side-dial"><i></i><b></b></div></div><div class="guide-demo-volume-note"><i>&uarr;</i><b>SWIPE TO ADJUST</b><i>&darr;</i></div></div>'
+    visual: '<div class="guide-demo guide-demo-volume-stage"><div class="guide-demo-trigger"><span></span><i>&#8964;</i><small>PRESS HERE FOR TABS</small></div><div class="guide-demo-art-panel"><span>NOW PLAYING</span><div class="guide-demo-side-dial"><i></i><b></b></div></div><div class="guide-demo-volume-note"><i>&uarr;</i><b>SWIPE TO ADJUST</b><i>&darr;</i></div></div>'
   },
   {
     kicker: "NOW PLAYING · 4 OF 5",
