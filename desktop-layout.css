@@ -58,6 +58,7 @@
 
 /* Anchor each icon button to its own setup card, not the page viewport. */
 #pairing .setup-step.dashboard-step{position:relative!important}
+#pairing .setup-step.dashboard-step>div{min-width:0!important;padding-right:48px!important}
 /* I.9.5 setup repair: standalone square dashboard shortcuts and a visible warning. */
 .setup-steps .dashboard-step .dashboard-action{
   position:absolute!important;top:12px!important;right:12px!important;
