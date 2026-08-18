@@ -15,7 +15,7 @@
     <link rel="icon" href="./icons/turntable-remote.ico" sizes="any">
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
     <title>Turntable — LAN Music Remote</title>
-    <link rel="stylesheet" href="./styles.css?v=I.9.5-control-hints-5">
+    <link rel="stylesheet" href="./styles.css?v=I.9.5-lyrics-anchor-6">
     <link rel="stylesheet" href="./settings-help.css">
     <link rel="stylesheet" href="./settings-help-previews.css">
     <link rel="stylesheet" href="./screen-fit.css">
@@ -53,8 +53,8 @@
           <button id="refresh" class="status-button" aria-label="Refresh Spotify status"><span class="refresh-icon" aria-hidden="true">&#8635;</span></button>
           <span id="connection-dot" class="connection-indicator waiting" role="status" aria-label="Connection status: waiting" title="Waiting for the PC"></span>
         </nav>
-        <button id="bar-handle" class="bar-handle" aria-label="Show quick views"><span></span></button>
-        <p class="topbar-hint guide-copy">PRESS FOR TABS</p>
+        <button id="bar-handle" class="bar-handle" aria-label="Show quick views"><span class="topbar-chevron" aria-hidden="true">&#8964;</span></button>
+        <p class="topbar-hint">PRESS FOR TABS</p>
         <a id="spotify-track-link" class="spotify-track-link" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer" aria-label="Open Spotify" title="Open Spotify">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <circle cx="12" cy="12" r="11"></circle>
@@ -301,7 +301,7 @@
           <button id="dial" class="dial" aria-label="Volume dial; swipe around it or use arrow keys" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
             <span class="dial-marker"></span><span class="dial-center"></span><span class="bar-button-label guide-copy">PRESS</span>
           </button>
-          <p class="dial-swipe-hint guide-copy">SWIPE &#8597; TO ADJUST</p>
+          <p class="dial-swipe-hint">SWIPE &#8597; TO ADJUST</p>
         </aside>
         <p id="message" class="message" role="status"></p>
       </section>
