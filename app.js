@@ -446,6 +446,7 @@ function syncDisplayPresentation() {
 function setLyricsAvailability(nextAvailability) {
   lyricsAvailability = nextAvailability;
   syncDisplayPresentation();
+  requestAnimationFrame(refreshLyricsTrackMarquee);
 }
 function renderLyricsLayout() {
   const container = $("lyrics-lines");
@@ -934,6 +935,7 @@ function applyAppearance(nextAlbum = albumStyle, nextControl = controlStyle, nex
   remote.dataset.album = albumStyle;
   remote.dataset.control = controlStyle;
   syncDisplayPresentation();
+  requestAnimationFrame(refreshLyricsTrackMarquee);
   remote.dataset.lyricsBackground = lyricsBackground;
   remote.dataset.playerBackground = playerBackgroundStyle;
   remote.dataset.lyricStyle = lyricStyle;
@@ -1557,6 +1559,25 @@ function optimisticPlaybackDisplay(serverPlaying) {
   return optimisticPlaybackPlaying;
 }
 
+function refreshLyricsTrackMarquee() {
+  const marquee = $("lyrics-track-marquee");
+  const text = $("lyrics-track-marquee-text");
+  if (!marquee || !text) return;
+  marquee.classList.remove("is-overflowing");
+  const overflow = Math.ceil(text.scrollWidth - marquee.clientWidth);
+  marquee.style.setProperty("--lyrics-marquee-shift", `${-Math.max(0, overflow)}px`);
+  if (overflow <= 2) return;
+  void text.offsetWidth;
+  marquee.classList.add("is-overflowing");
+}
+function updateLyricsTrackMarquee(track) {
+  const text = $("lyrics-track-marquee-text");
+  if (!text) return;
+  const label = track ? `${track.name || "Unknown title"} — ${artists(track)}` : "";
+  if (text.textContent !== label) text.textContent = label;
+  requestAnimationFrame(refreshLyricsTrackMarquee);
+}
+
 function updateTrackCopy(track, context = playback?.context, updateContext = true) {
   const title = $("title");
   const nextTitle = track?.name || "Nothing playing";
@@ -1565,6 +1586,7 @@ function updateTrackCopy(track, context = playback?.context, updateContext = tru
     title.scrollTop = 0;
   }
   $("artist").textContent = track ? artists(track) : "Open Spotify on your PC and start a song";
+  updateLyricsTrackMarquee(track);
   if (updateContext) $("context").textContent = displayStyle === "lyrics" && lyricsAvailability === "unavailable" ? "LYRICS UNAVAILABLE" : context?.type ? "PLAYING FROM " + context.type.toUpperCase() : "PLAYING FROM YOUR PC";
 }
 
@@ -2387,6 +2409,7 @@ albumCard.addEventListener("pointercancel", () => { artSwipe = null; resetAlbumC
 
 applyAppearance(albumStyle, controlStyle, displayStyle, lyricsBackground);
 applyBackgroundColorMode(backgroundColorMode, manualBackgroundColor);
+window.addEventListener("resize", () => requestAnimationFrame(refreshLyricsTrackMarquee));
 applyVolumeWeight(volumeWeight);
 applyLayoutProfile(layoutProfile);
 applyUIFontScale(uiFontScale);

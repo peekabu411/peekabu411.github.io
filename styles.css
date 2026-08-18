@@ -592,3 +592,12 @@
 
 /* Clear recovery guidance for the zoom-sensitive Spotify dashboard. */
 .dashboard-note{margin:8px 0 0!important;color:#ff6b6b!important;font-size:11px!important;font-weight:700;line-height:1.4!important}
+
+/* Lyrics-mode song identity stays visible without competing with the top controls. */
+.lyrics-track-marquee{position:absolute;z-index:9;top:max(18px,env(safe-area-inset-top));right:calc(58px + env(safe-area-inset-right));width:min(34vw,260px);overflow:hidden;display:none;opacity:.5;color:#f8f8f8;font-size:10px;font-weight:700;line-height:16px;letter-spacing:.015em;white-space:nowrap;pointer-events:none}
+.lyrics-track-marquee span{display:block;width:max-content;min-width:100%;transform:translateX(0)}
+.device.topbar-hidden[data-current-view="player"][data-display="lyrics"] .lyrics-track-marquee{display:block}
+.lyrics-track-marquee.is-overflowing span{animation:lyrics-track-marquee 11s ease-in-out infinite}
+@keyframes lyrics-track-marquee{0%,18%{transform:translateX(0)}50%,68%{transform:translateX(var(--lyrics-marquee-shift))}100%{transform:translateX(0)}}
+@media (orientation:landscape) and (max-height:500px){.lyrics-track-marquee{top:max(13px,env(safe-area-inset-top));right:calc(47px + env(safe-area-inset-right));width:min(34vw,240px);font-size:9px;line-height:14px}}
+@media (prefers-reduced-motion:reduce){.lyrics-track-marquee.is-overflowing span{animation:none}}
