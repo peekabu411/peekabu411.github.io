@@ -603,7 +603,7 @@
 @media (prefers-reduced-motion:reduce){.lyrics-track-marquee.is-overflowing span{animation:none}}
 /* Match the volume reveal language with a restrained downward top-bar arrow. */
 .bar-handle span{display:none!important}
-.bar-handle::after{content:"\2304";display:block;color:#fff;font-size:29px;font-weight:700;line-height:1;text-shadow:0 2px 8px #000,0 0 2px #000;opacity:.25}
+.bar-handle::after{content:"\2304";display:block;color:#fff;font-size:29px;font-weight:700;line-height:1;text-shadow:0 2px 8px #000,0 0 2px #000;opacity:.25;transform:translateY(-10px)}
 /* Dashboard shortcuts stay compact so setup instructions remain easy to scan. */
 .setup-step{position:relative}
 .dashboard-step>div{padding-right:44px}
