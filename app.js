@@ -894,6 +894,9 @@ function closeGuidedTour(completed = false) {
   const tour = $("guided-tour");
   if (!tour || tour.hidden) return;
   tour.hidden = true;
+  tour.style.removeProperty("display");
+  tour.style.removeProperty("visibility");
+  tour.style.removeProperty("opacity");
   remote.classList.remove("guided-tour-active");
   clearGuidedTourSpotlight();
   if (completed) localStorage.setItem(TOUR_COMPLETE_KEY, "true");
@@ -919,6 +922,9 @@ function startGuidedTour() {
   if (!tour || remote.hidden) return;
   guidedTourReturnView = currentView || "player";
   tour.hidden = false;
+  tour.style.display = "block";
+  tour.style.visibility = "visible";
+  tour.style.opacity = "1";
   remote.classList.add("guided-tour-active");
   showGuidedTourStep(0);
   requestAnimationFrame(() => $("guided-tour-card")?.focus({ preventScroll: true }));
