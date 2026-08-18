@@ -583,3 +583,6 @@
 
 /* Update history is always read as one vertical column. */
 .update-log-list{grid-template-columns:1fr!important;grid-template-rows:none!important;grid-auto-flow:row!important}
+
+/* Readable single-column update history; override all legacy grid flows. */
+.update-log-list{display:block!important;margin:0!important;padding:6px 12px 12px!important;max-height:calc(100dvh - 145px)!important;overflow:auto!important;list-style:none!important}.update-log-list li{display:block!important;width:100%!important;padding:11px 7px!important;border-bottom:1px solid #ffffff14!important}.update-log-list li>b{display:block!important;margin:0 0 4px!important;white-space:nowrap!important;color:var(--green)!important;font-size:9px!important;line-height:1.2!important}.update-log-list li>span{display:block!important;margin:0!important;color:#d0d0d0!important;font-size:10px!important;line-height:1.45!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important}
