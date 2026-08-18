@@ -1221,21 +1221,42 @@ function setPlaylistPinned(id, pinned) {
   savePlaylistIds(PLAYLIST_PINNED_KEY, [...pins]);
   renderPlaylists(playlistLibrary);
 }
-function movePlaylistBefore(sourceId, targetId) {
+function playlistCardPositions() {
+  return new Map([...document.querySelectorAll(".playlist-card")].map((card) => [card.dataset.playlistId, card.getBoundingClientRect()]));
+}
+function animatePlaylistReorder(before) {
+  requestAnimationFrame(() => document.querySelectorAll(".playlist-card").forEach((card) => {
+    const previous = before.get(card.dataset.playlistId);
+    if (!previous) return;
+    const next = card.getBoundingClientRect();
+    const x = previous.left - next.left;
+    const y = previous.top - next.top;
+    if (Math.abs(x) < 1 && Math.abs(y) < 1) return;
+    card.animate([{ transform: `translate3d(${x}px,${y}px,0)` }, { transform: "translate3d(0,0,0)" }], { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" });
+  }));
+}
+function movePlaylistBefore(sourceId, targetId, placeAfter = false) {
   if (!sourceId || !targetId || sourceId === targetId) return;
   const { pins } = playlistPresentation(playlistLibrary);
   if (pins.has(sourceId) !== pins.has(targetId)) { setMessage("Pin or unpin a playlist before moving it between sections."); return; }
+  const before = playlistCardPositions();
   const current = playlistPresentation(playlistLibrary);
   const ordered = [...current.pinned, ...current.regular].map((playlist) => playlist.id);
   const withoutSource = ordered.filter((id) => id !== sourceId);
-  withoutSource.splice(Math.max(0, withoutSource.indexOf(targetId)), 0, sourceId);
+  const targetIndex = withoutSource.indexOf(targetId);
+  withoutSource.splice(Math.max(0, targetIndex + (placeAfter ? 1 : 0)), 0, sourceId);
   savePlaylistIds(PLAYLIST_ORDER_KEY, withoutSource);
   renderPlaylists(playlistLibrary);
+  animatePlaylistReorder(before);
+}
+function setPlaylistDropGap(card, after) {
+  card?.classList.remove("drop-before", "drop-after");
+  card?.classList.add(after ? "drop-after" : "drop-before");
 }
 function clearPlaylistDrag(drag) {
   if (!drag) return;
   drag.card?.classList.remove("dragging");
-  drag.hover?.classList.remove("drop-target");
+  drag.hover?.classList.remove("drop-before", "drop-after");
   drag.preview?.remove();
 }
 function renderPlaylistCard(playlist, pins) {
@@ -1311,9 +1332,12 @@ function renderPlaylistCard(playlist, pins) {
     event.preventDefault();
     drag.preview.style.transform = `translate3d(${event.clientX - 44}px, ${event.clientY - 44}px, 0) rotate(3deg)`;
     const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(".playlist-card");
-    if (drag.hover && drag.hover !== target) drag.hover.classList.remove("drop-target");
-    drag.hover = target && target !== card ? target : null;
-    drag.hover?.classList.add("drop-target");
+    const nextHover = target && target !== card ? target : null;
+    const placeAfter = nextHover ? event.clientY > nextHover.getBoundingClientRect().top + nextHover.getBoundingClientRect().height / 2 : false;
+    if (drag.hover && (drag.hover !== nextHover || drag.placeAfter !== placeAfter)) drag.hover.classList.remove("drop-before", "drop-after");
+    drag.hover = nextHover;
+    drag.placeAfter = placeAfter;
+    setPlaylistDropGap(drag.hover, placeAfter);
   });
   card.addEventListener("pointerup", (event) => {
     const drag = playlistTouchDrag;

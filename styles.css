@@ -579,3 +579,5 @@
 
 /* Two-line song-title viewport with a calm automatic scroll for longer titles. */
 .title-viewport{overflow:hidden;margin:0 0 10px}.title-viewport #title{margin:0!important;max-height:none!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;will-change:transform}.title-viewport.is-overflowing #title{animation:title-auto-scroll 16s ease-in-out infinite alternate}@keyframes title-auto-scroll{0%,12%{transform:translateY(0)}88%,100%{transform:translateY(calc(-1 * var(--title-scroll-distance,0px)))}}@media(prefers-reduced-motion:reduce){.title-viewport.is-overflowing #title{animation:none}}
+/* Playlist organizer insertion marker and smooth reorder motion. */
+.playlist-card.drop-before::before,.playlist-card.drop-after::after{content:"";position:absolute;z-index:4;left:0;right:0;height:3px;border-radius:999px;background:#1ed760;box-shadow:0 0 12px #1ed760}.playlist-card.drop-before::before{top:-9px}.playlist-card.drop-after::after{bottom:-9px}.playlist-card.drop-before .playlist-cover,.playlist-card.drop-after .playlist-cover{box-shadow:0 12px 25px #0008}
