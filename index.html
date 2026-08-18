@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -14,7 +14,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png">
     <link rel="icon" href="./icons/turntable-remote.ico" sizes="any">
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
-    <title>Turntable â€” LAN Music Remote</title>
+    <title>Turntable — LAN Music Remote</title>
     <link rel="stylesheet" href="./styles.css?v=0.9.07-spotify-layer">
     <link rel="stylesheet" href="./settings-help.css">
     <link rel="stylesheet" href="./settings-help-previews.css">
@@ -30,14 +30,14 @@
         <h1>Control the music<br>from your phone.</h1>
         <p class="pair-copy">Set up direct Spotify control on this device. No laptop or LAN server is needed.</p>
         <div class="setup-steps" role="list">
-          <section class="setup-step" role="listitem"><span>1</span><div><b>Sign in to Spotify</b><p>Open the Spotify Developer Dashboard. If you are signed out, Spotify will show the login page first and then send you to the dashboard.</p><a class="setup-action" href="https://accounts.spotify.com/en/login?continue=https%3A%2F%2Fdeveloper.spotify.com%2Fdashboard" target="_blank" rel="noopener noreferrer">Sign in &amp; open Dashboard <i>↗</i></a></div></section>
+          <section class="setup-step" role="listitem"><span>1</span><div><b>Sign in to Spotify</b><p>Open the Spotify Developer Dashboard. If you are signed out, Spotify will show the login page first and then send you to the dashboard.</p><a class="setup-action" href="https://accounts.spotify.com/en/login?continue=https%3A%2F%2Fdeveloper.spotify.com%2Fdashboard" target="_blank" rel="noopener noreferrer">Sign in &amp; open Dashboard <i>?</i></a></div></section>
           <section class="setup-step" role="listitem"><span>2</span><div><b>Create or choose an app</b><p>In the dashboard, create a new Web API app or open the app you want Turntable to control.</p></div></section>
           <section class="setup-step" role="listitem"><span>3</span><div><b>Open the app settings</b><p>Choose Settings or Edit settings for that Spotify app. Keep this Turntable page open.</p></div></section>
           <section class="setup-step" role="listitem"><span>4</span><div><b>Copy the Redirect URI</b><p>Turntable uses this address to safely return after Spotify authorization.</p><div class="redirect-uri"><code>https://peekabu411.github.io/</code><button id="copy-redirect-uri" type="button">Copy URL</button></div></div></section>
           <section class="setup-step" role="listitem"><span>5</span><div><b>Paste and save the Redirect URI</b><p>Back in Spotify app settings, add the copied address under Redirect URIs, then save your changes.</p></div></section>
           <section class="setup-step" role="listitem"><span>6</span><div><b>Copy the Client ID</b><p>Copy the Client ID shown in the same Spotify app settings. Do not copy or paste the Client Secret.</p></div></section>
           <section class="setup-step" role="listitem"><span>7</span><div><b>Paste the Client ID</b><p>Return here and paste the Client ID below.</p><input id="pin" inputmode="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Spotify Client ID" aria-label="Spotify Client ID"></div></section>
-          <section class="setup-step" role="listitem"><span>8</span><div><b>Connect Spotify</b><p>Approve access in Spotify. Turntable stores the connection only on this device.</p><button id="pair" class="setup-action primary-action">Connect Spotify <i>→</i></button></div></section>
+          <section class="setup-step" role="listitem"><span>8</span><div><b>Connect Spotify</b><p>Approve access in Spotify. Turntable stores the connection only on this device.</p><button id="pair" class="setup-action primary-action">Connect Spotify <i>?</i></button></div></section>
         </div>        <small id="pair-error" role="alert"></small>
       </section>
 
@@ -123,21 +123,21 @@
             <section id="connection-status-card" class="connection-status-card" aria-live="polite">
               <span id="connection-status-dot" class="connection-status-dot waiting"></span>
               <div class="connection-status-copy"><small>REMOTE CONNECTION</small><strong id="connection-status-title">Checking connection</strong><p id="connection-status-detail">Contacting the PC and Spotify...</p><p class="connection-recommendation"><span>Recommended action</span><b id="connection-recommended-action">Wait for the current connection check to finish.</b></p></div>
-              <div class="connection-facts"><span>Last sync <b id="connection-last-sync">â€”</b></span><span>Playback cache <b id="connection-cache-age">â€”</b></span></div><div class="connection-legend" aria-label="Connection light legend"><span><i class="connected"></i>Ready</span><span><i class="syncing"></i>Syncing</span><span><i class="cached"></i>Cached</span><span><i class="cooldown"></i>Cooldown</span><span><i class="offline"></i>Offline</span><span><i class="waiting"></i>Waiting</span></div>
+              <div class="connection-facts"><span>Last sync <b id="connection-last-sync">—</b></span><span>Playback cache <b id="connection-cache-age">—</b></span></div><div class="connection-legend" aria-label="Connection light legend"><span><i class="connected"></i>Ready</span><span><i class="syncing"></i>Syncing</span><span><i class="cached"></i>Cached</span><span><i class="cooldown"></i>Cooldown</span><span><i class="offline"></i>Offline</span><span><i class="waiting"></i>Waiting</span></div>
             </section>
             <div class="devices-layout">
               <div id="device-list" class="device-list"><p class="empty">Looking for Spotify devices...</p></div>
               <section class="pair-another" aria-labelledby="pair-another-title">
                 <div><small>PAIR ANOTHER PHONE</small><b id="pair-another-title">Open this address</b></div>
                 <button id="copy-address" class="address-button"><span id="pair-address">Loading LAN address...</span><small>Tap to copy</small></button>
-                <div class="pair-code-row"><span>PAIRING PIN</span><strong id="settings-pin">â€¢â€¢â€¢â€¢</strong></div>
+                <div class="pair-code-row"><span>PAIRING PIN</span><strong id="settings-pin">••••</strong></div>
                 <button id="unpair-phone" class="unpair-button">Unpair this phone</button>
               </section>
             </div>
           </section>
 
           <section class="view controls-view" data-panel="settings">
-            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.09"><small>REMOTE VERSION</small><b>ver(I.9.09)</b></button></div>
+            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.10"><small>REMOTE VERSION</small><b>ver(I.9.10)</b></button></div>
             <div class="settings-columns">
               <div class="settings-controls">
                 <section class="theme-picker" aria-labelledby="theme-title">
