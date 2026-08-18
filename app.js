@@ -1232,6 +1232,12 @@ function movePlaylistBefore(sourceId, targetId) {
   savePlaylistIds(PLAYLIST_ORDER_KEY, withoutSource);
   renderPlaylists(playlistLibrary);
 }
+function clearPlaylistDrag(drag) {
+  if (!drag) return;
+  drag.card?.classList.remove("dragging");
+  drag.hover?.classList.remove("drop-target");
+  drag.preview?.remove();
+}
 function renderPlaylistCard(playlist, pins) {
   const card = document.createElement("article");
   card.className = "playlist-card";
@@ -1269,26 +1275,56 @@ function renderPlaylistCard(playlist, pins) {
     pin.setAttribute("aria-label", `${pins.has(playlist.id) ? "Unpin" : "Pin"} ${playlist.name}`);
     pin.textContent = pins.has(playlist.id) ? "Pinned" : "Pin";
     pin.onclick = () => setPlaylistPinned(playlist.id, !pins.has(playlist.id));
-    const handle = document.createElement("span");
-    handle.className = "playlist-drag-handle";
-    handle.textContent = "Drag to reorder";
-    card.append(pin, handle);
+    card.append(pin);
   }
-  card.addEventListener("dragstart", (event) => { if (!playlistOrganizerMode) return; event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", playlist.id); card.classList.add("dragging"); });
-  card.addEventListener("dragend", () => card.classList.remove("dragging"));
-  card.addEventListener("dragover", (event) => { if (playlistOrganizerMode) { event.preventDefault(); event.dataTransfer.dropEffect = "move"; } });
-  card.addEventListener("drop", (event) => { if (!playlistOrganizerMode) return; event.preventDefault(); movePlaylistBefore(event.dataTransfer.getData("text/plain"), playlist.id); });
-  card.addEventListener("pointerdown", (event) => { if (playlistOrganizerMode && !event.target.closest(".playlist-pin")) playlistTouchDrag = { id: playlist.id, pointerId: event.pointerId, moved: false, card }; });
-  card.addEventListener("pointermove", (event) => { if (!playlistTouchDrag || playlistTouchDrag.pointerId !== event.pointerId) return; if (Math.hypot(event.movementX, event.movementY) > 2) { playlistTouchDrag.moved = true; card.classList.add("dragging"); } });
-  card.addEventListener("pointerup", (event) => {
-    if (!playlistTouchDrag || playlistTouchDrag.pointerId !== event.pointerId) return;
-    const drag = playlistTouchDrag; playlistTouchDrag = null; card.classList.remove("dragging");
-    if (!drag.moved) return;
-    suppressPlaylistPlayUntil = Date.now() + 350;
-    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(".playlist-card");
-    if (target) movePlaylistBefore(drag.id, target.dataset.playlistId);
+  card.addEventListener("dragstart", (event) => {
+    if (!playlistOrganizerMode) return;
+    const preview = cover.cloneNode(true);
+    preview.className = "playlist-drag-preview";
+    document.body.append(preview);
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", playlist.id);
+    event.dataTransfer.setDragImage(preview, preview.offsetWidth / 2, preview.offsetHeight / 2);
+    requestAnimationFrame(() => preview.remove());
+    card.classList.add("dragging");
   });
-  card.addEventListener("pointercancel", () => { playlistTouchDrag?.card.classList.remove("dragging"); playlistTouchDrag = null; });
+  card.addEventListener("dragend", () => card.classList.remove("dragging"));
+  card.addEventListener("dragover", (event) => { if (playlistOrganizerMode) { event.preventDefault(); event.dataTransfer.dropEffect = "move"; card.classList.add("drop-target"); } });
+  card.addEventListener("dragleave", () => card.classList.remove("drop-target"));
+  card.addEventListener("drop", (event) => { if (!playlistOrganizerMode) return; event.preventDefault(); card.classList.remove("drop-target"); movePlaylistBefore(event.dataTransfer.getData("text/plain"), playlist.id); });
+  card.addEventListener("pointerdown", (event) => {
+    if (!playlistOrganizerMode || event.pointerType === "mouse" || event.target.closest(".playlist-pin")) return;
+    playlistTouchDrag = { id: playlist.id, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false, card, preview: null, hover: null };
+    card.setPointerCapture?.(event.pointerId);
+  });
+  card.addEventListener("pointermove", (event) => {
+    const drag = playlistTouchDrag;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (!drag.moved && Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 8) return;
+    if (!drag.moved) {
+      drag.moved = true;
+      drag.preview = cover.cloneNode(true);
+      drag.preview.className = "playlist-drag-preview";
+      document.body.append(drag.preview);
+      card.classList.add("dragging");
+    }
+    event.preventDefault();
+    drag.preview.style.transform = `translate3d(${event.clientX - 44}px, ${event.clientY - 44}px, 0) rotate(3deg)`;
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(".playlist-card");
+    if (drag.hover && drag.hover !== target) drag.hover.classList.remove("drop-target");
+    drag.hover = target && target !== card ? target : null;
+    drag.hover?.classList.add("drop-target");
+  });
+  card.addEventListener("pointerup", (event) => {
+    const drag = playlistTouchDrag;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    playlistTouchDrag = null;
+    if (drag.moved) suppressPlaylistPlayUntil = Date.now() + 350;
+    const targetId = drag.hover?.dataset.playlistId;
+    clearPlaylistDrag(drag);
+    if (drag.moved && targetId) movePlaylistBefore(drag.id, targetId);
+  });
+  card.addEventListener("pointercancel", () => { clearPlaylistDrag(playlistTouchDrag); playlistTouchDrag = null; });
   return card;
 }
 function renderPlaylists(playlists = []) {
@@ -1303,13 +1339,15 @@ function renderPlaylists(playlists = []) {
     return;
   }
   const { pinned, regular, pins } = playlistPresentation(playlists);
+  const appendCards = (items) => items.forEach((playlist) => grid.append(renderPlaylistCard(playlist, pins)));
+  if (!playlistOrganizerMode) { appendCards([...pinned, ...regular]); return; }
   const appendSection = (label, items) => {
     if (!items.length) return;
     const heading = document.createElement("p");
     heading.className = "playlist-section-label";
     heading.textContent = label;
     grid.append(heading);
-    items.forEach((playlist) => grid.append(renderPlaylistCard(playlist, pins)));
+    appendCards(items);
   };
   if (pinned.length) appendSection("PINNED", pinned);
   appendSection(pinned.length ? "ALL PLAYLISTS" : "YOUR PLAYLISTS", regular);
