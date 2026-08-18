@@ -1264,7 +1264,7 @@ function renderPlaylistCard(playlist, pins) {
   const name = document.createElement("b");
   name.textContent = playlist.name;
   const detail = document.createElement("small");
-  detail.textContent = Number.isFinite(playlist.tracks) ? `${playlist.tracks} tracks` : playlist.owner;
+  detail.textContent = `${Number.isFinite(playlist.tracks) ? playlist.tracks : 0} songs`;
   playButton.append(cover, name, detail);
   playButton.onclick = () => { if (Date.now() >= suppressPlaylistPlayUntil) playPlaylist(playlist, playButton); };
   card.append(playButton);

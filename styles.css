@@ -574,3 +574,5 @@
 @media (orientation:landscape) and (max-height:500px) and (max-width:1200px){.playlist-play>b{margin-top:6px;font-size:12px}.playlist-play>small{font-size:9px}}
 @media (min-width:1200px) and (min-height:700px){.playlist-play>b{font-size:14px}}
 @media (orientation:portrait) and (max-width:760px){.playlist-play>b{font-size:14px}.playlist-play>small{font-size:11px}}
+/* Playlist cards always remain exactly two lines. */
+.playlist-play>b,.playlist-play>small{width:100%;max-width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.playlist-play>small{color:#8d8d8d}
