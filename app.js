@@ -1310,9 +1310,9 @@ function renderPlaylistCard(playlist, pins) {
     card.classList.add("dragging");
   });
   card.addEventListener("dragend", () => card.classList.remove("dragging"));
-  card.addEventListener("dragover", (event) => { if (playlistOrganizerMode) { event.preventDefault(); event.dataTransfer.dropEffect = "move"; card.classList.add("drop-target"); } });
-  card.addEventListener("dragleave", () => card.classList.remove("drop-target"));
-  card.addEventListener("drop", (event) => { if (!playlistOrganizerMode) return; event.preventDefault(); card.classList.remove("drop-target"); movePlaylistBefore(event.dataTransfer.getData("text/plain"), playlist.id); });
+  card.addEventListener("dragover", (event) => { if (!playlistOrganizerMode) return; event.preventDefault(); event.dataTransfer.dropEffect = "move"; setPlaylistDropGap(card, event.clientY > card.getBoundingClientRect().top + card.getBoundingClientRect().height / 2); });
+  card.addEventListener("dragleave", () => card.classList.remove("drop-before", "drop-after"));
+  card.addEventListener("drop", (event) => { if (!playlistOrganizerMode) return; event.preventDefault(); const placeAfter = card.classList.contains("drop-after"); card.classList.remove("drop-before", "drop-after"); movePlaylistBefore(event.dataTransfer.getData("text/plain"), playlist.id, placeAfter); });
   card.addEventListener("pointerdown", (event) => {
     if (!playlistOrganizerMode || event.pointerType === "mouse" || event.target.closest(".playlist-pin")) return;
     playlistTouchDrag = { id: playlist.id, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false, card, preview: null, hover: null };
