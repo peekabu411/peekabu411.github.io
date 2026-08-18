@@ -1547,7 +1547,7 @@ function updateTrackCopy(track, context = playback?.context, updateContext = tru
   const nextTitle = track?.name || "Nothing playing";
   if (title.textContent !== nextTitle) {
     title.textContent = nextTitle;
-    updateTitleScroll();
+    title.scrollTop = 0;
   }
   $("artist").textContent = track ? artists(track) : "Open Spotify on your PC and start a song";
   if (updateContext) $("context").textContent = context?.type ? "PLAYING FROM " + context.type.toUpperCase() : "PLAYING FROM YOUR PC";
@@ -2379,4 +2379,4 @@ applyLyricFontScale(lyricFontScale);
 setLyricOffset(lyricOffset);
 setTopBarHidden(localStorage.getItem("turntable-topbar-hidden") !== "false");
 if (session) { pairing.hidden = true; remote.hidden = false; hydrateClientSnapshot(); void startStatusRefreshCycle(); scheduleFullscreenPrompt(); }
-window.addEventListener("resize", () => { applyLayoutProfile(layoutProfile); updateTitleScroll(); });
+window.addEventListener("resize", () => applyLayoutProfile(layoutProfile));
