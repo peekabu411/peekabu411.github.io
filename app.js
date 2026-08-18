@@ -2035,7 +2035,8 @@ $("spotify-track-link").onclick = (event) => {
   if (opened) opened.opener = null;
   else location.assign(destination);
 };
-$("playlist-organize").onclick = () => { playlistOrganizerMode = !playlistOrganizerMode; $("playlist-organize").classList.toggle("active", playlistOrganizerMode); $("playlist-organize").setAttribute("aria-pressed", String(playlistOrganizerMode)); $("playlist-organize").textContent = playlistOrganizerMode ? "Done" : "Organize"; renderPlaylists(playlistLibrary); };`r`n$("bar-handle").onclick = () => { physicalFeedback("press"); setTopBarHidden(!remote.classList.contains("topbar-hidden")); };
+$("playlist-organize").onclick = () => { playlistOrganizerMode = !playlistOrganizerMode; $("playlist-organize").classList.toggle("active", playlistOrganizerMode); $("playlist-organize").setAttribute("aria-pressed", String(playlistOrganizerMode)); $("playlist-organize").textContent = playlistOrganizerMode ? "Done" : "Organize"; renderPlaylists(playlistLibrary); };
+$("bar-handle").onclick = () => { physicalFeedback("press"); setTopBarHidden(!remote.classList.contains("topbar-hidden")); };
 document.addEventListener("pointerup", (event) => {
   if (!remote.classList.contains("topbar-hidden") || event.button !== 0 || event.target.closest("button,input,select,a[href],#fullscreen-prompt")) return;
   const handleBounds = $("bar-handle").getBoundingClientRect();
