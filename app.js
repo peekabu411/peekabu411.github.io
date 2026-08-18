@@ -92,6 +92,7 @@ let requestedNextCover = "";
 const artworkPreloads = new Map();
 const albumColorCache = new Map();
 const lyricsResultCache = new Map();
+const lyricsPrefetches = new Map();
 let albumColorTrackUri = null;
 let lyricsTrackUri = null;
 let lyricsRequestToken = 0;
@@ -502,44 +503,68 @@ function renderLyrics(result = {}) {
   updateActiveLyrics(clockPosition());
 }
 
+function lyricsRequestFor(track) {
+  const query = new URLSearchParams({
+    track_name: track?.name || "",
+    artist_name: artists(track),
+    album_name: track?.album?.name || "",
+    duration: String(Math.round((track?.duration_ms || 0) / 1000))
+  });
+  return { query, cacheKey: query.toString() };
+}
+function cacheLyricsResult(cacheKey, result) {
+  lyricsResultCache.set(cacheKey, result);
+  if (lyricsResultCache.size > 30) lyricsResultCache.delete(lyricsResultCache.keys().next().value);
+  return result;
+}
+async function requestLyricsResult(query) {
+  try {
+    return await api(`/api/lyrics?${query}`);
+  } catch {
+    const response = await fetch(`https://lrclib.net/api/get?${query}`, { headers: { "Lrclib-Client": "Turntable LAN Remote v0.1 (local personal project)" } });
+    if (response.status === 404) return { found: false, instrumental: false, syncedLyrics: null, plainLyrics: null };
+    if (!response.ok) throw new Error("Lyrics provider unavailable");
+    const direct = await response.json();
+    return { found: true, instrumental: !!direct.instrumental, syncedLyrics: direct.syncedLyrics || null, plainLyrics: direct.plainLyrics || null };
+  }
+}
+function prefetchLyrics(track) {
+  if (!track?.uri) return Promise.resolve(null);
+  const { query, cacheKey } = lyricsRequestFor(track);
+  if (lyricsResultCache.has(cacheKey)) return Promise.resolve(lyricsResultCache.get(cacheKey));
+  if (lyricsPrefetches.has(cacheKey)) return lyricsPrefetches.get(cacheKey);
+  const request = requestLyricsResult(query)
+    .then((result) => cacheLyricsResult(cacheKey, result))
+    .finally(() => lyricsPrefetches.delete(cacheKey));
+  lyricsPrefetches.set(cacheKey, request);
+  return request;
+}
 async function loadLyrics(track) {
   const token = ++lyricsRequestToken;
   lyricsTrackUri = track?.uri || null;
   activeLyricIndex = -1;
   activeLyricWordIndex = -1;
   lyricsLines = [];
-  setLyricsAvailability(track ? "loading" : "unavailable");
+  if (!track) {
+    setLyricsAvailability("unavailable");
+    $("lyrics-lines").replaceChildren();
+    $("lyrics-lines").className = "lyrics-lines";
+    $("lyrics-status").hidden = false;
+    $("lyrics-status").textContent = "Play a song to see lyrics.";
+    return;
+  }
+  const { cacheKey } = lyricsRequestFor(track);
+  if (lyricsResultCache.has(cacheKey)) {
+    renderLyrics(lyricsResultCache.get(cacheKey));
+    return;
+  }
+  setLyricsAvailability("loading");
   $("lyrics-lines").replaceChildren();
   $("lyrics-lines").className = "lyrics-lines";
   $("lyrics-status").hidden = false;
-  $("lyrics-status").textContent = track ? "Finding lyrics…" : "Play a song to see lyrics.";
-  if (!track) return;
-  const query = new URLSearchParams({
-    track_name: track.name || "",
-    artist_name: artists(track),
-    album_name: track.album?.name || "",
-    duration: String(Math.round((track.duration_ms || 0) / 1000))
-  });
-  const cacheKey = query.toString();
-  if (lyricsResultCache.has(cacheKey)) {
-    if (token === lyricsRequestToken) renderLyrics(lyricsResultCache.get(cacheKey));
-    return;
-  }
+  $("lyrics-status").textContent = "Finding lyrics…";
   try {
-    let result;
-    try {
-      result = await api(`/api/lyrics?${query}`);
-    } catch {
-      const response = await fetch(`https://lrclib.net/api/get?${query}`, { headers: { "Lrclib-Client": "Turntable LAN Remote v0.1 (local personal project)" } });
-      if (response.status === 404) result = { found: false, instrumental: false, syncedLyrics: null, plainLyrics: null };
-      else {
-        if (!response.ok) throw new Error("Lyrics provider unavailable");
-        const direct = await response.json();
-        result = { found: true, instrumental: !!direct.instrumental, syncedLyrics: direct.syncedLyrics || null, plainLyrics: direct.plainLyrics || null };
-      }
-    }
-    lyricsResultCache.set(cacheKey, result);
-    if (lyricsResultCache.size > 30) lyricsResultCache.delete(lyricsResultCache.keys().next().value);
+    const result = await prefetchLyrics(track);
     if (token === lyricsRequestToken && lyricsTrackUri === track.uri) renderLyrics(result);
   } catch {
     if (token === lyricsRequestToken) {
@@ -550,7 +575,6 @@ async function loadLyrics(track) {
     }
   }
 }
-
 function lyricPosition(position) {
   position -= lyricOffset * 1000;
   let lineIndex = -1;
@@ -1022,6 +1046,7 @@ function applyAppearance(nextAlbum = albumStyle, nextControl = controlStyle, nex
     }
   }
   if (displayStyle === "lyrics" || playerBackgroundStyle === "solid") updateAlbumColor(artwork(playback?.item), playback?.item?.uri);
+  if (displayStyle === 'lyrics') void prefetchLyrics(state?.queue?.[0]);
 }
 
 function applyVolumeWeight(nextWeight = volumeWeight) {
@@ -1197,6 +1222,7 @@ async function loadQueue(force = false) {
     queueLoaded = true;
     saveClientSnapshot(true);
     queue.slice(0, 4).forEach((track) => preloadArtwork(artwork(track)));
+    if (displayStyle === 'lyrics') void prefetchLyrics(queue[0]);
     showNextCover(artwork(queue[0]));
   } catch (error) { showError(error); }
   finally {
@@ -1657,6 +1683,7 @@ function render(data) {
   }
   if (!artworkTransitionActive) {
     state.queue?.slice(0, 4).forEach((queuedTrack) => preloadArtwork(artwork(queuedTrack)));
+    if (displayStyle === 'lyrics') void prefetchLyrics(state.queue?.[0]);
     showNextCover(artwork(state.queue?.[0]));
   }
   paintPlaybackButton(optimisticPlaybackDisplay(!!playback?.is_playing));
