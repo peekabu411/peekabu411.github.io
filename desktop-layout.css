@@ -103,3 +103,10 @@
 @media (orientation:landscape) and (max-height:500px) and (max-width:1200px){
   .lyrics-track-marquee{top:calc(max(7px,env(safe-area-inset-top)) + 2px)!important}
 }
+/* Wide desktop profile: give lyrics the extra space created by the smaller artwork. */
+@media (min-width:1200px) and (min-height:650px){
+  .device[data-layout-resolved="wide"][data-current-view="player"] .art-stage{width:min(24vw,43.2vh,468px)!important}
+  .device[data-layout-resolved="wide"][data-display="lyrics"] .lyrics-panel{height:380px!important;padding:26px 34px!important}
+  .device[data-layout-resolved="wide"][data-display="lyrics"]{--lyric-line-base:36px;--lyric-word-min:68px;--lyric-word-fluid:12vw;--lyric-word-max:128px;--lyric-stage-min:44px;--lyric-stage-fluid:7.4vw;--lyric-stage-max:78px;--lyric-neighbor-min:30px;--lyric-neighbor-fluid:4vw;--lyric-neighbor-max:48px}
+  .device[data-layout-resolved="wide"][data-display="lyrics"] .lyrics-panel>p{font-size:calc(32px + var(--lyric-font-adjust) + var(--lyric-font-adjust))}
+}
