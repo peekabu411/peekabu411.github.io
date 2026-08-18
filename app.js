@@ -896,22 +896,34 @@ let nowPlayingGuideStep = -1;
 let nowPlayingGuideScheduled = false;
 const nowPlayingGuidePages = [
   {
-    kicker: "NOW PLAYING · 1 OF 3",
+    kicker: "NOW PLAYING · 1 OF 5",
     title: "The record is your skip control",
-    copy: "Swipe the album artwork left or right to move through songs. The title and artist stay centered beside it.",
-    visual: '<div class="guide-demo guide-demo-record"><div class="guide-demo-record-disc"><span></span></div><div class="guide-demo-arrows"><i>←</i><b>SWIPE</b><i>→</i></div><div class="guide-demo-copy"><strong>Current track</strong><span>Artist name</span></div></div>'
+    copy: "Swipe the album artwork left or right to move through songs. The gesture lives right on the center of the record.",
+    visual: '<div class="guide-demo guide-demo-record"><div class="guide-demo-record-disc"><div class="guide-demo-record-swipe"><i>&larr;</i><b>SWIPE</b><i>&rarr;</i></div></div><div class="guide-demo-copy"><strong>Current track</strong><span>Artist name</span></div></div>'
   },
   {
-    kicker: "NOW PLAYING · 2 OF 3",
+    kicker: "NOW PLAYING · 2 OF 5",
     title: "Keep playback close",
     copy: "Use the timeline to seek. Play, previous, next, shuffle, repeat, and the queue are always part of the Now Playing deck.",
-    visual: '<div class="guide-demo guide-demo-playback"><div class="guide-demo-timeline"><i></i></div><div class="guide-demo-transport"><span>↔</span><span>◀◀</span><b>▶</b><span>▶▶</span><span>↻</span></div><small>PLAYBACK CONTROLS</small></div>'
+    visual: '<div class="guide-demo guide-demo-playback"><div class="guide-demo-timeline"><i></i></div><div class="guide-demo-transport"><span>&#8644;</span><span>&#9664;&#9664;</span><b>&#9654;</b><span>&#9654;&#9654;</span><span>&#8635;</span></div><small>PLAYBACK CONTROLS</small></div>'
   },
   {
-    kicker: "NOW PLAYING · 3 OF 3",
-    title: "Reveal tabs and adjust volume",
-    copy: "Press the top arrow for Playlists, Devices, and Settings. Swipe the dial or side bar vertically to adjust volume.",
-    visual: '<div class="guide-demo guide-demo-controls"><div class="guide-demo-tabs"><i>⌄</i><span>NOW PLAYING</span><span>PLAYLISTS</span><span>DEVICES</span><span>SETTINGS</span></div><div class="guide-demo-volume"><b>VOLUME</b><div><i>↑</i><strong></strong><i>↓</i></div><small>SWIPE TO ADJUST</small></div></div>'
+    kicker: "NOW PLAYING · 3 OF 5",
+    title: "Press for tabs. Swipe for volume.",
+    copy: "Press the small top arrow to reveal the tab row. On the right, swipe the partially visible dial vertically to adjust volume.",
+    visual: '<div class="guide-demo guide-demo-volume-stage"><div class="guide-demo-trigger"><i>&#8964;</i><small>PRESS FOR TABS</small></div><div class="guide-demo-art-panel"><span>NOW PLAYING</span><div class="guide-demo-side-dial"><i></i><b></b></div></div><div class="guide-demo-volume-note"><i>&uarr;</i><b>SWIPE TO ADJUST</b><i>&darr;</i></div></div>'
+  },
+  {
+    kicker: "NOW PLAYING · 4 OF 5",
+    title: "Your tabs are always one press away",
+    copy: "The revealed row gives you a direct route to every Turntable page and a quick refresh without leaving the controller.",
+    visual: '<div class="guide-demo guide-demo-tab-row"><div class="guide-demo-tab-trigger">&#8963;</div><div class="guide-demo-presets"><b>Now Playing</b><span>Playlists</span><span>Devices</span><span>Settings</span><i aria-label="Refresh">&#8635;</i></div></div>'
+  },
+  {
+    kicker: "NOW PLAYING · 5 OF 5",
+    title: "Next: explore each tab",
+    copy: "Playlists, Devices, and Settings each have their own visual guide next. You can return to this overview anytime from Settings.",
+    visual: '<div class="guide-demo guide-demo-next-tabs"><span>PLAYLISTS</span><span>DEVICES</span><span>SETTINGS</span><small>MORE GUIDES COMING NEXT</small></div>'
   }
 ];
 function openNowPlayingGuide(step = -1) {
