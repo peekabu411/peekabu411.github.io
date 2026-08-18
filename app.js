@@ -1310,7 +1310,7 @@ function renderPlaylistCard(playlist, pins) {
     card.classList.add("dragging");
   });
   card.addEventListener("dragend", () => card.classList.remove("dragging"));
-  card.addEventListener("dragover", (event) => { if (!playlistOrganizerMode) return; event.preventDefault(); event.dataTransfer.dropEffect = "move"; setPlaylistDropGap(card, event.clientY > card.getBoundingClientRect().top + card.getBoundingClientRect().height / 2); });
+  card.addEventListener("dragover", (event) => { if (!playlistOrganizerMode) return; event.preventDefault(); event.dataTransfer.dropEffect = "move"; setPlaylistDropGap(card, event.clientX > card.getBoundingClientRect().left + card.getBoundingClientRect().width / 2); });
   card.addEventListener("dragleave", () => card.classList.remove("drop-before", "drop-after"));
   card.addEventListener("drop", (event) => { if (!playlistOrganizerMode) return; event.preventDefault(); const placeAfter = card.classList.contains("drop-after"); card.classList.remove("drop-before", "drop-after"); movePlaylistBefore(event.dataTransfer.getData("text/plain"), playlist.id, placeAfter); });
   card.addEventListener("pointerdown", (event) => {
@@ -1333,7 +1333,7 @@ function renderPlaylistCard(playlist, pins) {
     drag.preview.style.transform = `translate3d(${event.clientX - 44}px, ${event.clientY - 44}px, 0) rotate(3deg)`;
     const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(".playlist-card");
     const nextHover = target && target !== card ? target : null;
-    const placeAfter = nextHover ? event.clientY > nextHover.getBoundingClientRect().top + nextHover.getBoundingClientRect().height / 2 : false;
+    const placeAfter = nextHover ? event.clientX > nextHover.getBoundingClientRect().left + nextHover.getBoundingClientRect().width / 2 : false;
     if (drag.hover && (drag.hover !== nextHover || drag.placeAfter !== placeAfter)) drag.hover.classList.remove("drop-before", "drop-after");
     drag.hover = nextHover;
     drag.placeAfter = placeAfter;
