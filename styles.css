@@ -613,3 +613,7 @@
 .setup-steps .dashboard-step .dashboard-action{position:absolute!important;top:12px!important;right:12px!important;display:grid!important;place-items:center!important;width:34px!important;min-width:34px!important;max-width:34px!important;height:34px!important;min-height:34px!important;margin:0!important;padding:0!important;border-radius:10px!important}
 .setup-steps .dashboard-step .dashboard-action i{margin:0!important;font-size:18px!important;line-height:1!important}
 .setup-steps .dashboard-step .dashboard-note{display:block!important;margin:8px 0 0!important;color:#ff4f5d!important;font-size:11px!important;font-weight:800!important;line-height:1.4!important}
+/* Compact interaction hints remain optional through the existing guide setting. */
+.topbar-hint{position:absolute;z-index:12;top:29px;left:50%;display:none;margin:0;transform:translateX(-50%);color:#fff;font-size:8px;font-weight:800;letter-spacing:.12em;line-height:1;white-space:nowrap;opacity:.45;pointer-events:none}
+.device.topbar-hidden .topbar-hint{display:block}
+@media (orientation:landscape) and (max-height:500px) and (max-width:1200px){.topbar-hint{top:25px}.device[data-control="dial"] .dial-rail>.dial-swipe-hint{display:block;position:absolute;top:calc(50% + 105px);left:0;right:0;margin:0;text-align:center;color:#777;font-size:8px;letter-spacing:.12em;line-height:1.3}}
