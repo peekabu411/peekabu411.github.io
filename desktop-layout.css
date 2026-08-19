@@ -170,3 +170,9 @@
 @media (orientation:landscape) and (max-height:540px){
   .now-playing-guide-visual>.guide-demo-target-layout{justify-self:stretch!important;width:calc(100% - 36px)!important}
 }
+/* I.9.7.17: anchor the partial volume dial to the visual's actual right edge. */
+@media (orientation:landscape) and (max-height:540px){
+  .now-playing-guide-visual{position:relative!important}
+  .now-playing-guide-visual .guide-demo-target-body{position:static!important}
+  .now-playing-guide-visual .guide-demo-target-dial{right:0!important;top:65%!important}
+}
