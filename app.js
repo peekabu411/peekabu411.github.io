@@ -439,10 +439,11 @@ function parseSyncedLyrics(text = "") {
 }
 
 function syncDisplayPresentation() {
-  const fallbackToInfo = displayStyle === "lyrics" && lyricsAvailability === "unavailable";
+  const lyricsConfirmed = lyricsAvailability === "available";
+  const fallbackToInfo = displayStyle === "lyrics" && !lyricsConfirmed;
   remote.dataset.display = fallbackToInfo ? "info" : displayStyle;
   remote.dataset.lyricsFallback = String(fallbackToInfo);
-  if (fallbackToInfo) $("context").textContent = "LYRICS UNAVAILABLE";
+  if (displayStyle === "lyrics" && lyricsAvailability === "unavailable") $("context").textContent = "LYRICS UNAVAILABLE";
 }
 function setLyricsAvailability(nextAvailability) {
   lyricsAvailability = nextAvailability;
