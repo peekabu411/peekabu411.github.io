@@ -1,5 +1,5 @@
-const CACHE = "turntable-ios-i9719-guide-controls";
-const ASSETS = ["./", "./index.html", "./styles.css", "./app.js?v=I.9.7.9-guide-controls", "./manifest.webmanifest"];
+const CACHE = "turntable-ios-i97110-guide-target-layout";
+const ASSETS = ["./", "./index.html", "./styles.css", "./app.js?v=I.9.7.10-guide-target-layout", "./manifest.webmanifest"];
 self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener("activate", event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
 self.addEventListener("fetch", event => {
