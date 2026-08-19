@@ -894,6 +894,8 @@ async function restoreNowPlayingMotion() {
 const NOW_PLAYING_GUIDE_KEY = "turntable-now-playing-guide-v1";
 let nowPlayingGuideStep = -1;
 let nowPlayingGuideScheduled = false;
+let nowPlayingGuideRequestId = 0;
+let nowPlayingGuideActionAt = 0;
 const nowPlayingGuidePages = [
   {
     kicker: "NOW PLAYING · 1 OF 5",
@@ -927,6 +929,8 @@ const nowPlayingGuidePages = [
   }
 ];
 function openNowPlayingGuide(step = -1) {
+  nowPlayingGuideRequestId += 1;
+  nowPlayingGuideScheduled = false;
   const tour = $("now-playing-guide");
   if (!tour || !session) return;
   switchView("player");
@@ -963,21 +967,30 @@ function renderNowPlayingGuide() {
 function maybeRequestNowPlayingGuide(delay = 900) {
   if (!session || nowPlayingGuideScheduled || localStorage.getItem(NOW_PLAYING_GUIDE_KEY)) return;
   nowPlayingGuideScheduled = true;
+  const requestId = ++nowPlayingGuideRequestId;
   window.setTimeout(() => {
+    if (requestId !== nowPlayingGuideRequestId) return;
     nowPlayingGuideScheduled = false;
     if (session && !localStorage.getItem(NOW_PLAYING_GUIDE_KEY)) openNowPlayingGuide();
   }, delay);
 }
-$("now-playing-guide-next").onclick = (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  if (nowPlayingGuideStep < 0) { nowPlayingGuideStep = 0; renderNowPlayingGuide(); return; }
-  if (nowPlayingGuideStep >= nowPlayingGuidePages.length - 1) { closeNowPlayingGuide("completed"); return; }
-  nowPlayingGuideStep += 1;
+function moveNowPlayingGuide(direction, event) {
+  event?.preventDefault();
+  event?.stopPropagation();
+  const now = Date.now();
+  if (now - nowPlayingGuideActionAt < 350) return;
+  nowPlayingGuideActionAt = now;
+  if (direction > 0 && nowPlayingGuideStep < 0) { nowPlayingGuideStep = 0; renderNowPlayingGuide(); return; }
+  if (direction > 0 && nowPlayingGuideStep >= nowPlayingGuidePages.length - 1) { closeNowPlayingGuide("completed"); return; }
+  nowPlayingGuideStep = Math.max(0, Math.min(nowPlayingGuidePages.length - 1, nowPlayingGuideStep + direction));
   renderNowPlayingGuide();
-};
-$("now-playing-guide-back").onclick = () => { if (nowPlayingGuideStep > 0) { nowPlayingGuideStep -= 1; renderNowPlayingGuide(); } };
-$("now-playing-guide-dismiss").onclick = () => closeNowPlayingGuide(nowPlayingGuideStep < 0 ? "dismissed" : "completed");
+}
+const nowPlayingGuideNext = $("now-playing-guide-next");
+const nowPlayingGuideBack = $("now-playing-guide-back");
+nowPlayingGuideNext.onclick = (event) => moveNowPlayingGuide(1, event);
+nowPlayingGuideBack.onclick = (event) => moveNowPlayingGuide(-1, event);
+nowPlayingGuideNext.addEventListener("touchend", (event) => moveNowPlayingGuide(1, event), { passive: false });
+nowPlayingGuideBack.addEventListener("touchend", (event) => moveNowPlayingGuide(-1, event), { passive: false });$("now-playing-guide-dismiss").onclick = () => closeNowPlayingGuide(nowPlayingGuideStep < 0 ? "dismissed" : "completed");
 $("start-now-playing-guide").onclick = () => openNowPlayingGuide();
 function setTopBarHidden(hidden) {
   remote.classList.toggle("topbar-hidden", hidden);
