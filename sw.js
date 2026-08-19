@@ -1,5 +1,5 @@
-const CACHE = "turntable-ios-i97120-lyrics-title-fallback";
-const ASSETS = ["./", "./index.html", "./styles.css", "./app.js?v=I.9.7.20-lyrics-title-fallback", "./manifest.webmanifest"];
+const CACHE = "turntable-ios-i97121-force-lyrics-fallback";
+const ASSETS = ["./", "./index.html", "./styles.css", "./app.js?v=I.9.7.21-force-lyrics-fallback", "./manifest.webmanifest"];
 self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener("activate", event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
 self.addEventListener("fetch", event => {

@@ -441,8 +441,15 @@ function parseSyncedLyrics(text = "") {
 function syncDisplayPresentation() {
   const lyricsConfirmed = lyricsAvailability === "available";
   const fallbackToInfo = displayStyle === "lyrics" && !lyricsConfirmed;
+  const lyricsPanel = $("lyrics-panel");
   remote.dataset.display = fallbackToInfo ? "info" : displayStyle;
   remote.dataset.lyricsFallback = String(fallbackToInfo);
+  if (lyricsPanel) lyricsPanel.hidden = fallbackToInfo;
+  if (fallbackToInfo) {
+    $("context").hidden = false;
+    $("title").hidden = false;
+    $("artist").hidden = false;
+  }
   if (displayStyle === "lyrics" && lyricsAvailability === "unavailable") $("context").textContent = "LYRICS UNAVAILABLE";
 }
 function setLyricsAvailability(nextAvailability) {
