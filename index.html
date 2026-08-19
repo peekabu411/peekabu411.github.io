@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="./settings-help-previews.css">
     <link rel="stylesheet" href="./screen-fit.css">
     <link rel="stylesheet" href="./preset-controls.css">
-    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.7.11-guide-full-canvas">
+    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.7.12-guide-control-spacing">
   </head>
   <body>
     <main class="shell">
@@ -139,7 +139,7 @@
           </section>
 
           <section class="view controls-view" data-panel="settings">
-            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.7.11"><small>REMOTE VERSION</small><b>ver(I.9.7.11)</b></button></div>
+            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.7.12"><small>REMOTE VERSION</small><b>ver(I.9.7.12)</b></button></div>
             <div class="settings-columns">
               <div class="settings-controls">
                 <section class="theme-picker" aria-labelledby="theme-title">
@@ -367,6 +367,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
+            <li><b>ver(I.9.7.12)</b><span>Fixed guide card three control spacing: slider and swipe guidance now fit fully, while the half-visible dial stays anchored at the right edge.</span></li>
             <li><b>ver(I.9.7.11)</b><span>Expanded guide card three across the full visual canvas so its artwork, track copy, slider, swipe cue, and edge dial match the intended Now Playing layout.</span></li>
             <li><b>ver(I.9.7.10)</b><span>Rebuilt guide card three as a compact Now Playing mockup with square art, track text, slider, swipe direction, and a half-visible dial.</span></li>
             <li><b>ver(I.9.7.9)</b><span>Corrected the guide visuals: square art now demonstrates skip control, while volume demonstrates the dial and slider styles with a higher tab instruction.</span></li>
@@ -404,7 +405,7 @@
           </section>
         </section>
       </div>    </main>
-    <script src="./bridge.js?v=I.9.7.11-guide-full-canvas"></script>
+    <script src="./bridge.js?v=I.9.7.12-guide-control-spacing"></script>
   </body>
 </html>
 
