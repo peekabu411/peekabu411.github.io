@@ -1,5 +1,5 @@
-const CACHE = "turntable-ios-i97115-volume-dial-marker";
-const ASSETS = ["./", "./index.html", "./styles.css", "./app.js?v=I.9.7.15-volume-dial-marker", "./manifest.webmanifest"];
+const CACHE = "turntable-ios-i97118-clean-volume-guide";
+const ASSETS = ["./", "./index.html", "./styles.css", "./app.js?v=I.9.7.18-clean-volume-guide", "./manifest.webmanifest"];
 self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener("activate", event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
 self.addEventListener("fetch", event => {

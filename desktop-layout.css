@@ -176,3 +176,14 @@
   .now-playing-guide-visual .guide-demo-target-body{position:static!important}
   .now-playing-guide-visual .guide-demo-target-dial{right:0!important;top:65%!important}
 }
+/* I.9.7.18: cohesive short-landscape Now Playing guide composition. */
+@media (orientation:landscape) and (max-height:540px){
+  .now-playing-guide-visual>.guide-demo-target-layout{width:calc(100% - 44px)!important}
+  .now-playing-guide-visual .guide-demo-target-body{display:flex!important;position:relative!important;align-items:center!important;gap:13px!important;width:100%!important;padding-right:0!important}
+  .now-playing-guide-visual .guide-demo-target-art{flex:0 0 78px!important}
+  .now-playing-guide-visual .guide-demo-target-copy{flex:1 1 auto!important;min-width:0!important}
+  .now-playing-guide-visual .guide-demo-target-slider{flex:0 0 36px!important;margin-left:auto!important}
+  .now-playing-guide-visual .guide-demo-target-swipe{flex:0 0 38px!important}
+  .now-playing-guide-visual .guide-demo-target-dial{position:relative!important;top:auto!important;right:auto!important;flex:0 0 48px!important;width:48px!important;height:80px!important;transform:none!important}
+  .now-playing-guide-visual .guide-demo-target-dial i{left:27px!important;right:auto!important;bottom:9px!important}
+}

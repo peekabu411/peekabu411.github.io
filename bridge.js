@@ -60,7 +60,7 @@
     try { await navigator.clipboard.writeText(value); } catch { window.prompt("Copy this Redirect URI:", value); return; }
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
-  callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js?v=I.9.7.15-volume-dial-marker"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
+  callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js?v=I.9.7.18-clean-volume-guide"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
 })();
 
 
