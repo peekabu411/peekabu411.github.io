@@ -166,3 +166,7 @@
   .guide-demo-target-dial{width:48px!important}
   .guide-demo-target-dial i{left:27px!important;right:auto!important;bottom:9px!important}
 }
+/* I.9.7.16: let the Now Playing visual use the full guide canvas in short landscape. */
+@media (orientation:landscape) and (max-height:540px){
+  .now-playing-guide-visual>.guide-demo-target-layout{justify-self:stretch!important;width:calc(100% - 36px)!important}
+}
