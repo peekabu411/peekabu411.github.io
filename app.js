@@ -899,7 +899,7 @@ const nowPlayingGuidePages = [
     kicker: "NOW PLAYING · 1 OF 5",
     title: "The record is your skip control",
     copy: "Swipe the album artwork left or right to move through songs. The gesture lives right on the center of the record.",
-    visual: '<div class="guide-demo guide-demo-record"><div class="guide-demo-record-disc"><div class="guide-demo-record-swipe"><i>&larr;</i><b>SWIPE</b><i>&rarr;</i></div></div><div class="guide-demo-copy"><strong>Current track</strong><span>Artist name</span></div></div>'
+    visual: '<div class="guide-demo guide-demo-skip-examples"><div class="guide-demo-skip-option"><div class="guide-demo-record-disc"><div class="guide-demo-record-swipe"><i>&larr;</i><b>SWIPE</b><i>&rarr;</i></div></div><small>VINYL</small></div><div class="guide-demo-skip-option"><div class="guide-demo-square-swipe"><div class="guide-demo-record-swipe"><i>&larr;</i><b>SWIPE</b><i>&rarr;</i></div></div><small>SQUARE</small></div></div>'
   },
   {
     kicker: "NOW PLAYING · 2 OF 5",
@@ -911,7 +911,7 @@ const nowPlayingGuidePages = [
     kicker: "NOW PLAYING · 3 OF 5",
     title: "Press for tabs. Swipe for volume.",
     copy: "Press the small top arrow to reveal the tab row. On the right, swipe the partially visible dial vertically to adjust volume.",
-    visual: '<div class="guide-demo guide-demo-volume-stage"><div class="guide-demo-trigger"><span></span><i>&#8964;</i><small>PRESS THE TOP ARROW<br>TO OPEN TABS</small></div><div class="guide-demo-dial-examples"><div class="guide-demo-art-panel"><span>WIDE DISPLAY</span><div class="guide-demo-side-dial"><i></i><b></b></div></div><div class="guide-demo-square-art"><span>SQUARE DISPLAY</span><div class="guide-demo-side-dial"><i></i><b></b></div></div></div><div class="guide-demo-volume-note"><i>&uarr;</i><b>SWIPE TO ADJUST</b><i>&darr;</i></div></div>'
+    visual: '<div class="guide-demo guide-demo-volume-stage"><div class="guide-demo-trigger"><span></span><i>&#8964;</i><small>PRESS THE TOP ARROW<br>TO OPEN TABS</small></div><div class="guide-demo-volume-controls"><div class="guide-demo-volume-control"><div class="guide-demo-control-dial"><i></i><b></b></div><small>DIAL</small></div><div class="guide-demo-volume-control"><div class="guide-demo-control-slider"><i></i><b></b></div><small>SLIDER</small></div></div><div class="guide-demo-volume-note"><i>&uarr;</i><b>SWIPE TO ADJUST</b><i>&darr;</i></div></div>'
   },
   {
     kicker: "NOW PLAYING · 4 OF 5",
