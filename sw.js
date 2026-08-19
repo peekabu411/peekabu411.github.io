@@ -1,5 +1,5 @@
-const CACHE = "turntable-ios-i97112-guide-control-spacing";
-const ASSETS = ["./", "./index.html", "./styles.css", "./app.js?v=I.9.7.12-guide-control-spacing", "./manifest.webmanifest"];
+const CACHE = "turntable-ios-i97114-guide-card-reset";
+const ASSETS = ["./", "./index.html", "./styles.css", "./app.js?v=I.9.7.14-guide-card-reset", "./manifest.webmanifest"];
 self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener("activate", event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
 self.addEventListener("fetch", event => {

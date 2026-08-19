@@ -944,6 +944,7 @@ function closeNowPlayingGuide(outcome = "completed") {
   if (outcome) localStorage.setItem(NOW_PLAYING_GUIDE_KEY, outcome);
 }
 function renderNowPlayingGuide() {
+  const guideCard = $("now-playing-guide-card");
   const isWelcome = nowPlayingGuideStep < 0;
   const page = isWelcome ? null : nowPlayingGuidePages[nowPlayingGuideStep];
   $("now-playing-guide-kicker").textContent = isWelcome ? "WELCOME TO TURNTABLE" : page.kicker;
@@ -956,6 +957,7 @@ function renderNowPlayingGuide() {
   $("now-playing-guide-back").hidden = isWelcome || nowPlayingGuideStep === 0;
   $("now-playing-guide-dismiss").textContent = isWelcome ? "Not now" : "Skip guide";
   $("now-playing-guide-next").textContent = isWelcome ? "Start guide" : nowPlayingGuideStep === nowPlayingGuidePages.length - 1 ? "Done" : "Next";
+  guideCard.scrollTop = 0;
 }
 function maybeRequestNowPlayingGuide(delay = 900) {
   if (!session || nowPlayingGuideScheduled || localStorage.getItem(NOW_PLAYING_GUIDE_KEY)) return;
