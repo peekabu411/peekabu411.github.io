@@ -160,3 +160,9 @@
 }
 /* I.9.7.14: keep short-landscape guide cards comfortably sized. */
 @media (orientation:landscape) and (max-height:540px){.now-playing-guide-card{width:min(640px,calc(100vw - 32px))!important}}
+/* I.9.7.15: show the volume dial marker in the short-landscape guide. */
+@media (orientation:landscape) and (max-height:540px){
+  .guide-demo-target-body{padding-right:48px!important}
+  .guide-demo-target-dial{width:48px!important}
+  .guide-demo-target-dial i{left:27px!important;right:auto!important;bottom:9px!important}
+}
