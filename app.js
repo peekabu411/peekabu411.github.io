@@ -953,7 +953,7 @@ function renderNowPlayingGuide() {
   $("now-playing-guide-count").textContent = isWelcome ? "Overview" : `${nowPlayingGuideStep + 1} / ${nowPlayingGuidePages.length}`;
   $("now-playing-guide-copy").textContent = isWelcome ? "A simple visual guide to the controls on this page. It takes less than a minute, and you can replay it from Settings anytime." : page.copy;
   $("now-playing-guide-visual").innerHTML = isWelcome
-    ? '<div class="guide-demo guide-demo-welcome"><div class="guide-demo-welcome-disc"><span></span></div><div><b>NOW PLAYING</b><small>Music, playback, tabs, and volume</small></div></div>'
+    ? '<div class="guide-demo guide-demo-welcome"><div class="guide-demo-welcome-disc"><span></span></div><div><b>NOW PLAYING</b><small>Music, playback, tabs, and volume</small><div class="guide-demo-welcome-details"><i>SWIPE ART</i><i>PLAYBACK</i><i>TABS + VOLUME</i></div></div></div>'
     : page.visual;
   $("now-playing-guide-back").hidden = isWelcome || nowPlayingGuideStep === 0;
   $("now-playing-guide-dismiss").textContent = isWelcome ? "Not now" : "Skip guide";
@@ -968,7 +968,9 @@ function maybeRequestNowPlayingGuide(delay = 900) {
     if (session && !localStorage.getItem(NOW_PLAYING_GUIDE_KEY)) openNowPlayingGuide();
   }, delay);
 }
-$("now-playing-guide-next").onclick = () => {
+$("now-playing-guide-next").onclick = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
   if (nowPlayingGuideStep < 0) { nowPlayingGuideStep = 0; renderNowPlayingGuide(); return; }
   if (nowPlayingGuideStep >= nowPlayingGuidePages.length - 1) { closeNowPlayingGuide("completed"); return; }
   nowPlayingGuideStep += 1;
