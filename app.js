@@ -911,7 +911,7 @@ const nowPlayingGuidePages = [
     kicker: "NOW PLAYING · 3 OF 5",
     title: "Press for tabs. Swipe for volume.",
     copy: "Press the small top arrow to reveal the tab row. On the right, swipe the partially visible dial vertically to adjust volume.",
-    visual: '<div class="guide-demo guide-demo-volume-stage"><div class="guide-demo-trigger"><span></span><i>&#8964;</i><small>PRESS HERE FOR TABS</small></div><div class="guide-demo-art-panel"><span>NOW PLAYING</span><div class="guide-demo-side-dial"><i></i><b></b></div></div><div class="guide-demo-volume-note"><i>&uarr;</i><b>SWIPE TO ADJUST</b><i>&darr;</i></div></div>'
+    visual: '<div class="guide-demo guide-demo-volume-stage"><div class="guide-demo-trigger"><span></span><i>&#8964;</i><small>PRESS THE TOP ARROW<br>TO OPEN TABS</small></div><div class="guide-demo-dial-examples"><div class="guide-demo-art-panel"><span>WIDE DISPLAY</span><div class="guide-demo-side-dial"><i></i><b></b></div></div><div class="guide-demo-square-art"><span>SQUARE DISPLAY</span><div class="guide-demo-side-dial"><i></i><b></b></div></div></div><div class="guide-demo-volume-note"><i>&uarr;</i><b>SWIPE TO ADJUST</b><i>&darr;</i></div></div>'
   },
   {
     kicker: "NOW PLAYING · 4 OF 5",
@@ -944,6 +944,8 @@ function closeNowPlayingGuide(outcome = "completed") {
   if (outcome) localStorage.setItem(NOW_PLAYING_GUIDE_KEY, outcome);
 }
 function renderNowPlayingGuide() {
+  const guideCard = $("now-playing-guide-card");
+  guideCard.scrollTop = 0;
   const isWelcome = nowPlayingGuideStep < 0;
   const page = isWelcome ? null : nowPlayingGuidePages[nowPlayingGuideStep];
   $("now-playing-guide-kicker").textContent = isWelcome ? "WELCOME TO TURNTABLE" : page.kicker;
@@ -956,6 +958,7 @@ function renderNowPlayingGuide() {
   $("now-playing-guide-back").hidden = isWelcome || nowPlayingGuideStep === 0;
   $("now-playing-guide-dismiss").textContent = isWelcome ? "Not now" : "Skip guide";
   $("now-playing-guide-next").textContent = isWelcome ? "Start guide" : nowPlayingGuideStep === nowPlayingGuidePages.length - 1 ? "Done" : "Next";
+  requestAnimationFrame(() => { guideCard.scrollTop = 0; });
 }
 function maybeRequestNowPlayingGuide(delay = 900) {
   if (!session || nowPlayingGuideScheduled || localStorage.getItem(NOW_PLAYING_GUIDE_KEY)) return;
