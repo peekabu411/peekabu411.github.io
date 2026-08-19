@@ -894,8 +894,6 @@ async function restoreNowPlayingMotion() {
 const NOW_PLAYING_GUIDE_KEY = "turntable-now-playing-guide-v1";
 let nowPlayingGuideStep = -1;
 let nowPlayingGuideScheduled = false;
-let nowPlayingGuideRequestId = 0;
-let nowPlayingGuideActionAt = 0;
 const nowPlayingGuidePages = [
   {
     kicker: "NOW PLAYING · 1 OF 5",
@@ -913,7 +911,7 @@ const nowPlayingGuidePages = [
     kicker: "NOW PLAYING · 3 OF 5",
     title: "Press for tabs. Swipe for volume.",
     copy: "Press the small top arrow to reveal the tab row. On the right, swipe the partially visible dial vertically to adjust volume.",
-    visual: '<div class="guide-demo guide-demo-volume-stage"><div class="guide-demo-trigger"><span></span><i>&#8964;</i><small>PRESS THE TOP ARROW<br>TO OPEN TABS</small></div><div class="guide-demo-dial-examples"><div class="guide-demo-art-panel"><span>WIDE DISPLAY</span><div class="guide-demo-side-dial"><i></i><b></b></div></div><div class="guide-demo-square-art"><span>SQUARE DISPLAY</span><div class="guide-demo-side-dial"><i></i><b></b></div></div></div><div class="guide-demo-volume-note"><i>&uarr;</i><b>SWIPE TO ADJUST</b><i>&darr;</i></div></div>'
+    visual: '<div class="guide-demo guide-demo-volume-stage"><div class="guide-demo-trigger"><span></span><i>&#8964;</i><small>PRESS HERE FOR TABS</small></div><div class="guide-demo-art-panel"><span>NOW PLAYING</span><div class="guide-demo-side-dial"><i></i><b></b></div></div><div class="guide-demo-volume-note"><i>&uarr;</i><b>SWIPE TO ADJUST</b><i>&darr;</i></div></div>'
   },
   {
     kicker: "NOW PLAYING · 4 OF 5",
@@ -929,8 +927,6 @@ const nowPlayingGuidePages = [
   }
 ];
 function openNowPlayingGuide(step = -1) {
-  nowPlayingGuideRequestId += 1;
-  nowPlayingGuideScheduled = false;
   const tour = $("now-playing-guide");
   if (!tour || !session) return;
   switchView("player");
@@ -948,8 +944,6 @@ function closeNowPlayingGuide(outcome = "completed") {
   if (outcome) localStorage.setItem(NOW_PLAYING_GUIDE_KEY, outcome);
 }
 function renderNowPlayingGuide() {
-  const guideCard = $("now-playing-guide-card");
-  guideCard.scrollTop = 0;
   const isWelcome = nowPlayingGuideStep < 0;
   const page = isWelcome ? null : nowPlayingGuidePages[nowPlayingGuideStep];
   $("now-playing-guide-kicker").textContent = isWelcome ? "WELCOME TO TURNTABLE" : page.kicker;
@@ -957,40 +951,28 @@ function renderNowPlayingGuide() {
   $("now-playing-guide-count").textContent = isWelcome ? "Overview" : `${nowPlayingGuideStep + 1} / ${nowPlayingGuidePages.length}`;
   $("now-playing-guide-copy").textContent = isWelcome ? "A simple visual guide to the controls on this page. It takes less than a minute, and you can replay it from Settings anytime." : page.copy;
   $("now-playing-guide-visual").innerHTML = isWelcome
-    ? '<div class="guide-demo guide-demo-welcome"><div class="guide-demo-welcome-disc"><span></span></div><div><b>NOW PLAYING</b><small>Music, playback, tabs, and volume</small><div class="guide-demo-welcome-details"><i>SWIPE ART</i><i>PLAYBACK</i><i>TABS + VOLUME</i></div></div></div>'
+    ? '<div class="guide-demo guide-demo-welcome"><div class="guide-demo-welcome-disc"><span></span></div><div><b>NOW PLAYING</b><small>Music, playback, tabs, and volume</small></div></div>'
     : page.visual;
   $("now-playing-guide-back").hidden = isWelcome || nowPlayingGuideStep === 0;
   $("now-playing-guide-dismiss").textContent = isWelcome ? "Not now" : "Skip guide";
   $("now-playing-guide-next").textContent = isWelcome ? "Start guide" : nowPlayingGuideStep === nowPlayingGuidePages.length - 1 ? "Done" : "Next";
-  requestAnimationFrame(() => { guideCard.scrollTop = 0; });
 }
 function maybeRequestNowPlayingGuide(delay = 900) {
   if (!session || nowPlayingGuideScheduled || localStorage.getItem(NOW_PLAYING_GUIDE_KEY)) return;
   nowPlayingGuideScheduled = true;
-  const requestId = ++nowPlayingGuideRequestId;
   window.setTimeout(() => {
-    if (requestId !== nowPlayingGuideRequestId) return;
     nowPlayingGuideScheduled = false;
     if (session && !localStorage.getItem(NOW_PLAYING_GUIDE_KEY)) openNowPlayingGuide();
   }, delay);
 }
-function moveNowPlayingGuide(direction, event) {
-  event?.preventDefault();
-  event?.stopPropagation();
-  const now = Date.now();
-  if (now - nowPlayingGuideActionAt < 350) return;
-  nowPlayingGuideActionAt = now;
-  if (direction > 0 && nowPlayingGuideStep < 0) { nowPlayingGuideStep = 0; renderNowPlayingGuide(); return; }
-  if (direction > 0 && nowPlayingGuideStep >= nowPlayingGuidePages.length - 1) { closeNowPlayingGuide("completed"); return; }
-  nowPlayingGuideStep = Math.max(0, Math.min(nowPlayingGuidePages.length - 1, nowPlayingGuideStep + direction));
+$("now-playing-guide-next").onclick = () => {
+  if (nowPlayingGuideStep < 0) { nowPlayingGuideStep = 0; renderNowPlayingGuide(); return; }
+  if (nowPlayingGuideStep >= nowPlayingGuidePages.length - 1) { closeNowPlayingGuide("completed"); return; }
+  nowPlayingGuideStep += 1;
   renderNowPlayingGuide();
-}
-const nowPlayingGuideNext = $("now-playing-guide-next");
-const nowPlayingGuideBack = $("now-playing-guide-back");
-nowPlayingGuideNext.onclick = (event) => moveNowPlayingGuide(1, event);
-nowPlayingGuideBack.onclick = (event) => moveNowPlayingGuide(-1, event);
-nowPlayingGuideNext.addEventListener("touchend", (event) => moveNowPlayingGuide(1, event), { passive: false });
-nowPlayingGuideBack.addEventListener("touchend", (event) => moveNowPlayingGuide(-1, event), { passive: false });$("now-playing-guide-dismiss").onclick = () => closeNowPlayingGuide(nowPlayingGuideStep < 0 ? "dismissed" : "completed");
+};
+$("now-playing-guide-back").onclick = () => { if (nowPlayingGuideStep > 0) { nowPlayingGuideStep -= 1; renderNowPlayingGuide(); } };
+$("now-playing-guide-dismiss").onclick = () => closeNowPlayingGuide(nowPlayingGuideStep < 0 ? "dismissed" : "completed");
 $("start-now-playing-guide").onclick = () => openNowPlayingGuide();
 function setTopBarHidden(hidden) {
   remote.classList.toggle("topbar-hidden", hidden);
