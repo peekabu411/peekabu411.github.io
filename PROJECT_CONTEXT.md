@@ -15,7 +15,9 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 ## Current deployed state
 
 - Latest deployed release is tracked by the active version/tag above and GitHub Pages build status.
-- 
+- I.9.7.31 is deployed: normal status checks use a 7.5-second interval, while the faster 2-second checks run only during the final 3 seconds of a playing track.
+- I.9.7.30 adds a slower, layered card-slide animation for automatic square album-art changes at natural song boundaries; manual artwork swipes remain fast.
+- I.9.7.29 cancels a pending scheduled status check while a playback or settings action confirms, then resumes one scheduled check afterward to avoid duplicate requests.
 - The setup screen's Step 3 and Step 4 dashboard shortcuts are 36px square green arrow buttons in the top-right of their cards.
 - The Step 3 dashboard warning is forced red: “Can’t find Create app? Zoom out until the dashboard header is visible — the button appears at the top.”
 
@@ -37,6 +39,7 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 - Setup flow ordered as: sign in, copy redirect URI, create/choose app, copy Client ID, paste Client ID, connect Spotify.
 - Internal update log and diagnostics are present in Settings.
 - Interaction hints include “PRESS FOR TABS” and “SWIPE ↕ TO ADJUST.”
+- Request telemetry records direct Spotify Web API calls and shows a guide-style warning only when the rolling one-minute count rises past 30.
 
 ## Important files
 
@@ -83,3 +86,4 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 - iOS cannot reliably hide the Home Indicator for a normal installed web app; avoid promising native fullscreen behavior.
 - Lyrics availability depends on the lyric provider and track metadata. When unavailable, title display is the intended fallback.
 - After visual changes, verify both the normal Safari site and the installed Home Screen app because Safari caching can make them appear different temporarily.
+- Do not broaden the final-track fast polling window without considering short tracks: a long high-frequency window can generate many passive status calls.
