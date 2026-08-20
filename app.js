@@ -110,9 +110,9 @@ localStorage.setItem("turntable-lyric-offset-default-v2", "applied");
 const VOLUME_WEIGHT_SENSITIVITY = { light: .28, medium: .19, heavy: .12 };
 const DIAL_MULTI_TAP_MS = 420;
 const SIDE_CONTROL_HIDE_ZONE_START = 0.56;
-const ACTIVE_STATUS_REFRESH_MS = 5_000;
+const ACTIVE_STATUS_REFRESH_MS = 7_500;
 const IDLE_STATUS_REFRESH_MS = 15_000;
-const ENDING_STATUS_REFRESH_MS = 1_000;
+const ENDING_STATUS_REFRESH_MS = 2_000;
 const ENDING_STATUS_WINDOW_MS = 12_000;
 const DEVICES_VIEW_REFRESH_MS = 30_000;
 const SEEK_CONFIRM_GRACE_MS = 4_000;
@@ -1887,9 +1887,12 @@ async function refresh(force = false) {
   if (progressClock.duration) return Math.min(ACTIVE_STATUS_REFRESH_MS, Math.max(ENDING_STATUS_REFRESH_MS, remaining - ENDING_STATUS_WINDOW_MS));
   return ACTIVE_STATUS_REFRESH_MS;
 }
-function scheduleStatusRefresh(delay = statusRefreshDelay()) {
+function clearScheduledStatusRefresh() {
   if (refreshTimer) clearTimeout(refreshTimer);
   refreshTimer = null;
+}
+function scheduleStatusRefresh(delay = statusRefreshDelay()) {
+  clearScheduledStatusRefresh();
   if (!session || document.hidden || currentView !== "player") return;
   refreshTimer = setTimeout(async () => {
     refreshTimer = null;
@@ -1908,6 +1911,7 @@ async function playerAction(action, options = {}) {
     return;
   }
   commandPending = true; setMessage();
+  clearScheduledStatusRefresh();
   const beforeTrack = playback?.item;
   const beforeContext = playback?.context;
   const beforeUri = beforeTrack?.uri;
@@ -1981,6 +1985,7 @@ async function playerAction(action, options = {}) {
 async function setting(body, refreshAfter = true) {
   if (commandPending) return false;
   commandPending = true; setMessage();
+  clearScheduledStatusRefresh();
   try {
     await api("/api/settings", { method: "PUT", body: JSON.stringify({ ...body, target_device_id: body.device_id ? undefined : activeDeviceId() }) });
     if (refreshAfter) {
@@ -1996,7 +2001,10 @@ async function setting(body, refreshAfter = true) {
     showError(error);
     await refresh();
     return false;
-  } finally { commandPending = false; }
+  } finally {
+    commandPending = false;
+    scheduleStatusRefresh();
+  }
 }
 const fullscreenPrompt = $("fullscreen-prompt");
 const fullscreenEnter = $("fullscreen-enter");
