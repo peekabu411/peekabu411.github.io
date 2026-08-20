@@ -1,8 +1,8 @@
-const CACHE = "turntable-ios-i9725-rate-warning";
+const CACHE = "turntable-ios-i9726-guide-style-warning";
 const ASSETS = [
-  "./", "./index.html", "./styles.css?v=I.9.7.25-rate-warning", "./settings-help.css", "./settings-help-previews.css",
-  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.25-rate-warning",
-  "./bridge.js?v=I.9.7.25-rate-warning", "./app.js?v=I.9.7.25-rate-warning",
+  "./", "./index.html", "./styles.css?v=I.9.7.26-guide-style-warning", "./settings-help.css", "./settings-help-previews.css",
+  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.26-guide-style-warning",
+  "./bridge.js?v=I.9.7.26-guide-style-warning", "./app.js?v=I.9.7.26-guide-style-warning",
   "./settings-help.js", "./preset-controls.js", "./manifest.webmanifest", "./manifest.json",
   "./icons/turntable-remote-192.png", "./icons/apple-touch-icon.png"
 ];
