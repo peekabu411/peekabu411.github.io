@@ -1770,7 +1770,7 @@ function render(data) {
     animateVinylAlbumChange(cover, incomingUri);
   } else if (trackChanged && albumStyle === "square" && !artworkTransitionActive && !transitionWasRequested) {
     displayedTrackUri = incomingUri;
-    animateProgrammaticAlbumChange(pendingArtworkDirection || "next", cover);
+    animateProgrammaticAlbumChange(pendingArtworkDirection || "next", cover, { automatic: naturalPlaybackBoundary });
   } else {
     if (!artworkTransitionActive) {
       $("cover").src = cover;
@@ -2470,24 +2470,26 @@ function resetAlbumCard() {
   artStage.classList.remove("promote-next"); setUpcomingCardProgress(0);
   requestAnimationFrame(() => requestAnimationFrame(() => albumCard.classList.remove("swipe-reset")));
 }
-async function animateProgrammaticAlbumChange(direction, incomingCover) {
+async function animateProgrammaticAlbumChange(direction, incomingCover, { automatic = false } = {}) {
   if (albumStyle !== "square" || !incomingCover || artworkTransitionActive) return;
   const token = ++artworkTransitionToken;
   artworkTransitionActive = true;
   $("next-cover").src = incomingCover;
   $("next-cover").style.display = "block";
   artStage.classList.add("promote-next");
+  if (automatic) artStage.classList.add("auto-card-slide");
   fadeBackground(incomingCover);
   requestAnimationFrame(() => {
     albumCard.classList.add(direction === "previous" ? "swipe-commit-right" : "swipe-commit-left");
   });
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, automatic ? 620 : 300));
   if (token !== artworkTransitionToken) return;
   $("cover").src = incomingCover;
   $("cover").style.display = "block";
   albumCard.classList.add("swipe-reset");
   albumCard.classList.remove("swipe-commit-left", "swipe-commit-right");
   artStage.classList.remove("promote-next");
+  artStage.classList.remove("auto-card-slide");
   setUpcomingCardProgress(0);
   await new Promise((resolve) => requestAnimationFrame(resolve));
   artworkTransitionActive = false;

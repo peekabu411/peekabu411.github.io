@@ -1,8 +1,8 @@
-const CACHE = "turntable-ios-i9729-polling-optimization";
+const CACHE = "turntable-ios-i9730-smooth-auto-art";
 const ASSETS = [
-  "./", "./index.html", "./styles.css?v=I.9.7.29-polling-optimization", "./settings-help.css", "./settings-help-previews.css",
-  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.29-polling-optimization",
-  "./bridge.js?v=I.9.7.29-polling-optimization", "./app.js?v=I.9.7.29-polling-optimization",
+  "./", "./index.html", "./styles.css?v=I.9.7.30-smooth-auto-art", "./settings-help.css", "./settings-help-previews.css",
+  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.30-smooth-auto-art",
+  "./bridge.js?v=I.9.7.30-smooth-auto-art", "./app.js?v=I.9.7.30-smooth-auto-art",
   "./settings-help.js", "./preset-controls.js", "./manifest.webmanifest", "./manifest.json",
   "./icons/turntable-remote-192.png", "./icons/apple-touch-icon.png"
 ];
