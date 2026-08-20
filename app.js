@@ -451,7 +451,7 @@ function syncDisplayPresentation() {
     $("title").hidden = false;
     $("artist").hidden = false;
   }
-  if (displayStyle === "lyrics" && lyricsAvailability === "unavailable") $("context").textContent = "LYRICS UNAVAILABLE";
+  if (displayStyle === "lyrics" && lyricsAvailability === "unavailable") $("context").textContent = "LYRICS NOT AVAILABLE";
 }
 function setLyricsAvailability(nextAvailability) {
   lyricsAvailability = nextAvailability;
@@ -1708,7 +1708,7 @@ function updateTrackCopy(track, context = playback?.context, updateContext = tru
   }
   $("artist").textContent = track ? artists(track) : "Open Spotify on your PC and start a song";
   updateLyricsTrackMarquee(track);
-  if (updateContext) $("context").textContent = displayStyle === "lyrics" && lyricsAvailability === "unavailable" ? "LYRICS UNAVAILABLE" : context?.type ? "PLAYING FROM " + context.type.toUpperCase() : "PLAYING FROM YOUR PC";
+  if (updateContext) $("context").textContent = displayStyle === "lyrics" && lyricsAvailability === "unavailable" ? "LYRICS NOT AVAILABLE" : context?.type ? "PLAYING FROM " + context.type.toUpperCase() : "PLAYING FROM YOUR PC";
 }
 
 function spotifyTrackUrl(track) {

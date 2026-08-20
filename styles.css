@@ -631,3 +631,9 @@
 /* I.9.7.21: force title fallback while lyrics are unresolved or unavailable. */
 .device[data-lyrics-fallback="true"] .lyrics-panel,.lyrics-panel[hidden]{display:none!important}
 .device[data-lyrics-fallback="true"] #context,.device[data-lyrics-fallback="true"] #title,.device[data-lyrics-fallback="true"] #artist{display:block!important}
+/* I.9.7.24: smooth title/lyrics availability handoff. */
+.device[data-display="info"] .track-copy{animation:track-copy-arrive .24s cubic-bezier(.22,.61,.36,1) both}
+.device[data-display="lyrics"] .lyrics-panel{animation:lyrics-panel-arrive .26s cubic-bezier(.22,.61,.36,1) both}
+@keyframes track-copy-arrive{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes lyrics-panel-arrive{from{opacity:0;transform:translateY(7px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media (prefers-reduced-motion:reduce){.device[data-display="info"] .track-copy,.device[data-display="lyrics"] .lyrics-panel{animation:none}}
