@@ -985,6 +985,16 @@ $("now-playing-guide-next").onclick = () => {
 $("now-playing-guide-back").onclick = () => { if (nowPlayingGuideStep > 0) { nowPlayingGuideStep -= 1; renderNowPlayingGuide(); } };
 $("now-playing-guide-dismiss").onclick = () => closeNowPlayingGuide(nowPlayingGuideStep < 0 ? "dismissed" : "completed");
 $("start-now-playing-guide").onclick = () => openNowPlayingGuide();
+function showRateWarning(detail = {}) {
+  const warning = $("rate-warning");
+  if (!warning) return;
+  const count = Number(detail.count) || 20;
+  $("rate-warning-copy").textContent = `Turntable made ${count} Spotify requests in the last minute. Avoid repeated refreshes, skips, and setting changes, then wait one minute before continuing.`;
+  warning.hidden = false;
+  requestAnimationFrame(() => $("rate-warning-dismiss")?.focus());
+}
+$("rate-warning-dismiss").onclick = () => { $("rate-warning").hidden = true; };
+window.addEventListener("turntable:api-rate-warning", event => showRateWarning(event.detail));
 function setTopBarHidden(hidden) {
   remote.classList.toggle("topbar-hidden", hidden);
   $("bar-handle").setAttribute("aria-label", hidden ? "Show quick views" : "Hide quick views");
@@ -2069,7 +2079,7 @@ fullscreenDismiss.onclick = () => {
   hideFullscreenPrompt();
 };
 document.addEventListener("pointerup", (event) => {
-  if (fullscreenDismissed || fullscreenActive() || remote.hidden || event.target.closest("#fullscreen-prompt,a[href]")) return;
+  if (fullscreenDismissed || fullscreenActive() || remote.hidden || event.target.closest("#fullscreen-prompt,#rate-warning,a[href]")) return;
   requestAppFullscreen(true);
 }, { capture: true });
 document.addEventListener("fullscreenchange", () => fullscreenActive() ? hideFullscreenPrompt() : scheduleFullscreenPrompt(650));
@@ -2279,7 +2289,7 @@ $("spotify-track-link").onclick = (event) => {
 $("playlist-organize").onclick = () => { playlistOrganizerMode = !playlistOrganizerMode; $("playlist-organize").classList.toggle("active", playlistOrganizerMode); $("playlist-organize").setAttribute("aria-pressed", String(playlistOrganizerMode)); $("playlist-organize").textContent = playlistOrganizerMode ? "Done" : "Organize"; $("playlist-reorder-hint").hidden = !playlistOrganizerMode; document.querySelector(".playlist-view").classList.toggle("organizing", playlistOrganizerMode); renderPlaylists(playlistLibrary); };
 $("bar-handle").onclick = () => { physicalFeedback("press"); setTopBarHidden(!remote.classList.contains("topbar-hidden")); };
 document.addEventListener("pointerup", (event) => {
-  if (!remote.classList.contains("topbar-hidden") || event.button !== 0 || event.target.closest("button,input,select,a[href],#fullscreen-prompt")) return;
+  if (!remote.classList.contains("topbar-hidden") || event.button !== 0 || event.target.closest("button,input,select,a[href],#fullscreen-prompt,#rate-warning")) return;
   const handleBounds = $("bar-handle").getBoundingClientRect();
   const insideExpandedHandle = event.clientX >= handleBounds.left - 18 && event.clientX <= handleBounds.right + 18
     && event.clientY >= Math.max(0, handleBounds.top - 64) && event.clientY <= handleBounds.bottom;

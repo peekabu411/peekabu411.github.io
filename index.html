@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="./settings-help-previews.css">
     <link rel="stylesheet" href="./screen-fit.css">
     <link rel="stylesheet" href="./preset-controls.css">
-    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.7.24-smooth-lyrics-handoff">
+    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.7.25-rate-warning">
   </head>
   <body>
     <main class="shell">
@@ -139,7 +139,7 @@
           </section>
 
           <section class="view controls-view" data-panel="settings">
-            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.7.24"><small>REMOTE VERSION</small><b>ver(I.9.7.24)</b></button></div>
+            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.7.25"><small>REMOTE VERSION</small><b>ver(I.9.7.25)</b></button></div>
             <div class="settings-columns">
               <div class="settings-controls">
                 <section class="theme-picker" aria-labelledby="theme-title">
@@ -318,6 +318,9 @@
           <div class="now-playing-guide-actions"><button id="now-playing-guide-dismiss" type="button">Not now</button><button id="now-playing-guide-back" type="button" hidden>Back</button><button id="now-playing-guide-next" class="primary" type="button">Start guide</button></div>
         </section>
       </div>
+      <div id="rate-warning" class="rate-warning" role="alertdialog" aria-modal="true" aria-labelledby="rate-warning-title" hidden>
+        <section class="rate-warning-card"><small>REQUEST RATE WARNING</small><h2 id="rate-warning-title">Slow down for a moment</h2><p id="rate-warning-copy">Turntable has made several Spotify requests in the last minute. Avoid repeated refreshes, skips, and setting changes, then wait one minute before continuing.</p><button id="rate-warning-dismiss" type="button">Okay, I’ll wait</button></section>
+      </div>
       <input id="haptic-switch" class="haptic-switch" type="checkbox" switch tabindex="-1" aria-hidden="true">
       <div class="rotate-notice"><strong>Turn your device sideways</strong><span>Landscape provides the full dashboard layout.</span></div>
       <div id="fullscreen-prompt" class="fullscreen-prompt" role="dialog" aria-modal="true" aria-labelledby="fullscreen-title" hidden>
@@ -367,6 +370,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
+            <li><b>ver(I.9.7.25)</b><span>Added a Spotify request-rate warning after 20 calls in one minute, with guidance to wait before continuing.</span></li>
             <li><b>ver(I.9.7.24)</b><span>Smoothed the title/lyrics handoff and renamed the green fallback label to “LYRICS NOT AVAILABLE.”</span></li>
             <li><b>ver(I.9.7.23)</b><span>Fixed lyric transitions: timestamp-only lyric responses now count as unavailable, and the title display resets before previous lyric lines are cleared.</span></li>
             <li><b>ver(I.9.7.22)</b><span>App health update: fixed the guide card DOM target and expanded offline pre-caching to include the complete core app shell.</span></li>
@@ -417,7 +421,7 @@
           </section>
         </section>
       </div>    </main>
-    <script src="./bridge.js?v=I.9.7.24-smooth-lyrics-handoff"></script>
+    <script src="./bridge.js?v=I.9.7.25-rate-warning"></script>
   </body>
 </html>
 
