@@ -1,8 +1,8 @@
-const CACHE = "turntable-ios-i9722-core-health";
+const CACHE = "turntable-ios-i9723-empty-lyrics-fallback";
 const ASSETS = [
   "./", "./index.html", "./styles.css", "./settings-help.css", "./settings-help-previews.css",
-  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.22-core-health",
-  "./bridge.js?v=I.9.7.22-core-health", "./app.js?v=I.9.7.21-force-lyrics-fallback",
+  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.23-empty-lyrics-fallback",
+  "./bridge.js?v=I.9.7.23-empty-lyrics-fallback", "./app.js?v=I.9.7.23-empty-lyrics-fallback",
   "./settings-help.js", "./preset-controls.js", "./manifest.webmanifest", "./manifest.json",
   "./icons/turntable-remote-192.png", "./icons/apple-touch-icon.png"
 ];

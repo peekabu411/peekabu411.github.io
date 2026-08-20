@@ -432,7 +432,8 @@ function parseSyncedLyrics(text = "") {
   const parsed = [];
   text.split(/\r?\n/).forEach((rawLine) => {
     const stamps = [...rawLine.matchAll(/\[(\d{1,2}):(\d{2}(?:\.\d{1,3})?)\]/g)];
-    const words = rawLine.replace(/\[[^\]]+\]/g, "").trim() || "…";
+    const words = rawLine.replace(/\[[^\]]+\]/g, "").trim();
+    if (!words) return;
     stamps.forEach((stamp) => parsed.push({ time: (Number(stamp[1]) * 60 + Number(stamp[2])) * 1000, text: words }));
   });
   return parsed.sort((a, b) => a.time - b.time);
@@ -552,6 +553,7 @@ async function loadLyrics(track) {
   lyricsTrackUri = track?.uri || null;
   activeLyricIndex = -1;
   activeLyricWordIndex = -1;
+  if (track) setLyricsAvailability("loading");
   lyricsLines = [];
   if (!track) {
     setLyricsAvailability("unavailable");
@@ -566,7 +568,6 @@ async function loadLyrics(track) {
     renderLyrics(lyricsResultCache.get(cacheKey));
     return;
   }
-  setLyricsAvailability("loading");
   $("lyrics-lines").replaceChildren();
   $("lyrics-lines").className = "lyrics-lines";
   $("lyrics-status").hidden = false;
