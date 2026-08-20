@@ -2,16 +2,15 @@
   const API = "https://api.spotify.com/v1", ACCOUNTS = "https://accounts.spotify.com", KEY = "turntable-ios-oauth";
   const nativeFetch = window.fetch.bind(window);
   const REQUEST_WARNING_LIMIT = 20, REQUEST_WARNING_WINDOW_MS = 60_000;
-  const telemetry = { startedAt: Date.now(), events: [], rateWarningUntil: 0 };
+  const telemetry = { startedAt: Date.now(), events: [], lastMinuteCount: 0 };
   const recordRequest = path => {
     const now = Date.now();
     telemetry.events.push({ at: now, path: path.split("?")[0] });
     if (telemetry.events.length > 250) telemetry.events.splice(0, telemetry.events.length - 250);
     const recentCount = telemetry.events.filter(event => event.at >= now - REQUEST_WARNING_WINDOW_MS).length;
-    if (recentCount >= REQUEST_WARNING_LIMIT && now >= telemetry.rateWarningUntil) {
-      telemetry.rateWarningUntil = now + REQUEST_WARNING_WINDOW_MS;
-      window.dispatchEvent(new CustomEvent("turntable:api-rate-warning", { detail: { count: recentCount, waitSeconds: 60 } }));
-    }
+    const crossedWarningThreshold = telemetry.lastMinuteCount <= REQUEST_WARNING_LIMIT && recentCount > REQUEST_WARNING_LIMIT;
+    telemetry.lastMinuteCount = recentCount;
+    if (crossedWarningThreshold) window.dispatchEvent(new CustomEvent("turntable:api-rate-warning", { detail: { count: recentCount, waitSeconds: 60 } }));
   };
   const read = () => JSON.parse(localStorage.getItem(KEY) || "{}");
   const save = value => localStorage.setItem(KEY, JSON.stringify(value));
@@ -70,7 +69,7 @@
     try { await navigator.clipboard.writeText(value); } catch { window.prompt("Copy this Redirect URI:", value); return; }
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
-  callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js?v=I.9.7.26-guide-style-warning"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
+  callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js?v=I.9.7.27-threshold-crossing"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
 })();
 
 
