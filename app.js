@@ -988,7 +988,7 @@ $("start-now-playing-guide").onclick = () => openNowPlayingGuide();
 function showRateWarning(detail = {}) {
   const warning = $("rate-warning");
   if (!warning) return;
-  const count = Number(detail.count) || 20;
+  const count = Number(detail.count) || 30;
   $("rate-warning-copy").textContent = `Turntable made ${count} Spotify requests in the last minute. Avoid repeated refreshes, skips, and setting changes, then wait one minute before continuing.`;
   warning.hidden = false;
   requestAnimationFrame(() => $("rate-warning-dismiss")?.focus());
