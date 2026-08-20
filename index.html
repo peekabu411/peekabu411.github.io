@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="./settings-help-previews.css">
     <link rel="stylesheet" href="./screen-fit.css">
     <link rel="stylesheet" href="./preset-controls.css">
-    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.7.21-force-lyrics-fallback">
+    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.7.22-core-health">
   </head>
   <body>
     <main class="shell">
@@ -139,7 +139,7 @@
           </section>
 
           <section class="view controls-view" data-panel="settings">
-            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.7.21"><small>REMOTE VERSION</small><b>ver(I.9.7.21)</b></button></div>
+            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.7.22"><small>REMOTE VERSION</small><b>ver(I.9.7.22)</b></button></div>
             <div class="settings-columns">
               <div class="settings-controls">
                 <section class="theme-picker" aria-labelledby="theme-title">
@@ -311,7 +311,7 @@
       </section>
       <div id="now-playing-guide" class="now-playing-guide" role="dialog" aria-modal="true" aria-labelledby="now-playing-guide-title" hidden>
         <div class="now-playing-guide-backdrop" aria-hidden="true"></div>
-        <section class="now-playing-guide-card" tabindex="-1">
+        <section id="now-playing-guide-card" class="now-playing-guide-card" tabindex="-1">
           <header><div><small id="now-playing-guide-kicker">WELCOME TO TURNTABLE</small><h2 id="now-playing-guide-title">A quick Now Playing tour</h2></div><span id="now-playing-guide-count" aria-live="polite">Overview</span></header>
           <div id="now-playing-guide-visual" class="now-playing-guide-visual" aria-hidden="true"></div>
           <p id="now-playing-guide-copy"></p>
@@ -367,6 +367,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
+            <li><b>ver(I.9.7.22)</b><span>App health update: fixed the guide card DOM target and expanded offline pre-caching to include the complete core app shell.</span></li>
             <li><b>ver(I.9.7.21)</b><span>Hardened the no-lyrics fallback: unavailable or loading lyrics now explicitly hide the lyric panel and show title, artist, and context.</span></li>
             <li><b>ver(I.9.7.20)</b><span>Fixed lyric fallback behavior: the title display now remains visible until lyrics are confirmed, including for tracks with no lyrics.</span></li>
             <li><b>ver(I.9.7.19)</b><span>Rebuilt the Now Playing volume visual as a clean player strip with a dedicated volume module, swipe cue, and edge dial.</span></li>
@@ -414,7 +415,7 @@
           </section>
         </section>
       </div>    </main>
-    <script src="./bridge.js?v=I.9.7.21-force-lyrics-fallback"></script>
+    <script src="./bridge.js?v=I.9.7.22-core-health"></script>
   </body>
 </html>
 

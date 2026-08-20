@@ -10,12 +10,12 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 - Repository: https://github.com/peekabu411/peekabu411.github.io
 - Local project folder: `C:\Users\Luigi Mendoza\OneDrive\Documents\New project\peekabu411.github.io`
 - Default branch: `main`
-- Current release/version: `ver(I.9.7.21)` / tag `vI.9.7.21`
+- Current release/version: `ver(I.9.7.22)` / tag `vI.9.7.22`
 
 ## Current deployed state
 
-- Latest deployed commit: `5853804` — `Fix setup dashboard icon layout`.
-- GitHub Pages deployment completed successfully for that commit on 2026-08-18.
+- Latest deployed release is tracked by the active version/tag above and GitHub Pages build status.
+- 
 - The setup screen's Step 3 and Step 4 dashboard shortcuts are 36px square green arrow buttons in the top-right of their cards.
 - The Step 3 dashboard warning is forced red: “Can’t find Create app? Zoom out until the dashboard header is visible — the button appears at the top.”
 
