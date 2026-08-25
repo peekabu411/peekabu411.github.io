@@ -1,8 +1,8 @@
-const CACHE = "turntable-ios-i9732-artwork-atmosphere";
+const CACHE = "turntable-ios-i9733-timestamped-lyrics";
 const ASSETS = [
-  "./", "./index.html", "./styles.css?v=I.9.7.32-artwork-atmosphere", "./settings-help.css", "./settings-help-previews.css",
-  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.32-artwork-atmosphere",
-  "./bridge.js?v=I.9.7.32-artwork-atmosphere", "./app.js?v=I.9.7.32-artwork-atmosphere",
+  "./", "./index.html", "./styles.css?v=I.9.7.33-timestamped-lyrics", "./settings-help.css", "./settings-help-previews.css",
+  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.33-timestamped-lyrics",
+  "./bridge.js?v=I.9.7.33-timestamped-lyrics", "./app.js?v=I.9.7.33-timestamped-lyrics",
   "./settings-help.js", "./preset-controls.js", "./manifest.webmanifest", "./manifest.json",
   "./icons/turntable-remote-192.png", "./icons/apple-touch-icon.png"
 ];

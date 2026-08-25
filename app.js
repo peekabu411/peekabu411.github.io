@@ -471,6 +471,7 @@ function renderLyricsLayout() {
       const line = document.createElement("p");
       line.textContent = row.text;
       if (row.time == null) line.className = "plain";
+      else line.className = "lyric-pending";
       container.append(line);
     });
     return;
@@ -621,10 +622,17 @@ function buildTimedLyricLine(stage, words, wordIndex) {
 function updateActiveLyrics(position) {
   if (displayStyle !== "lyrics" || !lyricsLines.length || lyricsLines[0].time == null) return;
   const { lineIndex, wordIndex, words } = lyricPosition(position);
+  const container = $("lyrics-lines");
   if (lyricStyle !== "scroll") {
-    if (lineIndex < 0 || !words.length || (lineIndex === activeLyricIndex && wordIndex === activeLyricWordIndex)) return;
-    const stage = $("lyrics-lines").querySelector(".lyric-stage");
+    const stage = container.querySelector(".lyric-stage");
     if (!stage) return;
+    if (lineIndex < 0 || !words.length) {
+      if (activeLyricIndex >= 0) stage.replaceChildren();
+      activeLyricIndex = -1;
+      activeLyricWordIndex = -1;
+      return;
+    }
+    if (lineIndex === activeLyricIndex && wordIndex === activeLyricWordIndex) return;
     activeLyricIndex = lineIndex;
     activeLyricWordIndex = wordIndex;
     if (lyricStyle === "word") {
@@ -633,19 +641,24 @@ function updateActiveLyrics(position) {
     } else buildTimedLyricLine(stage, words, wordIndex);
     return;
   }
+  const elements = [...container.children];
+  elements.forEach((element, index) => element.classList.toggle("lyric-pending", index > lineIndex));
+  if (lineIndex < 0) {
+    if (activeLyricIndex >= 0) elements[activeLyricIndex]?.classList.remove("active");
+    activeLyricIndex = -1;
+    activeLyricWordIndex = -1;
+    return;
+  }
   if (lineIndex === activeLyricIndex) return;
-  const elements = [...$("lyrics-lines").children];
   if (activeLyricIndex >= 0) elements[activeLyricIndex]?.classList.remove("active");
   activeLyricIndex = lineIndex;
   activeLyricWordIndex = -1;
   const active = elements[lineIndex];
   if (!active) return;
   active.classList.add("active");
-  const container = $("lyrics-lines");
   const activeCenter = active.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop + active.offsetHeight / 2;
   container.scrollTo({ top: Math.max(0, activeCenter - container.clientHeight * .46), behavior: "smooth" });
 }
-
 async function updateAlbumColor(url, uri) {
   if (!url || !uri) return;
   albumColorTrackUri = uri;
