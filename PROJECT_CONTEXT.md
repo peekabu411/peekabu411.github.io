@@ -10,12 +10,13 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 - Repository: https://github.com/peekabu411/peekabu411.github.io
 - Local project folder: `C:\Users\Luigi Mendoza\OneDrive\Documents\New project\peekabu411.github.io`
 - Default branch: `main`
-- Current release/version: `ver(I.9.7.31)` / tag `vI.9.7.31`
+- Current release/version: `ver(I.9.7.32)` / tag `vI.9.7.32`
 
 ## Current deployed state
 
 - Latest deployed release is tracked by the active version/tag above and GitHub Pages build status.
-- I.9.7.31 is deployed: normal status checks use a 7.5-second interval, while the faster 2-second checks run only during the final 3 seconds of a playing track.
+- I.9.7.32 is deployed: album-art glow and artwork backdrop update reliably during every song-change animation.
+- I.9.7.31 uses normal 7.5-second status checks, while faster 2-second checks run only during the final 3 seconds of a playing track.
 - I.9.7.30 adds a slower, layered card-slide animation for automatic square album-art changes at natural song boundaries; manual artwork swipes remain fast.
 - I.9.7.29 cancels a pending scheduled status check while a playback or settings action confirms, then resumes one scheduled check afterward to avoid duplicate requests.
 - The setup screen's Step 3 and Step 4 dashboard shortcuts are 36px square green arrow buttons in the top-right of their cards.

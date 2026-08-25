@@ -1781,10 +1781,9 @@ function render(data) {
   }
   if (transitionWasRequested || (trackChanged && pendingArtworkUri)) pendingArtworkUri = null;
   if (trackChanged) pendingArtworkDirection = null;
-  if (!staleDuringTransition) {
-    $("ambient").style.backgroundImage = cover ? `url(${JSON.stringify(cover)})` : "none";
-    fadeBackground(cover, !currentBackgroundUrl);
-  }
+  // Keep the album atmosphere in sync even while the card animation is still settling.
+  $("ambient").style.backgroundImage = cover ? `url(${JSON.stringify(cover)})` : "none";
+  fadeBackground(cover, !currentBackgroundUrl);
   if (!artworkTransitionActive) {
     state.queue?.slice(0, 4).forEach((queuedTrack) => preloadArtwork(artwork(queuedTrack)));
     if (displayStyle === 'lyrics') void prefetchLyrics(state.queue?.[0]);
