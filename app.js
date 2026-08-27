@@ -474,6 +474,7 @@ function renderLyricsLayout() {
       else line.className = "lyric-pending";
       container.append(line);
     });
+    container.scrollTop = 0;
     return;
   }
   container.classList.add("lyric-stage-mode");
@@ -646,6 +647,14 @@ function updateActiveLyrics(position) {
   const introFadeProgress = Math.max(0, Math.min(1, (lyricTimelinePosition - (lyricsLines[0].time - 5_000)) / 5_000));
   const waitingForIntroFade = lineIndex < 0 && introFadeProgress <= 0;
   const fadingIntoFirstLine = lineIndex < 0 && introFadeProgress > 0;
+  const introFadeWasActive = container.classList.contains("lyric-intro-fading");
+  if (fadingIntoFirstLine && !introFadeWasActive) {
+    const firstLine = elements[0];
+    if (firstLine) {
+      const firstLineCenter = firstLine.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop + firstLine.offsetHeight / 2;
+      container.scrollTo({ top: Math.max(0, firstLineCenter - container.clientHeight * .46), behavior: "auto" });
+    }
+  }
   container.classList.toggle("lyric-intro-fading", fadingIntoFirstLine);
   container.style.setProperty("--lyric-intro-opacity", introFadeProgress.toFixed(3));
   elements.forEach((element) => element.classList.toggle("lyric-pending", waitingForIntroFade));
