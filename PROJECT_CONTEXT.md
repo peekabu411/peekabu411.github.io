@@ -10,11 +10,12 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 - Repository: https://github.com/peekabu411/peekabu411.github.io
 - Local project folder: `C:\Users\Luigi Mendoza\OneDrive\Documents\New project\peekabu411.github.io`
 - Default branch: `main`
-- Current release/version: `ver(I.9.7.37)` / tag `vI.9.7.37`
+- Current release/version: `ver(I.9.7.38)` / tag `vI.9.7.38`
 
 ## Current deployed state
 
 - Latest deployed release is tracked by the active version/tag above and GitHub Pages build status.
+- I.9.7.38 maps Spotify track `08PQgCL2WTNuMKAnbKC9jV` to LRCLIB record `11006398`, correcting its approximately nine-second longer intro while keeping other Oshakashama masters unchanged. Lyric cache keys now include the Spotify track URI so identical metadata cannot mix different recordings.
 - I.9.7.37 is deployed: each Scroll lyric song resets to the beginning, and the first line is placed at the normal focus position before the intro fade begins.
 - I.9.7.36 fades Scroll lyrics from 0% to 100% during the five seconds before the first timestamp, driven by playback time.
 - I.9.7.35 restores the full Scroll lyric list after the intro so active, previous, and upcoming lines remain visible.

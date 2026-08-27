@@ -93,6 +93,9 @@ const artworkPreloads = new Map();
 const albumColorCache = new Map();
 const lyricsResultCache = new Map();
 const lyricsPrefetches = new Map();
+const LRCLIB_TRACK_RECORD_OVERRIDES = new Map([
+  ["spotify:track:08PQgCL2WTNuMKAnbKC9jV", 11006398]
+]);
 let albumColorTrackUri = null;
 let lyricsTrackUri = null;
 let lyricsRequestToken = 0;
@@ -521,18 +524,20 @@ function lyricsRequestFor(track) {
     album_name: track?.album?.name || "",
     duration: String(Math.round((track?.duration_ms || 0) / 1000))
   });
-  return { query, cacheKey: query.toString() };
+  const sourceRecordId = LRCLIB_TRACK_RECORD_OVERRIDES.get(track?.uri) || null;
+  return { query, cacheKey: (track?.uri || "no-uri") + "|" + query.toString(), sourceRecordId };
 }
 function cacheLyricsResult(cacheKey, result) {
   lyricsResultCache.set(cacheKey, result);
   if (lyricsResultCache.size > 30) lyricsResultCache.delete(lyricsResultCache.keys().next().value);
   return result;
 }
-async function requestLyricsResult(query) {
+async function requestLyricsResult(query, sourceRecordId = null) {
   try {
-    return await api(`/api/lyrics?${query}`);
+    return await api(sourceRecordId ? "/api/lyrics?id=" + sourceRecordId : "/api/lyrics?" + query);
   } catch {
-    const response = await fetch(`https://lrclib.net/api/get?${query}`, { headers: { "Lrclib-Client": "Turntable LAN Remote v0.1 (local personal project)" } });
+    const lyricsSource = sourceRecordId ? "https://lrclib.net/api/get/" + sourceRecordId : "https://lrclib.net/api/get?" + query;
+    const response = await fetch(lyricsSource, { headers: { "Lrclib-Client": "Turntable LAN Remote v0.1 (local personal project)" } });
     if (response.status === 404) return { found: false, instrumental: false, syncedLyrics: null, plainLyrics: null };
     if (!response.ok) throw new Error("Lyrics provider unavailable");
     const direct = await response.json();
@@ -541,10 +546,10 @@ async function requestLyricsResult(query) {
 }
 function prefetchLyrics(track) {
   if (!track?.uri) return Promise.resolve(null);
-  const { query, cacheKey } = lyricsRequestFor(track);
+  const { query, cacheKey, sourceRecordId } = lyricsRequestFor(track);
   if (lyricsResultCache.has(cacheKey)) return Promise.resolve(lyricsResultCache.get(cacheKey));
   if (lyricsPrefetches.has(cacheKey)) return lyricsPrefetches.get(cacheKey);
-  const request = requestLyricsResult(query)
+  const request = requestLyricsResult(query, sourceRecordId)
     .then((result) => cacheLyricsResult(cacheKey, result))
     .finally(() => lyricsPrefetches.delete(cacheKey));
   lyricsPrefetches.set(cacheKey, request);
