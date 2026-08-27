@@ -10,18 +10,19 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 - Repository: https://github.com/peekabu411/peekabu411.github.io
 - Local project folder: `C:\Users\Luigi Mendoza\OneDrive\Documents\New project\peekabu411.github.io`
 - Default branch: `main`
-- Current release/version: `ver(I.9.7.33)` / tag `vI.9.7.33`
+- Current release/version: `ver(I.9.7.34)` / tag `vI.9.7.34`
 
 ## Current deployed state
 
 - Latest deployed release is tracked by the active version/tag above and GitHub Pages build status.
-- I.9.7.33 is deployed: synced lyric lines remain hidden until their timestamp begins, so instrumental intros stay in lyrics mode without premature text.
+- I.9.7.34 is deployed: Setup Step 3 opens Spotify's direct Create app route, bypassing the dashboard button that can be hidden beneath Spotify's announcement banner.
+- I.9.7.33 keeps synced lyric lines hidden until their timestamp begins, so instrumental intros stay in lyrics mode without premature text.
 - I.9.7.32 fixed album-art glow and artwork backdrop updates during every song-change animation.
 - I.9.7.31 uses normal 7.5-second status checks, while faster 2-second checks run only during the final 3 seconds of a playing track.
 - I.9.7.30 adds a slower, layered card-slide animation for automatic square album-art changes at natural song boundaries; manual artwork swipes remain fast.
 - I.9.7.29 cancels a pending scheduled status check while a playback or settings action confirms, then resumes one scheduled check afterward to avoid duplicate requests.
 - The setup screen's Step 3 and Step 4 dashboard shortcuts are 36px square green arrow buttons in the top-right of their cards.
-- The Step 3 dashboard warning is forced red: “Can’t find Create app? Zoom out until the dashboard header is visible — the button appears at the top.”
+- Step 3 opens Spotify's direct Create app route (`https://developer.spotify.com/dashboard/create`) so first-time users do not need to locate a dashboard button hidden by Spotify's announcement banner.
 
 ## Product behavior
 
