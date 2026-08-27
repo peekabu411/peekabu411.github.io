@@ -642,8 +642,13 @@ function updateActiveLyrics(position) {
     return;
   }
   const elements = [...container.children];
-  const waitingForFirstLine = lineIndex < 0;
-  elements.forEach((element) => element.classList.toggle("lyric-pending", waitingForFirstLine));
+  const lyricTimelinePosition = position - lyricOffset * 1000;
+  const introFadeProgress = Math.max(0, Math.min(1, (lyricTimelinePosition - (lyricsLines[0].time - 5_000)) / 5_000));
+  const waitingForIntroFade = lineIndex < 0 && introFadeProgress <= 0;
+  const fadingIntoFirstLine = lineIndex < 0 && introFadeProgress > 0;
+  container.classList.toggle("lyric-intro-fading", fadingIntoFirstLine);
+  container.style.setProperty("--lyric-intro-opacity", introFadeProgress.toFixed(3));
+  elements.forEach((element) => element.classList.toggle("lyric-pending", waitingForIntroFade));
   if (lineIndex < 0) {
     if (activeLyricIndex >= 0) elements[activeLyricIndex]?.classList.remove("active");
     activeLyricIndex = -1;

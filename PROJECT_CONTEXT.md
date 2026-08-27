@@ -10,12 +10,13 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 - Repository: https://github.com/peekabu411/peekabu411.github.io
 - Local project folder: `C:\Users\Luigi Mendoza\OneDrive\Documents\New project\peekabu411.github.io`
 - Default branch: `main`
-- Current release/version: `ver(I.9.7.35)` / tag `vI.9.7.35`
+- Current release/version: `ver(I.9.7.36)` / tag `vI.9.7.36`
 
 ## Current deployed state
 
 - Latest deployed release is tracked by the active version/tag above and GitHub Pages build status.
-- I.9.7.35 is deployed: Scroll lyrics stay blank before the first timestamp, then reveal the full lyric list so active, previous, and upcoming lines remain visible.
+- I.9.7.36 is deployed: Scroll lyrics remain at 0% opacity until five seconds before the first timestamp, then fade according to playback time and reach 100% as the first line begins.
+- I.9.7.35 restores the full Scroll lyric list after the intro so active, previous, and upcoming lines remain visible.
 - I.9.7.34 opens Spotify's direct Create app route from Setup Step 3, bypassing the dashboard button hidden beneath Spotify's announcement banner.
 - I.9.7.33 keeps synced lyric lines hidden until their timestamp begins, so instrumental intros stay in lyrics mode without premature text.
 - I.9.7.32 fixed album-art glow and artwork backdrop updates during every song-change animation.

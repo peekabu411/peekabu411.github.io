@@ -1,8 +1,8 @@
-const CACHE = "turntable-ios-i9735-scroll-lyrics-read-ahead";
+const CACHE = "turntable-ios-i9736-lyric-intro-fade";
 const ASSETS = [
-  "./", "./index.html", "./styles.css?v=I.9.7.35-scroll-lyrics-read-ahead", "./settings-help.css", "./settings-help-previews.css",
-  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.35-scroll-lyrics-read-ahead",
-  "./bridge.js?v=I.9.7.35-scroll-lyrics-read-ahead", "./app.js?v=I.9.7.35-scroll-lyrics-read-ahead",
+  "./", "./index.html", "./styles.css?v=I.9.7.36-lyric-intro-fade", "./settings-help.css", "./settings-help-previews.css",
+  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.36-lyric-intro-fade",
+  "./bridge.js?v=I.9.7.36-lyric-intro-fade", "./app.js?v=I.9.7.36-lyric-intro-fade",
   "./settings-help.js", "./preset-controls.js", "./manifest.webmanifest", "./manifest.json",
   "./icons/turntable-remote-192.png", "./icons/apple-touch-icon.png"
 ];
