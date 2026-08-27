@@ -642,7 +642,8 @@ function updateActiveLyrics(position) {
     return;
   }
   const elements = [...container.children];
-  elements.forEach((element, index) => element.classList.toggle("lyric-pending", index > lineIndex));
+  const waitingForFirstLine = lineIndex < 0;
+  elements.forEach((element) => element.classList.toggle("lyric-pending", waitingForFirstLine));
   if (lineIndex < 0) {
     if (activeLyricIndex >= 0) elements[activeLyricIndex]?.classList.remove("active");
     activeLyricIndex = -1;

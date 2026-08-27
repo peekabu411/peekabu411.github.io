@@ -15,12 +15,12 @@
     <link rel="icon" href="./icons/turntable-remote.ico" sizes="any">
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
     <title>Turntable — LAN Music Remote</title>
-    <link rel="stylesheet" href="./styles.css?v=I.9.7.34-direct-create-app">
+    <link rel="stylesheet" href="./styles.css?v=I.9.7.35-scroll-lyrics-read-ahead">
     <link rel="stylesheet" href="./settings-help.css">
     <link rel="stylesheet" href="./settings-help-previews.css">
     <link rel="stylesheet" href="./screen-fit.css">
     <link rel="stylesheet" href="./preset-controls.css">
-    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.7.34-direct-create-app">
+    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.7.35-scroll-lyrics-read-ahead">
   </head>
   <body>
     <main class="shell">
@@ -139,7 +139,7 @@
           </section>
 
           <section class="view controls-view" data-panel="settings">
-            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.7.34"><small>REMOTE VERSION</small><b>ver(I.9.7.34)</b></button></div>
+            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.7.35"><small>REMOTE VERSION</small><b>ver(I.9.7.35)</b></button></div>
             <div class="settings-columns">
               <div class="settings-controls">
                 <section class="theme-picker" aria-labelledby="theme-title">
@@ -370,6 +370,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
+            <li><b>ver(I.9.7.35)</b><span>Scroll lyrics now restore incoming lines after the instrumental intro ends.</span></li>
             <li><b>ver(I.9.7.34)</b><span>Setup Step 3 now opens Spotify's Create app form directly, bypassing the banner-covered dashboard button.</span></li>
             <li><b>ver(I.9.7.33)</b><span>Synced lyric lines now stay hidden until their timestamp begins, including during instrumental intros.</span></li>
             <li><b>ver(I.9.7.32)</b><span>Fixed album-art glow and background updates during song-change animations.</span></li>
@@ -429,7 +430,7 @@
           </section>
         </section>
       </div>    </main>
-    <script src="./bridge.js?v=I.9.7.34-direct-create-app"></script>
+    <script src="./bridge.js?v=I.9.7.35-scroll-lyrics-read-ahead"></script>
   </body>
 </html>
 
