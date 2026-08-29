@@ -1,8 +1,8 @@
-const CACHE = "turntable-ios-i9738-track-specific-lyrics";
+const CACHE = "turntable-ios-i9739-large-touch-layout";
 const ASSETS = [
-  "./", "./index.html", "./styles.css?v=I.9.7.38-track-specific-lyrics", "./settings-help.css", "./settings-help-previews.css",
-  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.38-track-specific-lyrics",
-  "./bridge.js?v=I.9.7.38-track-specific-lyrics", "./app.js?v=I.9.7.38-track-specific-lyrics",
+  "./", "./index.html", "./styles.css?v=I.9.7.39-large-touch-layout", "./settings-help.css", "./settings-help-previews.css",
+  "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.7.39-large-touch-layout",
+  "./bridge.js?v=I.9.7.39-large-touch-layout", "./app.js?v=I.9.7.39-large-touch-layout",
   "./settings-help.js", "./preset-controls.js", "./manifest.webmanifest", "./manifest.json",
   "./icons/turntable-remote-192.png", "./icons/apple-touch-icon.png"
 ];

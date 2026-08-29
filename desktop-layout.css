@@ -1,5 +1,7 @@
-/* Desktop-only player layout. Phone and tablet profiles intentionally remain untouched. */
-@media (min-width:1200px) and (min-height:650px) and (hover:hover) and (pointer:fine){
+/* Full-screen wide player layout. Large touch tablets use the same shell so the
+   collapsible tabs and half-visible side volume control keep working above 1200px. */
+@media (min-width:1200px) and (min-height:650px) and (hover:hover) and (pointer:fine),
+       (min-width:1200px) and (min-height:650px) and (any-pointer:coarse){
   html,body,.shell{width:100%;height:100%;min-height:0;overflow:hidden}
   .shell{display:block;padding:0;background:#050505}
   .device{position:relative;display:block;width:100vw;height:100dvh;min-height:0;max-width:none;max-height:none;border:0;border-radius:0;box-shadow:none;overflow:hidden}
@@ -7,7 +9,9 @@
   .preset-bar{position:absolute;z-index:20;left:0;right:0;top:0;height:73px;transform:translate3d(0,0,0);opacity:1;transition:transform .25s cubic-bezier(.2,.8,.2,1),opacity .2s ease}
   .device.topbar-hidden .preset-bar{transform:translate3d(0,-115%,0);opacity:0;pointer-events:none}
   .bar-handle{z-index:21;top:72px}
-  .device.topbar-hidden .bar-handle{top:3px}
+  .device[data-current-view="player"] .bar-handle{top:72px}
+  .device.topbar-hidden .bar-handle,
+  .device[data-current-view="player"].topbar-hidden .bar-handle{top:3px}
 
   .screen{position:absolute;z-index:1;inset:0;width:100%;height:100%;padding:0;overflow:hidden}
   .player-view{position:relative;width:100%;height:100%;padding:clamp(60px,7vh,92px) clamp(145px,10vw,220px) 92px clamp(52px,5vw,96px);gap:clamp(38px,5vw,86px);align-items:center;justify-content:flex-start}
@@ -98,6 +102,7 @@
   writing-mode:vertical-rl!important;transform:translateY(-50%) rotate(180deg)!important;
 }
 .device .dial-rail>.dial-swipe-hint span{color:#999!important;padding:0 4px!important}
+.device:not(.topbar-hidden) .topbar-hint,
 .device[data-guides="hidden"] .topbar-hint,
 .device[data-guides="hidden"] .dial-rail>.dial-swipe-hint{display:none!important;visibility:hidden!important}
 @media (orientation:landscape) and (max-height:500px) and (max-width:1200px){
