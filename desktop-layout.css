@@ -1,14 +1,14 @@
 /* Full-screen wide player layout. Large touch tablets use the same shell so the
-   collapsible tabs and half-visible side volume control keep working above 1200px. */
+   collapsible tabs and half-visible side volume control work from iPad mini landscape upward. */
 @media (min-width:1200px) and (min-height:650px) and (hover:hover) and (pointer:fine),
-       (min-width:1200px) and (min-height:650px) and (any-pointer:coarse){
+       (min-width:1000px) and (min-height:650px) and (orientation:landscape) and (any-pointer:coarse){
   html,body,.shell{width:100%;height:100%;min-height:0;overflow:hidden}
   .shell{display:block;padding:0;background:#050505}
   .device{position:relative;display:block;width:100vw;height:100dvh;min-height:0;max-width:none;max-height:none;border:0;border-radius:0;box-shadow:none;overflow:hidden}
 
   .preset-bar{position:absolute;z-index:20;left:0;right:0;top:0;height:73px;transform:translate3d(0,0,0);opacity:1;transition:transform .25s cubic-bezier(.2,.8,.2,1),opacity .2s ease}
   .device.topbar-hidden .preset-bar{transform:translate3d(0,-115%,0);opacity:0;pointer-events:none}
-  .bar-handle{z-index:21;top:72px}
+  .bar-handle{display:block;z-index:21;top:72px}
   .device[data-current-view="player"] .bar-handle{top:72px}
   .device.topbar-hidden .bar-handle,
   .device[data-current-view="player"].topbar-hidden .bar-handle{top:3px}
@@ -49,6 +49,7 @@
   .controls-view>.hint{width:min(1040px,100%);margin-left:auto;margin-right:auto}
   .queue-toggle{right:18px;bottom:14px}
   .message{left:30px;right:150px;bottom:74px}
+  .hardware-brand{display:flex}
 }
 
 /* Use viewport and platform detection so touch-enabled desktop computers still
