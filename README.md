@@ -1,3 +1,5 @@
+[![Star this repo](https://img.shields.io/github/stars/peekabu411/peekabu411.github.io?style=for-the-badge&logo=github&label=Star%20this%20repo&color=1ed760)](https://github.com/peekabu411/peekabu411.github.io)
+
 # Turntable iOS
 
 A self-contained, landscape-first Spotify controller for iPhone and iPad. It is a static Progressive Web App: no laptop, LAN server, Client Secret, or Android component is used.
