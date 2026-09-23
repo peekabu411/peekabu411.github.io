@@ -15,7 +15,7 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 ## Current deployed state
 
 - Latest deployed release is tracked by the active version/tag above and GitHub Pages build status.
-- I.9.8 extends the corrected full-screen Wide layout to coarse-pointer landscape viewports from 1000 × 650 upward, covering iPad mini and larger tablets while preserving the original large-phone layout below that combined threshold.
+- I.9.8 extends the corrected full-screen Wide layout to coarse-pointer landscape viewports from 1000 × 650 upward, covering iPad mini and larger tablets while preserving the original large-phone layout below that combined threshold. Its maintenance update also adds a synthetic Liked Songs card backed by Spotify's saved-track count and full collection playback; existing connections authorize the new `user-library-read` and `user-read-private` scopes once by tapping that card.
 - I.9.7.39 fixes the large-touch Wide-layout breakpoint (including iPad Pro at 1366 × 1024): the app fills the viewport, the top tabs truly collapse, the trigger moves below open tabs without overlapping its hint, and only half of the side volume dial remains visible.
 - I.9.7.38 maps Spotify track `08PQgCL2WTNuMKAnbKC9jV` to LRCLIB record `11006398`, correcting its approximately nine-second longer intro while keeping other Oshakashama masters unchanged. Lyric cache keys now include the Spotify track URI so identical metadata cannot mix different recordings.
 - I.9.7.37 is deployed: each Scroll lyric song resets to the beginning, and the first line is placed at the normal focus position before the intro fade begins.
@@ -45,6 +45,7 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 - Lyrics mode with LRCLIB lookup and automatic fallback to title display when lyrics are unavailable.
 - Lyrics mode displays a subtle song-and-artist marquee near the Spotify button.
 - Playlist organization with touch drag-and-drop, gap insertion indicator, and edge-only auto-scroll.
+- Liked Songs appears as a first-class playlist card, supports the same pin/reorder UI, and starts the user's full saved-song collection with a 100-track URI fallback if Spotify rejects collection-context playback.
 - Setup flow ordered as: sign in, copy redirect URI, create/choose app, copy Client ID, paste Client ID, connect Spotify.
 - Internal update log and diagnostics are present in Settings.
 - Interaction hints include “PRESS FOR TABS” and “SWIPE ↕ TO ADJUST.”

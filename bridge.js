@@ -2,7 +2,12 @@
   const API = "https://api.spotify.com/v1", ACCOUNTS = "https://accounts.spotify.com", KEY = "turntable-ios-oauth";
   const nativeFetch = window.fetch.bind(window);
   const REQUEST_WARNING_LIMIT = 30, REQUEST_WARNING_WINDOW_MS = 60_000;
+  const LIKED_SONGS_ID = "turntable:liked-songs";
+  const LIKED_SONGS_FALLBACK_LIMIT = 100;
+  const LIKED_SONGS_CACHE_MS = 5 * 60_000;
   const telemetry = { startedAt: Date.now(), events: [], lastMinuteCount: 0 };
+  let likedSongsSummaryCache = null;
+  let spotifyUserId = null;
   const recordRequest = path => {
     const now = Date.now();
     telemetry.events.push({ at: now, path: path.split("?")[0] });
@@ -33,9 +38,74 @@
     const r = await nativeFetch(`${API}${path}`, { ...options, headers: { Authorization: `Bearer ${await accessToken()}`, ...(options.headers || {}) } });
     if (r.status === 204) return null; const data = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(data.error?.message || `Spotify returned ${r.status}.`), { status: r.status }); return data;
   }
+  function likedSongsCard(total = null, options = {}) {
+    return {
+      id: LIKED_SONGS_ID,
+      type: "liked-songs",
+      uri: null,
+      name: "Liked Songs",
+      description: "Tracks saved to your Spotify library.",
+      image: "",
+      owner: "Your Library",
+      tracks: Number.isFinite(total) ? total : null,
+      needs_reconnect: !!options.needsReconnect,
+      temporarily_unavailable: !!options.temporarilyUnavailable
+    };
+  }
+  async function likedSongsSummary() {
+    if (likedSongsSummaryCache && Date.now() - likedSongsSummaryCache.updatedAt <= LIKED_SONGS_CACHE_MS) {
+      return likedSongsCard(likedSongsSummaryCache.total);
+    }
+    try {
+      const data = await spotify("/me/tracks?limit=1");
+      const total = Number.isFinite(data.total) ? data.total : (data.items || []).length;
+      likedSongsSummaryCache = { updatedAt: Date.now(), total };
+      return likedSongsCard(total);
+    } catch (error) {
+      likedSongsSummaryCache = null;
+      if (error.status === 403) return likedSongsCard(null, { needsReconnect: true });
+      return likedSongsCard(null, { temporarilyUnavailable: true });
+    }
+  }
+  async function currentSpotifyUserId() {
+    if (spotifyUserId) return spotifyUserId;
+    const user = await spotify("/me");
+    spotifyUserId = user?.id || null;
+    if (!spotifyUserId) throw Object.assign(new Error("Spotify could not identify this account."), { status: 502 });
+    return spotifyUserId;
+  }
+  async function likedSongsFallback() {
+    const first = await spotify("/me/tracks?limit=50&offset=0");
+    const total = Number.isFinite(first.total) ? first.total : (first.items || []).length;
+    const items = [...(first.items || [])];
+    if (total > 50) items.push(...((await spotify("/me/tracks?limit=50&offset=50")).items || []));
+    const uris = items.slice(0, LIKED_SONGS_FALLBACK_LIMIT).map(item => item?.track?.uri).filter(uri => typeof uri === "string" && uri.startsWith("spotify:track:"));
+    if (!uris.length) throw Object.assign(new Error("Your Liked Songs library is empty."), { status: 409 });
+    likedSongsSummaryCache = { updatedAt: Date.now(), total };
+    return { uris, total };
+  }
+  async function playLikedSongs(body) {
+    const path = `/me/player/play${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`;
+    if (likedSongsSummaryCache?.total === 0) throw Object.assign(new Error("Your Liked Songs library is empty."), { status: 409 });
+    try {
+      const userId = await currentSpotifyUserId();
+      await spotify(path, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({context_uri:`spotify:user:${userId}:collection`}) });
+      return { mode: "collection", total: likedSongsSummaryCache?.total ?? null, limited: false };
+    } catch (error) {
+      if (![400, 403, 404, 500].includes(error.status)) throw error;
+    }
+    try {
+      const fallback = await likedSongsFallback();
+      await spotify(path, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({uris:fallback.uris}) });
+      return { mode: "uris", played_count: fallback.uris.length, total: fallback.total, limited: fallback.uris.length < fallback.total };
+    } catch (error) {
+      if (error.status === 403 && /scope|permission/i.test(error.message)) throw Object.assign(new Error("Reconnect Spotify from the setup screen once to enable Liked Songs."), { status: 403 });
+      throw error;
+    }
+  }
   async function authorize(clientId) {
     const verifier = random(), state = random(); sessionStorage.setItem("tt.verifier", verifier); sessionStorage.setItem("tt.state", state); save({ ...read(), client_id: clientId });
-    const query = new URLSearchParams({ client_id: clientId, response_type: "code", redirect_uri: redirectUri, state, scope: "user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative", code_challenge_method: "S256", code_challenge: await challenge(verifier) });
+    const query = new URLSearchParams({ client_id: clientId, response_type: "code", redirect_uri: redirectUri, state, scope: "user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative user-library-read user-read-private", code_challenge_method: "S256", code_challenge: await challenge(verifier) });
     location.assign(`${ACCOUNTS}/authorize?${query}`);
   }
   async function callback() {
@@ -48,14 +118,16 @@
   async function route(path, options = {}) {
     const body = options.body ? JSON.parse(options.body) : {};
     if (path === "/api/pair") { const id = body.pin?.trim(); if (!id) return error("Paste your Spotify Client ID."); await authorize(id); return response({}); }
+    if (path === "/api/reauthorize") { const id = read().client_id; if (!id) return error("Reconnect from the setup screen to enable Liked Songs.", 403); await authorize(id); return response({}); }
     if (path.startsWith("/api/status")) return response({ playback: await spotify("/me/player"), connection: { fresh: true, cached: false, updated_at: Date.now() } });
     if (path.startsWith("/api/devices")) return response({ items: (await spotify("/me/player/devices"))?.devices || [] });
     if (path.startsWith("/api/queue")) return response({ items: (await spotify("/me/player/queue"))?.queue?.slice(0, 6) || [] });
-    if (path === "/api/playlists") { const data = await spotify("/me/playlists?limit=50"); return response({ items: (data.items || []).filter(Boolean).map(p => ({ id:p.id, uri:p.uri, name:p.name, description:p.description || "", image:p.images?.[0]?.url || "", owner:p.owner?.display_name || "Spotify", tracks:p.items?.total ?? p.tracks?.total })) }); }
+    if (path === "/api/playlists") { const data = await spotify("/me/playlists?limit=50"); const liked = await likedSongsSummary(); return response({ items: [liked, ...(data.items || []).filter(Boolean).map(p => ({ id:p.id, type:"playlist", uri:p.uri, name:p.name, description:p.description || "", image:p.images?.[0]?.url || "", owner:p.owner?.display_name || "Spotify", tracks:p.items?.total ?? p.tracks?.total }))] }); }
     if (path.startsWith("/api/lyrics")) { const q = path.split("?")[1] || ""; const params = new URLSearchParams(q); const recordId = params.get("id"); const lyricsSource = recordId && /^\d+$/.test(recordId) ? "https://lrclib.net/api/get/" + recordId : "https://lrclib.net/api/get?" + q; const r = await nativeFetch(lyricsSource); if (r.status === 404) return response({ found:false, instrumental:false, syncedLyrics:null, plainLyrics:null }); if (!r.ok) return new Response(await r.text(), { status:r.status, headers:{"Content-Type":"application/json"} }); const lyrics = await r.json(); return response({ found:true, instrumental:!!lyrics.instrumental, syncedLyrics:lyrics.syncedLyrics || null, plainLyrics:lyrics.plainLyrics || null }); }
     if (path.startsWith("/api/artwork")) return nativeFetch(new URL(path, location.href).searchParams.get("url"));
     if (path === "/api/pairing-info") return response({ address: location.origin + location.pathname, pin: "This device" });
     if (path === "/api/diagnostics") { const now = Date.now(); const lastMinute = telemetry.events.filter(event => event.at >= now - 60_000); const lastHour = telemetry.events.filter(event => event.at >= now - 3_600_000); const paths = {}; for (const event of lastHour) paths[event.path] = (paths[event.path] || 0) + 1; return response({ requests: { last_minute: lastMinute.length, last_hour: lastHour.length, cache_hits_since_start: 0, total_since_start: telemetry.events.length, top_paths: Object.entries(paths).sort((a,b) => b[1] - a[1]).slice(0,5).map(([path,count]) => ({ path, count })) }, connection: { state: "direct", cooldown_seconds: 0, playback_cache_age_seconds: 0 }, uptime_seconds: Math.floor((now - telemetry.startedAt) / 1000) }); }
+    if (path === "/api/player/liked-songs") return response(await playLikedSongs(body));
     if (path === "/api/player/playlist") { await spotify(`/me/player/play${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({context_uri:body.context_uri}) }); return response(null,204); }
     if (path === "/api/player/skip-count") { for(let i=0;i<body.count;i++) await spotify(`/me/player/next${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`, {method:"POST"}); return response({ requested:body.count, completed:body.count }); }
     if (path.startsWith("/api/player/")) { const action = path.split("/").pop(), endpoint = action === "next" || action === "previous" ? `/me/player/${action}` : `/me/player/${action}`; await spotify(`${endpoint}${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`, {method: action === "next" || action === "previous" ? "POST" : "PUT"}); return response(null,204); }
@@ -69,7 +141,7 @@
     try { await navigator.clipboard.writeText(value); } catch { window.prompt("Copy this Redirect URI:", value); return; }
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
-  callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js?v=I.9.8-ipad-mini-layout"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
+  callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js?v=I.9.8-liked-songs"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
 })();
 
 

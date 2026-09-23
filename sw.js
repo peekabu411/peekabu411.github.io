@@ -1,8 +1,8 @@
-const CACHE = "turntable-ios-i98-ipad-mini-layout";
+const CACHE = "turntable-ios-i98-liked-songs";
 const ASSETS = [
-  "./", "./index.html", "./styles.css?v=I.9.8-ipad-mini-layout", "./settings-help.css", "./settings-help-previews.css",
+  "./", "./index.html", "./styles.css?v=I.9.8-liked-songs", "./settings-help.css", "./settings-help-previews.css",
   "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.8-ipad-mini-layout",
-  "./bridge.js?v=I.9.8-ipad-mini-layout", "./app.js?v=I.9.8-ipad-mini-layout",
+  "./bridge.js?v=I.9.8-liked-songs", "./app.js?v=I.9.8-liked-songs",
   "./settings-help.js", "./preset-controls.js", "./manifest.webmanifest", "./manifest.json",
   "./icons/turntable-remote-192.png", "./icons/apple-touch-icon.png"
 ];

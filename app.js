@@ -1454,6 +1454,7 @@ function renderPlaylistCard(playlist, pins) {
   const card = document.createElement("article");
   card.className = "playlist-card";
   card.dataset.playlistId = playlist.id;
+  card.dataset.playlistType = playlist.type || "playlist";
   card.draggable = playlistOrganizerMode;
   const playButton = document.createElement("button");
   playButton.type = "button";
@@ -1463,7 +1464,7 @@ function renderPlaylistCard(playlist, pins) {
   cover.className = "playlist-cover";
   const fallback = document.createElement("span");
   fallback.className = "playlist-fallback";
-  fallback.textContent = playlist.name?.trim()?.[0]?.toUpperCase() || "Music";
+  fallback.textContent = playlist.type === "liked-songs" ? "♥" : (playlist.name?.trim()?.[0]?.toUpperCase() || "Music");
   if (playlist.image) {
     const image = document.createElement("img");
     image.src = playlist.image;
@@ -1476,7 +1477,10 @@ function renderPlaylistCard(playlist, pins) {
   const name = document.createElement("b");
   name.textContent = playlist.name;
   const detail = document.createElement("small");
-  detail.textContent = `${Number.isFinite(playlist.tracks) ? playlist.tracks : 0} songs`;
+  if (playlist.needs_reconnect) detail.textContent = "Tap to reconnect Spotify";
+  else if (playlist.temporarily_unavailable) detail.textContent = "Saved tracks unavailable right now";
+  else if (playlist.type === "liked-songs") detail.textContent = Number.isFinite(playlist.tracks) ? `${playlist.tracks} saved song${playlist.tracks === 1 ? "" : "s"}` : "Your saved songs";
+  else detail.textContent = `${Number.isFinite(playlist.tracks) ? playlist.tracks : 0} songs`;
   playButton.append(cover, name, detail);
   playButton.onclick = () => { if (Date.now() >= suppressPlaylistPlayUntil) playPlaylist(playlist, playButton); };
   card.append(playButton);
@@ -1605,13 +1609,19 @@ async function playPlaylist(playlist, button) {
   physicalFeedback("press");
   setMessage(`Starting ${playlist.name}...`);
   try {
-    await api("/api/player/playlist", {
+    if (playlist.needs_reconnect) {
+      setMessage("Opening Spotify to enable Liked Songs...");
+      await api("/api/reauthorize", { method: "POST" });
+      return;
+    }
+    const result = await api(playlist.type === "liked-songs" ? "/api/player/liked-songs" : "/api/player/playlist", {
       method: "PUT",
       body: JSON.stringify({ context_uri: playlist.uri, device_id: activeDeviceId() })
     });
     switchView("player");
     setTopBarHidden(true);
-    setMessage();
+    if (result?.limited) setMessage(`Playing your ${result.played_count} most recent Liked Songs.`);
+    else setMessage();
     setTimeout(() => refresh(true), 650);
     setTimeout(() => loadQueue(true), 900);
   } catch (error) { showError(error); }
