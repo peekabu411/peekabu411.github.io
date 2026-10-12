@@ -1,5 +1,7 @@
-/* A fixed overlay beside the art, outside the spinning/swiping artwork. */
-.art-stage>.track-like{position:absolute;z-index:8;top:8px;left:8px;display:grid;place-items:center;width:44px;height:44px;padding:10px;border:1px solid #ffffff24;border-radius:50%;background:#0a0a0ac9;color:#eee;box-shadow:0 3px 14px #0006;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:color .18s ease,background .18s ease,transform .15s ease}
+/* An independent player-corner control, never attached to the album artwork. */
+.device>.track-like{position:absolute;z-index:10;top:max(12px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));display:grid;place-items:center;width:44px;height:44px;padding:10px;border:1px solid #ffffff24;border-radius:50%;background:#0a0a0ac9;color:#eee;box-shadow:0 3px 14px #0006;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:color .18s ease,background .18s ease,transform .15s ease}
+.device:not([data-current-view="player"])>.track-like{display:none}
+@media (orientation:landscape) and (max-height:500px){.device>.track-like{top:max(7px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left))}}
 .track-like svg{width:24px;height:24px;overflow:visible}
 .track-like path{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
 .track-like[aria-pressed="true"]{color:#1ed760;background:#09180fd9}

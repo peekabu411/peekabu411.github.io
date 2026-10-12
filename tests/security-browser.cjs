@@ -87,7 +87,12 @@ async function fixtures(context) {
     for (const viewport of [{ width: 852, height: 393 }, { width: 1366, height: 1024 }, { width: 390, height: 844 }]) {
       await page.setViewportSize(viewport);
       const art = await page.locator(".art-stage").boundingBox(), heart = await page.locator("#track-like").boundingBox();
-      assert(heart && art && Math.abs(heart.x - art.x - 8) < 2 && Math.abs(heart.y - art.y - 8) < 2, "heart follows art's top-left");
+      const player = await page.locator("#remote").boundingBox(), spotify = await page.locator("#spotify-track-link").boundingBox();
+      assert(heart && spotify && player && Math.abs(heart.y - spotify.y) < 2, "heart and Spotify control share a top edge");
+      assert(Math.abs((heart.x - player.x) - (player.x + player.width - spotify.x - spotify.width)) < 2, "heart mirrors the Spotify corner inset");
+      assert.equal(heart.width, 44, "keep the larger heart size");
+      assert(heart.x + heart.width <= art.x || heart.x >= art.x + art.width || heart.y + heart.height <= art.y || heart.y >= art.y + art.height, "heart does not overlap artwork");
+      assert.equal(await page.locator(".art-stage #track-like").count(), 0);
       assert(heart.x >= 0 && heart.y >= 0 && heart.x + heart.width <= viewport.width);
     }
     await page.setViewportSize({ width: 1366, height: 1024 });
@@ -113,6 +118,7 @@ async function fixtures(context) {
     await page.waitForFunction(() => document.querySelector("#play").getAttribute("aria-label") === "Pause");
     await page.evaluate(() => setTopBarHidden(false));
     await page.locator('[data-view="playlists"]').click();
+    assert(await page.locator("#track-like").isHidden());
     await page.getByText("Liked Songs", { exact: true }).waitFor();
     await page.evaluate(() => setTopBarHidden(false));
     await page.locator('[data-view="devices"]').click();

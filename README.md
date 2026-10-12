@@ -18,7 +18,7 @@ The app uses Spotify's Authorization Code with PKCE flow. Spotify tokens are kep
 
 ### Liked Songs
 
-Tap the heart at the album artwork's top-left to save the current song to Spotify's Liked Songs. A green heart means saved; tap again to remove it. Older connections are asked to approve `user-library-modify` once. Podcasts and local files cannot be saved this way. The Liked Songs card refreshes on your next visit to Playlists.
+Tap the heart in the player's top-left corner to save the current song to Spotify's Liked Songs. It is separate from the artwork, opposite the Spotify shortcut, and keeps its larger 44px size. A green heart means saved; tap again to remove it. Older connections are asked to approve `user-library-modify` once. Podcasts and local files cannot be saved this way. The Liked Songs card refreshes on your next visit to Playlists.
 
 ### Connection security
 

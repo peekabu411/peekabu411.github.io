@@ -136,7 +136,7 @@ test("cross-origin /api URLs are not intercepted as local routes", async () => {
 function workerHarness() {
   const handlers = {}, stored = [], deleted = [], outbound = [];
   const cache = { addAll: async () => {}, put: async request => stored.push(request.url), keys: async () => [{ url: "https://peekabu411.github.io/?code=stale" }], delete: async request => deleted.push(request.url) };
-  const context = { URL, Promise, location: { origin: "https://peekabu411.github.io" }, caches: { open: async () => cache, keys: async () => ["turntable-ios-old", "turntable-ios-i98-song-likes", "another-app-cache"], delete: async key => deleted.push(key), match: async () => new Response("offline") }, fetch: async (request, options) => { outbound.push({ request, options }); return new Response("asset", { status: 200 }); }, self: { addEventListener: (name, callback) => { handlers[name] = callback; }, clients: { claim: async () => {} }, skipWaiting: async () => {} } };
+  const context = { URL, Promise, location: { origin: "https://peekabu411.github.io" }, caches: { open: async () => cache, keys: async () => ["turntable-ios-old", "turntable-ios-i98-song-likes-corners", "another-app-cache"], delete: async key => deleted.push(key), match: async () => new Response("offline") }, fetch: async (request, options) => { outbound.push({ request, options }); return new Response("asset", { status: 200 }); }, self: { addEventListener: (name, callback) => { handlers[name] = callback; }, clients: { claim: async () => {} }, skipWaiting: async () => {} } };
   vm.createContext(context); vm.runInContext(worker, context);
   return { handlers, stored, deleted, outbound };
 }
