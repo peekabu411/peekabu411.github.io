@@ -840,7 +840,10 @@ async function loadDiagnostics() {
       : `Playback cache age: ${data.connection.playback_cache_age_seconds ?? "none"}s. Total calls since server start: ${data.requests.total_since_start}.`;
     const paths = $("diag-paths"); paths.replaceChildren();
     for (const item of data.requests.top_paths) {
-      const row = document.createElement("li"); row.innerHTML = `<span>${item.path}</span><b>${item.count}</b>`; paths.append(row);
+      const row = document.createElement("li");
+      const path = document.createElement("span"), count = document.createElement("b");
+      path.textContent = item.path; count.textContent = item.count;
+      row.append(path, count); paths.append(row);
     }
   } catch (error) {
     $("diag-connection").textContent = error.message;
@@ -2418,7 +2421,7 @@ $("copy-address").onclick = async () => {
   try { await navigator.clipboard.writeText(address); setMessage("LAN address copied."); }
   catch { setMessage(`Open ${address} on the other phone.`); }
 };
-$("unpair-phone").onclick = () => { physicalFeedback("press"); localStorage.removeItem("turntable-session"); location.reload(); };
+$("unpair-phone").onclick = () => { physicalFeedback("press"); window.turntableAuth.disconnect(); location.reload(); };
 
 const screen = document.querySelector(".screen");
 screen.addEventListener("pointerdown", (event) => {

@@ -16,6 +16,12 @@ A self-contained, landscape-first Spotify controller for iPhone and iPad. It is 
 
 The app uses Spotify's Authorization Code with PKCE flow. Spotify tokens are kept only in Safari's local storage on the device. This repository intentionally contains no Client Secret, access token, or refresh token.
 
+### Connection security
+
+Unpairing removes saved Spotify tokens, pending sign-in state, and cached playback on this device. Other open tabs on the same origin also disconnect. This does not revoke the app's permission in your Spotify account; remove that permission in Spotify's account settings if needed.
+
+OAuth callback parameters are removed from the address bar, and the service worker does not cache callback or API URLs. A Content Security Policy restricts scripts and external resources. As a static GitHub Pages app, Turntable still keeps tokens in JavaScript-accessible browser storage to remember your connection. Never add a Client Secret or other server secret to frontend code or frontend environment variables.
+
 ## Development
 
 Static files can be served with any local web server. Do not use `file://`: Spotify requires an exact HTTPS Redirect URI in production.

@@ -17,7 +17,40 @@
     telemetry.lastMinuteCount = recentCount;
     if (crossedWarningThreshold) window.dispatchEvent(new CustomEvent("turntable:api-rate-warning", { detail: { count: recentCount, waitSeconds: 60 } }));
   };
-  const read = () => JSON.parse(localStorage.getItem(KEY) || "{}");
+  let authGeneration = 0;
+  let refreshInFlight = null;
+  const unauthorized = message => Object.assign(new Error(message), { status: 401 });
+  function clearPendingAuthorization() {
+    sessionStorage.removeItem("tt.verifier");
+    sessionStorage.removeItem("tt.state");
+  }
+  function disconnect() {
+    authGeneration++;
+    refreshInFlight = null;
+    localStorage.removeItem(KEY);
+    localStorage.removeItem("turntable-session");
+    localStorage.removeItem("turntable-last-playback");
+    clearPendingAuthorization();
+    likedSongsSummaryCache = null;
+    spotifyUserId = null;
+  }
+  const read = () => {
+    try {
+      const auth = JSON.parse(localStorage.getItem(KEY) || "{}");
+      if (!auth || typeof auth !== "object" || Array.isArray(auth)) throw new Error("Invalid connection data.");
+      return auth;
+    } catch {
+      disconnect();
+      return {};
+    }
+  };
+  window.turntableAuth = Object.freeze({ disconnect });
+  window.addEventListener("storage", event => {
+    if ((event.key === KEY && !event.newValue) || event.key === null) {
+      disconnect();
+      location.reload();
+    }
+  });
   const save = value => localStorage.setItem(KEY, JSON.stringify(value));
   const redirectUri = new URL("./", location.href).href;
   const response = (body, status = 200) => new Response(body === null ? null : JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -27,15 +60,31 @@
   const challenge = async verifier => base64url(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier))));
   async function accessToken() {
     const auth = read();
-    if (!auth.refresh_token) throw new Error("Connect Spotify first.");
-    if (auth.expires_at > Date.now() + 45_000) return auth.access_token;
-    const r = await nativeFetch(`${ACCOUNTS}/api/token`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ client_id: auth.client_id, grant_type: "refresh_token", refresh_token: auth.refresh_token }) });
-    const data = await r.json(); if (!r.ok) throw new Error(data.error_description || "Spotify sign-in expired.");
-    save({ ...auth, ...data, refresh_token: data.refresh_token || auth.refresh_token, expires_at: Date.now() + data.expires_in * 1000 }); return data.access_token;
+    if (!auth.refresh_token) throw unauthorized("Connect Spotify first.");
+    if (auth.access_token && auth.expires_at > Date.now() + 45_000) return auth.access_token;
+    if (refreshInFlight) return refreshInFlight;
+    const generation = authGeneration;
+    const pending = (async () => {
+      const r = await nativeFetch(`${ACCOUNTS}/api/token`, { method: "POST", cache: "no-store", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ client_id: auth.client_id, grant_type: "refresh_token", refresh_token: auth.refresh_token }) });
+      const data = await r.json();
+      if (generation !== authGeneration || !read().refresh_token) throw unauthorized("Connect Spotify first.");
+      if (!r.ok) {
+        if (data.error === "invalid_grant") { disconnect(); throw unauthorized("Spotify sign-in expired. Connect again."); }
+        throw new Error(data.error_description || "Spotify sign-in expired.");
+      }
+      save({ ...auth, ...data, refresh_token: data.refresh_token || auth.refresh_token, expires_at: Date.now() + data.expires_in * 1000 });
+      return data.access_token;
+    })();
+    refreshInFlight = pending;
+    try { return await pending; }
+    finally { if (refreshInFlight === pending) refreshInFlight = null; }
   }
   async function spotify(path, options = {}) {
+    const generation = authGeneration;
+    const token = await accessToken();
+    if (generation !== authGeneration) throw unauthorized("Connect Spotify first.");
     recordRequest(path);
-    const r = await nativeFetch(`${API}${path}`, { ...options, headers: { Authorization: `Bearer ${await accessToken()}`, ...(options.headers || {}) } });
+    const r = await nativeFetch(`${API}${path}`, { ...options, headers: { Authorization: `Bearer ${token}`, ...(options.headers || {}) } });
     if (r.status === 204) return null; const data = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(data.error?.message || `Spotify returned ${r.status}.`), { status: r.status }); return data;
   }
   function likedSongsCard(total = null, options = {}) {
@@ -104,16 +153,40 @@
     }
   }
   async function authorize(clientId) {
-    const verifier = random(), state = random(); sessionStorage.setItem("tt.verifier", verifier); sessionStorage.setItem("tt.state", state); save({ ...read(), client_id: clientId });
+    const auth = read();
+    authGeneration++;
+    refreshInFlight = null;
+    const verifier = random(), state = random(); sessionStorage.setItem("tt.verifier", verifier); sessionStorage.setItem("tt.state", state); save({ ...auth, client_id: clientId });
     const query = new URLSearchParams({ client_id: clientId, response_type: "code", redirect_uri: redirectUri, state, scope: "user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative user-library-read user-read-private", code_challenge_method: "S256", code_challenge: await challenge(verifier) });
     location.assign(`${ACCOUNTS}/authorize?${query}`);
   }
   async function callback() {
-    const query = new URLSearchParams(location.search), code = query.get("code"); if (!code) return;
-    const auth = read(), verifier = sessionStorage.getItem("tt.verifier"); if (!verifier || query.get("state") !== sessionStorage.getItem("tt.state")) throw new Error("Spotify sign-in could not be verified.");
-    document.body.innerHTML = "<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>Connecting Turntable to Spotify…</main>";
-    const r = await nativeFetch(`${ACCOUNTS}/api/token`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ client_id: auth.client_id, grant_type: "authorization_code", code, redirect_uri: redirectUri, code_verifier: verifier }) });
-    const data = await r.json(); if (!r.ok) throw new Error(data.error_description || "Spotify sign-in failed."); save({ ...auth, ...data, expires_at: Date.now() + data.expires_in * 1000 }); localStorage.setItem("turntable-session", "github-pages"); document.body.innerHTML = `<main class="return-shell"><section class="return-card"><div class="return-brand"><img src="./icons/turntable-remote-192.png" alt=""><b>turntable</b></div><p class="return-kicker">SPOTIFY CONNECTION</p><div class="return-record"><span></span></div><h1>Connected.</h1><p>Your Spotify account is ready on this device. Return to Turntable to control what is playing.</p><a href="${redirectUri}" class="return-action">Return to Turntable <i>→</i></a><small>You can also close this page and open the Turntable Home Screen icon.</small></section></main>`;
+    const query = new URLSearchParams(location.search), code = query.get("code");
+    if (!code && !query.has("error")) return false;
+    const verifier = sessionStorage.getItem("tt.verifier"), expectedState = sessionStorage.getItem("tt.state");
+    clearPendingAuthorization();
+    const cleanUrl = new URL(location.href);
+    for (const key of ["code", "state", "error", "error_description"]) cleanUrl.searchParams.delete(key);
+    history.replaceState(null, "", cleanUrl.href);
+    if (!verifier || !expectedState || query.get("state") !== expectedState) throw new Error("Spotify sign-in could not be verified.");
+    if (query.has("error")) throw new Error("Spotify sign-in was cancelled or denied. Return to Turntable and connect again.");
+    const auth = read(), generation = authGeneration;
+    showConnectionMessage("Connecting Turntable to Spotify…");
+    const r = await nativeFetch(`${ACCOUNTS}/api/token`, { method: "POST", cache: "no-store", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ client_id: auth.client_id, grant_type: "authorization_code", code, redirect_uri: redirectUri, code_verifier: verifier }) });
+    const data = await r.json();
+    if (generation !== authGeneration) throw unauthorized("Connection cancelled. Connect Spotify again.");
+    if (!r.ok) throw new Error(data.error_description || "Spotify sign-in failed.");
+    save({ client_id: auth.client_id, ...data, expires_at: Date.now() + data.expires_in * 1000 });
+    localStorage.setItem("turntable-session", "github-pages");
+    document.body.innerHTML = '<main class="return-shell"><section class="return-card"><div class="return-brand"><img src="./icons/turntable-remote-192.png" alt=""><b>turntable</b></div><p class="return-kicker">SPOTIFY CONNECTION</p><div class="return-record"><span></span></div><h1>Connected.</h1><p>Your Spotify account is ready on this device. Return to Turntable to control what is playing.</p><a class="return-action">Return to Turntable <i>→</i></a><small>You can also close this page and open the Turntable Home Screen icon.</small></section></main>';
+    document.querySelector(".return-action").href = redirectUri;
+    return true;
+  }
+  function showConnectionMessage(message) {
+    const main = document.createElement("main");
+    main.className = "connection-message";
+    main.textContent = message;
+    document.body.replaceChildren(main);
   }
   async function route(path, options = {}) {
     const body = options.body ? JSON.parse(options.body) : {};
@@ -134,14 +207,14 @@
     if (path === "/api/settings") { const target = body.target_device_id ? `&device_id=${encodeURIComponent(body.target_device_id)}` : ""; if(Number.isFinite(body.position_ms)) await spotify(`/me/player/seek?position_ms=${Math.round(body.position_ms)}${target}`,{method:"PUT"}); if(Number.isFinite(body.volume_percent)) await spotify(`/me/player/volume?volume_percent=${Math.round(body.volume_percent)}${target}`,{method:"PUT"}); if(typeof body.shuffle === "boolean") await spotify(`/me/player/shuffle?state=${body.shuffle}${target}`,{method:"PUT"}); if(body.repeat) await spotify(`/me/player/repeat?state=${body.repeat}${target}`,{method:"PUT"}); if(body.device_id) await spotify("/me/player",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({device_ids:[body.device_id],play:true})}); return response(null,204); }
     if (path.startsWith("/api/health")) return response({version:"GitHub Pages"}); return error("Unsupported local route.",404);
   }
-  window.fetch = async (input, options) => { const url = new URL(typeof input === "string" ? input : input.url, location.href); if (url.pathname.startsWith("/api/")) { try { return await route(url.pathname + url.search, options); } catch (e) { return error(e.message, e.status || 500); } } return nativeFetch(input, options); };
+  window.fetch = async (input, options) => { const url = new URL(typeof input === "string" ? input : input.url, location.href); if (url.origin === location.origin && url.pathname.startsWith("/api/")) { try { return await route(url.pathname + url.search, options); } catch (e) { return error(e.message, e.status || 500); } } return nativeFetch(input, options); };
   function load(src) { return new Promise((resolve,reject) => { const s=document.createElement("script"); s.src=src; s.onload=resolve; s.onerror=reject; document.body.append(s); }); }
   document.getElementById("copy-redirect-uri")?.addEventListener("click", async () => {
     const value = "https://peekabu411.github.io/";
     try { await navigator.clipboard.writeText(value); } catch { window.prompt("Copy this Redirect URI:", value); return; }
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
-  callback().then(async () => { if (new URLSearchParams(location.search).has("code")) return; await load("./app.js?v=I.9.8-liked-songs"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { document.body.innerHTML = `<main style='font:16px system-ui;padding:2rem;background:#050505;color:#fff'>${e.message}</main>`; });
+  callback().then(async handled => { if (handled) return; await load("./app.js?v=I.9.8-security"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
 })();
 
 
