@@ -1,0 +1,11 @@
+/* A fixed overlay beside the art, outside the spinning/swiping artwork. */
+.art-stage>.track-like{position:absolute;z-index:8;top:8px;left:8px;display:grid;place-items:center;width:44px;height:44px;padding:10px;border:1px solid #ffffff24;border-radius:50%;background:#0a0a0ac9;color:#eee;box-shadow:0 3px 14px #0006;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:color .18s ease,background .18s ease,transform .15s ease}
+.track-like svg{width:24px;height:24px;overflow:visible}
+.track-like path{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+.track-like[aria-pressed="true"]{color:#1ed760;background:#09180fd9}
+.track-like[aria-pressed="true"] path{fill:currentColor}
+.track-like:active:not(:disabled){transform:scale(.92)}
+.track-like:focus-visible{outline:2px solid #1ed760;outline-offset:3px}
+.track-like:disabled{opacity:.4;cursor:default}
+.track-like[aria-busy="true"]{opacity:.65}
+#library-permission .rate-warning-actions{gap:10px;flex-wrap:wrap}

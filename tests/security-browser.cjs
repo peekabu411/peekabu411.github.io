@@ -15,10 +15,11 @@ const server = http.createServer((req, res) => {
     res.end(error ? "Not found" : data);
   });
 });
-const fakeAuth = { client_id: "test-client", access_token: "test-access", refresh_token: "test-refresh", expires_at: Date.now() + 600000 };
-const track = { type: "track", id: "test-track", uri: "spotify:track:test-track", name: "Security Test Song", duration_ms: 240000, artists: [{ name: "Test Artist" }], album: { name: "Test Album", images: [{ url: "https://i.scdn.co/image/test-art" }] }, external_urls: { spotify: "https://open.spotify.com/track/test-track" } };
+const fakeAuth = { client_id: "test-client", access_token: "test-access", refresh_token: "test-refresh", expires_at: Date.now() + 600000, scope: "user-library-read user-library-modify" };
+const track = { type: "track", id: "4iV5W9uYEdYUVa79Axb7Rh", uri: "spotify:track:4iV5W9uYEdYUVa79Axb7Rh", name: "Security Test Song", duration_ms: 240000, artists: [{ name: "Test Artist" }], album: { name: "Test Album", images: [{ url: "https://i.scdn.co/image/test-art" }] }, external_urls: { spotify: "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh" } };
 const calls = [];
 let playing = false;
+let liked = false;
 async function fixtures(context) {
   await context.route("https://**/*", async route => {
     const request = route.request(), url = new URL(request.url());
@@ -27,12 +28,13 @@ async function fixtures(context) {
     if (url.hostname === "accounts.spotify.com") { await route.fulfill({ json: { access_token: "test-access", refresh_token: "test-refresh", expires_in: 3600 }, headers }); return; }
     if (url.hostname === "api.spotify.com") {
       if (request.method() !== "GET") {
+        if (url.pathname === "/v1/me/library") liked = request.method() === "PUT";
         if (url.pathname.endsWith("/play")) playing = true;
         if (url.pathname.endsWith("/pause")) playing = false;
         await route.fulfill({ status: 204, headers }); return;
       }
       const playback = { item: track, is_playing: playing, progress_ms: 60000, device: { id: "test-device", name: "Test device", is_active: true, supports_volume: true, volume_percent: 50 }, context: null, shuffle_state: false, repeat_state: "off", actions: { disallows: {} } };
-      const json = url.pathname.endsWith("/devices") ? { devices: [playback.device] } : url.pathname.endsWith("/queue") ? { queue: [] } : url.pathname.endsWith("/playlists") ? { items: [] } : url.pathname.endsWith("/tracks") ? { total: 1, items: [{ track }] } : url.pathname === "/v1/me" ? { id: "test-user" } : playback;
+      const json = url.pathname === "/v1/me/library/contains" ? [liked] : url.pathname.endsWith("/devices") ? { devices: [playback.device] } : url.pathname.endsWith("/queue") ? { queue: [] } : url.pathname.endsWith("/playlists") ? { items: [] } : url.pathname.endsWith("/tracks") ? { total: 1, items: [{ track }] } : url.pathname === "/v1/me" ? { id: "test-user" } : playback;
       await route.fulfill({ json, headers }); return;
     }
     if (url.hostname === "lrclib.net") { await route.fulfill({ json: { syncedLyrics: "[00:10.00]Test lyric line\n[00:20.00]Next lyric", plainLyrics: "Test lyric line\nNext lyric", instrumental: false }, headers }); return; }
@@ -70,6 +72,43 @@ async function fixtures(context) {
     await page.waitForFunction(() => document.querySelector("#title")?.textContent === "Security Test Song");
     assert(await page.locator("#remote").isVisible());
     await page.waitForFunction(() => document.querySelector("#cover").naturalWidth > 0);
+    await page.waitForFunction(() => !document.querySelector("#track-like").disabled);
+    const readsBefore = calls.filter(call => new URL(call.url).pathname === "/v1/me/library/contains").length;
+    await page.evaluate(() => { for (let i = 0; i < 5; i++) render(state); });
+    assert.equal(calls.filter(call => new URL(call.url).pathname === "/v1/me/library/contains").length, readsBefore);
+    await page.locator("#track-like").click();
+    await page.waitForFunction(() => document.querySelector("#track-like").getAttribute("aria-pressed") === "true");
+    assert.equal(liked, true);
+    await page.locator("#track-like").click();
+    await page.waitForFunction(() => document.querySelector("#track-like").getAttribute("aria-pressed") === "false");
+    assert.equal(liked, false);
+    assert(calls.some(call => new URL(call.url).pathname === "/v1/me/library" && call.method === "PUT"));
+    assert(calls.some(call => new URL(call.url).pathname === "/v1/me/library" && call.method === "DELETE"));
+    for (const viewport of [{ width: 852, height: 393 }, { width: 1366, height: 1024 }, { width: 390, height: 844 }]) {
+      await page.setViewportSize(viewport);
+      const art = await page.locator(".art-stage").boundingBox(), heart = await page.locator("#track-like").boundingBox();
+      assert(heart && art && Math.abs(heart.x - art.x - 8) < 2 && Math.abs(heart.y - art.y - 8) < 2, "heart follows art's top-left");
+      assert(heart.x >= 0 && heart.y >= 0 && heart.x + heart.width <= viewport.width);
+    }
+    await page.setViewportSize({ width: 1366, height: 1024 });
+    await page.screenshot({ path: path.join(process.env.TEMP, "turntable-song-likes.png") });
+    await page.evaluate(() => applyAppearance("vinyl"));
+    assert.equal(await page.locator("#remote").getAttribute("data-album"), "vinyl");
+    assert(await page.locator("#track-like").isVisible());
+    await page.screenshot({ path: path.join(process.env.TEMP, "turntable-song-likes-vinyl.png") });
+    // Existing read-only connections must prompt rather than silently pretend to save.
+    await page.evaluate(() => {
+      const auth = JSON.parse(localStorage.getItem("turntable-ios-oauth"));
+      auth.scope = "user-library-read";
+      localStorage.setItem("turntable-ios-oauth", JSON.stringify(auth));
+    });
+    await page.reload();
+    await page.waitForFunction(() => !document.querySelector("#track-like").disabled);
+    await page.locator("#track-like").click();
+    assert(await page.locator("#library-permission").isVisible());
+    await page.locator("#library-permission-dismiss").click();
+    assert(await page.locator("#library-permission").isHidden());
+    console.log("PASS: real heart save/remove, phone/tablet placement, and reconnect permission dialog.");
     await page.locator("#play").click();
     await page.waitForFunction(() => document.querySelector("#play").getAttribute("aria-label") === "Pause");
     await page.evaluate(() => setTopBarHidden(false));
@@ -154,6 +193,7 @@ async function fixtures(context) {
     await errorContext.close();
   } finally {
     if (browser) await browser.close();
+    server.closeAllConnections();
     await new Promise(resolve => server.close(resolve));
   }
 })().catch(error => { console.error(error); process.exitCode = 1; });

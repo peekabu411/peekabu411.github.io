@@ -7,6 +7,7 @@
   const LIKED_SONGS_CACHE_MS = 5 * 60_000;
   const telemetry = { startedAt: Date.now(), events: [], lastMinuteCount: 0 };
   let likedSongsSummaryCache = null;
+  const trackLikes = new Map();
   let spotifyUserId = null;
   const recordRequest = path => {
     const now = Date.now();
@@ -32,6 +33,7 @@
     localStorage.removeItem("turntable-last-playback");
     clearPendingAuthorization();
     likedSongsSummaryCache = null;
+    trackLikes.clear();
     spotifyUserId = null;
   }
   const read = () => {
@@ -85,7 +87,41 @@
     if (generation !== authGeneration) throw unauthorized("Connect Spotify first.");
     recordRequest(path);
     const r = await nativeFetch(`${API}${path}`, { ...options, headers: { Authorization: `Bearer ${token}`, ...(options.headers || {}) } });
-    if (r.status === 204) return null; const data = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(data.error?.message || `Spotify returned ${r.status}.`), { status: r.status }); return data;
+    if (r.status === 204) return null; const data = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(data.error?.message || `Spotify returned ${r.status}.`), { status: r.status, retryAfter: Number(r.headers.get("retry-after")) || 0 }); return data;
+  }
+  async function trackLibrary(path, options, body) {
+    const method = (options.method || "GET").toUpperCase();
+    if (!["GET", "PUT"].includes(method)) return error("Unsupported library action.", 405);
+    const uri = method === "GET" ? new URL(path, location.href).searchParams.get("uri") : body.uri;
+    if (!/^spotify:track:[A-Za-z0-9]{22}$/.test(uri || "")) return error("Only Spotify songs can be added to Liked Songs.");
+    if (method === "PUT" && typeof body.saved !== "boolean") return error("Choose whether to save or remove the song.");
+    const generation = authGeneration;
+    await accessToken(); // Authenticate even when returning a cached library status.
+    if (generation !== authGeneration) throw unauthorized("Connect Spotify first.");
+    const auth = read();
+    const scope = method === "PUT" ? "user-library-modify" : "user-library-read";
+    if (typeof auth.scope === "string" && !auth.scope.split(/\s+/).includes(scope)) {
+      return response({ error: "Approve Spotify library access once to use Liked Songs.", needs_reconnect: true }, 403);
+    }
+    const cached = trackLikes.get(uri);
+    if (method === "GET" && cached && Date.now() - cached.at < 60_000) {
+      return response({ uri, saved: cached.saved, needs_reconnect: typeof auth.scope === "string" && !auth.scope.split(/\s+/).includes("user-library-modify") });
+    }
+    try {
+      const query = `?uris=${encodeURIComponent(uri)}`;
+      const result = await spotify(method === "GET" ? `/me/library/contains${query}` : `/me/library${query}`, method === "GET" ? {} : { method: body.saved ? "PUT" : "DELETE" });
+      if (generation !== authGeneration) throw unauthorized("Connect Spotify first.");
+      if (method === "GET" && (!Array.isArray(result) || typeof result[0] !== "boolean")) throw new Error("Spotify could not confirm this song's library status.");
+      const latest = trackLikes.get(uri);
+      const saved = method === "GET" ? (latest && latest !== cached ? latest.saved : result[0]) : body.saved;
+      trackLikes.set(uri, { saved, at: Date.now() });
+      if (trackLikes.size > 100) trackLikes.delete(trackLikes.keys().next().value);
+      if (method === "PUT") likedSongsSummaryCache = null;
+      return response({ uri, saved, needs_reconnect: typeof auth.scope === "string" && !auth.scope.split(/\s+/).includes("user-library-modify") });
+    } catch (cause) {
+      if (cause.status === 403 && /scope|permission/i.test(cause.message)) return response({ error: "Approve Spotify library access once to use Liked Songs.", needs_reconnect: true }, 403);
+      throw cause;
+    }
   }
   function likedSongsCard(total = null, options = {}) {
     return {
@@ -157,7 +193,8 @@
     authGeneration++;
     refreshInFlight = null;
     const verifier = random(), state = random(); sessionStorage.setItem("tt.verifier", verifier); sessionStorage.setItem("tt.state", state); save({ ...auth, client_id: clientId });
-    const query = new URLSearchParams({ client_id: clientId, response_type: "code", redirect_uri: redirectUri, state, scope: "user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative user-library-read user-read-private", code_challenge_method: "S256", code_challenge: await challenge(verifier) });
+    trackLikes.clear();
+    const query = new URLSearchParams({ client_id: clientId, response_type: "code", redirect_uri: redirectUri, state, scope: "user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative user-library-read user-library-modify user-read-private", code_challenge_method: "S256", code_challenge: await challenge(verifier) });
     location.assign(`${ACCOUNTS}/authorize?${query}`);
   }
   async function callback() {
@@ -192,6 +229,7 @@
     const body = options.body ? JSON.parse(options.body) : {};
     if (path === "/api/pair") { const id = body.pin?.trim(); if (!id) return error("Paste your Spotify Client ID."); await authorize(id); return response({}); }
     if (path === "/api/reauthorize") { const id = read().client_id; if (!id) return error("Reconnect from the setup screen to enable Liked Songs.", 403); await authorize(id); return response({}); }
+    if (path.split("?")[0] === "/api/library/track") return trackLibrary(path, options, body);
     if (path.startsWith("/api/status")) return response({ playback: await spotify("/me/player"), connection: { fresh: true, cached: false, updated_at: Date.now() } });
     if (path.startsWith("/api/devices")) return response({ items: (await spotify("/me/player/devices"))?.devices || [] });
     if (path.startsWith("/api/queue")) return response({ items: (await spotify("/me/player/queue"))?.queue?.slice(0, 6) || [] });
@@ -207,14 +245,14 @@
     if (path === "/api/settings") { const target = body.target_device_id ? `&device_id=${encodeURIComponent(body.target_device_id)}` : ""; if(Number.isFinite(body.position_ms)) await spotify(`/me/player/seek?position_ms=${Math.round(body.position_ms)}${target}`,{method:"PUT"}); if(Number.isFinite(body.volume_percent)) await spotify(`/me/player/volume?volume_percent=${Math.round(body.volume_percent)}${target}`,{method:"PUT"}); if(typeof body.shuffle === "boolean") await spotify(`/me/player/shuffle?state=${body.shuffle}${target}`,{method:"PUT"}); if(body.repeat) await spotify(`/me/player/repeat?state=${body.repeat}${target}`,{method:"PUT"}); if(body.device_id) await spotify("/me/player",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({device_ids:[body.device_id],play:true})}); return response(null,204); }
     if (path.startsWith("/api/health")) return response({version:"GitHub Pages"}); return error("Unsupported local route.",404);
   }
-  window.fetch = async (input, options) => { const url = new URL(typeof input === "string" ? input : input.url, location.href); if (url.origin === location.origin && url.pathname.startsWith("/api/")) { try { return await route(url.pathname + url.search, options); } catch (e) { return error(e.message, e.status || 500); } } return nativeFetch(input, options); };
+  window.fetch = async (input, options) => { const url = new URL(typeof input === "string" ? input : input.url, location.href); if (url.origin === location.origin && url.pathname.startsWith("/api/")) { try { return await route(url.pathname + url.search, options); } catch (e) { return response({ error: e.message, retry_after: e.retryAfter || 0 }, e.status || 500); } } return nativeFetch(input, options); };
   function load(src) { return new Promise((resolve,reject) => { const s=document.createElement("script"); s.src=src; s.onload=resolve; s.onerror=reject; document.body.append(s); }); }
   document.getElementById("copy-redirect-uri")?.addEventListener("click", async () => {
     const value = "https://peekabu411.github.io/";
     try { await navigator.clipboard.writeText(value); } catch { window.prompt("Copy this Redirect URI:", value); return; }
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
-  callback().then(async handled => { if (handled) return; await load("./app.js?v=I.9.8-security"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
+  callback().then(async handled => { if (handled) return; await load("./app.js?v=I.9.8-song-likes"); await load("./track-likes.js?v=I.9.8-song-likes"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
 })();
 
 

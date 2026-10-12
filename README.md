@@ -16,6 +16,10 @@ A self-contained, landscape-first Spotify controller for iPhone and iPad. It is 
 
 The app uses Spotify's Authorization Code with PKCE flow. Spotify tokens are kept only in Safari's local storage on the device. This repository intentionally contains no Client Secret, access token, or refresh token.
 
+### Liked Songs
+
+Tap the heart at the album artwork's top-left to save the current song to Spotify's Liked Songs. A green heart means saved; tap again to remove it. Older connections are asked to approve `user-library-modify` once. Podcasts and local files cannot be saved this way. The Liked Songs card refreshes on your next visit to Playlists.
+
 ### Connection security
 
 Unpairing removes saved Spotify tokens, pending sign-in state, and cached playback on this device. Other open tabs on the same origin also disconnect. This does not revoke the app's permission in your Spotify account; remove that permission in Spotify's account settings if needed.

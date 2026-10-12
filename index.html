@@ -17,12 +17,13 @@
     <link rel="icon" href="./icons/turntable-remote.ico" sizes="any">
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
     <title>Turntable — LAN Music Remote</title>
-    <link rel="stylesheet" href="./styles.css?v=I.9.8-security">
+    <link rel="stylesheet" href="./styles.css?v=I.9.8-song-likes">
     <link rel="stylesheet" href="./settings-help.css">
     <link rel="stylesheet" href="./settings-help-previews.css">
     <link rel="stylesheet" href="./screen-fit.css">
     <link rel="stylesheet" href="./preset-controls.css">
     <link rel="stylesheet" href="./desktop-layout.css?v=I.9.8-ipad-mini-layout">
+    <link rel="stylesheet" href="./track-likes.css?v=I.9.8-song-likes">
   </head>
   <body>
     <main class="shell">
@@ -90,6 +91,7 @@
                 <div class="vinyl-hole" aria-hidden="true"></div>
                 <div class="swipe-glint"></div>
               </div>
+              <button id="track-like" class="track-like" type="button" aria-label="Add song to Liked Songs" aria-pressed="false" disabled title="Play a Spotify song to use Liked Songs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 3.5 12A5.4 5.4 0 0 1 12 5.4 5.4 5.4 0 0 1 20.5 12Z"/></svg></button>
               <p class="swipe-hint guide-copy"><span>&larr;</span> swipe to skip <span>&rarr;</span></p>
             </div>
             <div class="player-info">
@@ -323,6 +325,9 @@
       <div id="rate-warning" class="rate-warning" role="alertdialog" aria-modal="true" aria-labelledby="rate-warning-title" hidden>
         <section class="rate-warning-card" tabindex="-1"><header><div><small>REQUEST RATE WARNING</small><h2 id="rate-warning-title">Slow down for a moment</h2></div><span>30 / MIN</span></header><p id="rate-warning-copy">Turntable has made several Spotify requests in the last minute. Avoid repeated refreshes, skips, and setting changes, then wait one minute before continuing.</p><div class="rate-warning-actions"><button id="rate-warning-dismiss" class="primary" type="button">Okay, I’ll wait</button></div></section>
       </div>
+      <div id="library-permission" class="rate-warning" role="dialog" aria-modal="true" aria-labelledby="library-permission-title" hidden>
+        <section class="rate-warning-card" tabindex="-1"><header><div><small>SPOTIFY LIKED SONGS</small><h2 id="library-permission-title">Allow saving songs</h2></div></header><p>Connect Spotify again and approve library access. Your settings stay the same. Then tap the heart to add or remove the current song from Liked Songs.</p><div class="rate-warning-actions"><button id="library-permission-dismiss" type="button">Not now</button><button id="library-permission-connect" class="primary" type="button">Connect Spotify</button></div></section>
+      </div>
       <input id="haptic-switch" class="haptic-switch" type="checkbox" switch tabindex="-1" aria-hidden="true">
       <div class="rotate-notice"><strong>Turn your device sideways</strong><span>Landscape provides the full dashboard layout.</span></div>
       <div id="fullscreen-prompt" class="fullscreen-prompt" role="dialog" aria-modal="true" aria-labelledby="fullscreen-title" hidden>
@@ -372,7 +377,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
-            <li><b>ver(I.9.8)</b><span>Extended the corrected Wide layout to iPad mini and larger touch tablets, added Liked Songs with full-library playback, and hardened connection cleanup, OAuth callbacks, error rendering, and browser security policy.</span></li>
+            <li><b>ver(I.9.8)</b><span>Extended Wide layout to iPad mini and larger tablets, added Liked Songs playback and an artwork heart to save/remove songs, and hardened connection cleanup, OAuth callbacks, and browser security.</span></li>
             <li><b>ver(I.9.7.39)</b><span>Fixed Wide mode on large touch tablets: tabs collapse correctly, the volume dial stays half-visible at the right edge, and the tab arrow opens and closes cleanly.</span></li>
             <li><b>ver(I.9.7.38)</b><span>Corrected lyric timing for the longer-intro Oshakashama recording without shifting other versions.</span></li>
             <li><b>ver(I.9.7.37)</b><span>Positioned the first Scroll lyric before its intro fade and reset retained lyric scroll offsets.</span></li>
@@ -437,7 +442,7 @@
           </section>
         </section>
       </div>    </main>
-    <script src="./bridge.js?v=I.9.8-security"></script>
+    <script src="./bridge.js?v=I.9.8-song-likes"></script>
   </body>
 </html>
 

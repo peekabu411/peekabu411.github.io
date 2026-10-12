@@ -136,7 +136,7 @@ test("cross-origin /api URLs are not intercepted as local routes", async () => {
 function workerHarness() {
   const handlers = {}, stored = [], deleted = [], outbound = [];
   const cache = { addAll: async () => {}, put: async request => stored.push(request.url), keys: async () => [{ url: "https://peekabu411.github.io/?code=stale" }], delete: async request => deleted.push(request.url) };
-  const context = { URL, Promise, location: { origin: "https://peekabu411.github.io" }, caches: { open: async () => cache, keys: async () => ["turntable-ios-old", "turntable-ios-i98-security", "another-app-cache"], delete: async key => deleted.push(key), match: async () => new Response("offline") }, fetch: async (request, options) => { outbound.push({ request, options }); return new Response("asset", { status: 200 }); }, self: { addEventListener: (name, callback) => { handlers[name] = callback; }, clients: { claim: async () => {} }, skipWaiting: async () => {} } };
+  const context = { URL, Promise, location: { origin: "https://peekabu411.github.io" }, caches: { open: async () => cache, keys: async () => ["turntable-ios-old", "turntable-ios-i98-song-likes", "another-app-cache"], delete: async key => deleted.push(key), match: async () => new Response("offline") }, fetch: async (request, options) => { outbound.push({ request, options }); return new Response("asset", { status: 200 }); }, self: { addEventListener: (name, callback) => { handlers[name] = callback; }, clients: { claim: async () => {} }, skipWaiting: async () => {} } };
   vm.createContext(context); vm.runInContext(worker, context);
   return { handlers, stored, deleted, outbound };
 }
@@ -166,4 +166,69 @@ test("normal app assets remain cacheable", async () => {
   h.handlers.fetch({ request: { method: "GET", url: "https://peekabu411.github.io/app.js" }, respondWith: value => { result = value; }, waitUntil: value => waits.push(value) });
   await result; await Promise.all(waits);
   assert(h.stored.includes("https://peekabu411.github.io/app.js"));
+});
+
+const songUri = "spotify:track:4iV5W9uYEdYUVa79Axb7Rh";
+const libraryAuth = { ...auth, scope: "user-library-read user-library-modify" };
+test("library reads authenticate, cache, and save/remove use the documented library API", async () => {
+  let liked = false;
+  const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify(libraryAuth) }, fetcher: (_url, options) => {
+    if (options.method) { liked = options.method === "PUT"; return new Response(null, { status: 200 }); }
+    return Response.json([liked]);
+  } });
+  const read = () => h.context.window.fetch(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
+  assert.equal((await (await read()).json()).saved, false);
+  await read();
+  assert.equal(h.requests.length, 1);
+  for (const saved of [true, false]) {
+    const result = await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved }) });
+    assert.equal((await result.json()).saved, saved);
+    assert.equal(h.requests.at(-1).options.method, saved ? "PUT" : "DELETE");
+    assert.equal(new URL(h.requests.at(-1).url).pathname, "/v1/me/library");
+    assert.equal(new URL(h.requests.at(-1).url).searchParams.get("uris"), songUri);
+    assert.equal((await (await read()).json()).saved, saved);
+  }
+  assert.equal(h.requests.length, 3);
+  h.context.window.turntableAuth.disconnect();
+  assert.equal((await read()).status, 401);
+});
+test("library rejects invalid tracks, unsupported methods, and unauthenticated writes", async () => {
+  const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify(libraryAuth) } });
+  for (const uri of ["spotify:episode:4iV5W9uYEdYUVa79Axb7Rh", "spotify:local:artist:track", "https://example.org", "spotify:track:bad"]) {
+    assert.equal((await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri, saved: true }) })).status, 400);
+  }
+  assert.equal((await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: "true" }) })).status, 400);
+  assert.equal((await h.context.window.fetch("/api/library/track", { method: "DELETE" })).status, 405);
+  assert.equal(h.requests.length, 0);
+  const unauth = harness();
+  assert.equal((await unauth.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: true }) })).status, 401);
+});
+test("older read-only connections can check likes but must reconnect before writes", async () => {
+  const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify({ ...auth, scope: "user-library-read" }) }, fetcher: () => Response.json([true]) });
+  const result = await h.context.window.fetch(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
+  assert.equal((await result.json()).needs_reconnect, true);
+  const write = await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: false }) });
+  assert.equal(write.status, 403);
+  assert.equal((await write.json()).needs_reconnect, true);
+  assert.equal(h.requests.length, 1);
+  await h.context.window.fetch("/api/reauthorize", { method: "POST" });
+  assert(new URL(h.context.location.assigned).searchParams.get("scope").split(" ").includes("user-library-modify"));
+});
+test("failed writes retain confirmed status and rate limit retry delay", async () => {
+  const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify(libraryAuth) }, fetcher: (_url, options) => options.method ? Response.json({ error: { message: "Too many requests" } }, { status: 429, headers: { "retry-after": "45" } }) : Response.json([false]) });
+  const read = () => h.context.window.fetch(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
+  await read();
+  const write = await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: true }) });
+  assert.equal(write.status, 429);
+  assert.equal((await write.json()).retry_after, 45);
+  assert.equal((await (await read()).json()).saved, false);
+});
+test("a delayed pre-save read cannot overwrite a successful save", async () => {
+  let release;
+  const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify(libraryAuth) }, fetcher: (_url, options) => options.method ? new Response(null, { status: 200 }) : new Promise(resolve => { release = resolve; }) });
+  const read = h.context.window.fetch(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
+  await flush();
+  await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: true }) });
+  release(Response.json([false]));
+  assert.equal((await (await read).json()).saved, true);
 });

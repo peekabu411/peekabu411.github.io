@@ -126,7 +126,7 @@ let spotifyPauseUntil = Number(sessionStorage.getItem("turntable-spotify-pause-u
 let lastSnapshotSavedAt = 0;
 
 async function api(path, options = {}) {
-  const spotifyPath = /^\/api\/(status|devices|queue|playlists|player\/|settings)/.test(path);
+  const spotifyPath = /^\/api\/(status|devices|queue|playlists|player\/|library\/|settings)/.test(path);
   if (spotifyPath && Date.now() < spotifyPauseUntil) {
     const retryAfter = Math.max(1, Math.ceil((spotifyPauseUntil - Date.now()) / 1000));
     throw Object.assign(new Error(`Spotify is cooling down. Trying again in ${retryAfter} seconds.`), { status: 429, retryAfter, localCooldown: true });
@@ -156,7 +156,7 @@ async function api(path, options = {}) {
       spotifyPauseUntil = Math.max(spotifyPauseUntil, Date.now() + retryAfter * 1000);
       sessionStorage.setItem("turntable-spotify-pause-until", String(spotifyPauseUntil));
     }
-    throw Object.assign(new Error(body.error || "The PC remote did not respond."), { status: response.status, retryAfter });
+    throw Object.assign(new Error(body.error || "The PC remote did not respond."), { status: response.status, retryAfter, needsReconnect: !!body.needs_reconnect });
   }
   return response.status === 204 ? null : response.json();
 }
@@ -1795,6 +1795,7 @@ function render(data) {
   const previousRemaining = progressClock.duration ? Math.max(0, progressClock.duration - clockPosition()) : Infinity;
   state = { ...(state || {}), ...data }; playback = state.playback; const track = playback?.item;
   updateSpotifyTrackLink(track);
+  window.turntableLikes?.syncTrack(track);
   remote.classList.toggle("is-playing", !!playback?.is_playing);
 
 
