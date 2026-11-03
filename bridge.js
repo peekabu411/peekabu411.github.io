@@ -252,7 +252,7 @@
     try { await navigator.clipboard.writeText(value); } catch { window.prompt("Copy this Redirect URI:", value); return; }
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
-  callback().then(async handled => { if (handled) return; await load("./app.js?v=I.9.8-song-likes"); await load("./track-likes.js?v=I.9.8-song-likes"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
+  callback().then(async handled => { if (handled) return; await load("./app.js?v=I.9.8-viewport-resume"); await load("./viewport-resume.js?v=I.9.8-viewport-resume"); await load("./track-likes.js?v=I.9.8-song-likes"); await load("./settings-help.js"); await load("./preset-controls.js"); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
 })();
 
 

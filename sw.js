@@ -1,8 +1,8 @@
-const CACHE = "turntable-ios-i98-song-likes-corners";
+const CACHE = "turntable-ios-i98-viewport-resume";
 const ASSETS = [
   "./", "./index.html", "./styles.css?v=I.9.8-song-likes", "./settings-help.css", "./settings-help-previews.css",
   "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.8-ipad-mini-layout",
-  "./bridge.js?v=I.9.8-song-likes-corners", "./app.js?v=I.9.8-song-likes", "./track-likes.js?v=I.9.8-song-likes", "./track-likes.css?v=I.9.8-song-likes-corners",
+  "./bridge.js?v=I.9.8-viewport-resume", "./app.js?v=I.9.8-viewport-resume", "./viewport-resume.js?v=I.9.8-viewport-resume", "./viewport-resume.css?v=I.9.8-viewport-resume", "./track-likes.js?v=I.9.8-song-likes", "./track-likes.css?v=I.9.8-song-likes-corners",
   "./settings-help.js", "./preset-controls.js", "./manifest.webmanifest", "./manifest.json",
   "./icons/turntable-remote-192.png", "./icons/apple-touch-icon.png"
 ];

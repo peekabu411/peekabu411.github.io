@@ -73,6 +73,7 @@ async function fixtures(context) {
     assert(await page.locator("#remote").isVisible());
     await page.waitForFunction(() => document.querySelector("#cover").naturalWidth > 0);
     await page.waitForFunction(() => !document.querySelector("#track-like").disabled);
+    assert.equal(await page.locator("html[data-standalone-viewport]").count(), 0, "ordinary browser layout remains untouched");
     const readsBefore = calls.filter(call => new URL(call.url).pathname === "/v1/me/library/contains").length;
     await page.evaluate(() => { for (let i = 0; i < 5; i++) render(state); });
     assert.equal(calls.filter(call => new URL(call.url).pathname === "/v1/me/library/contains").length, readsBefore);
@@ -165,6 +166,70 @@ async function fixtures(context) {
     await page.waitForFunction(() => !localStorage.getItem("turntable-ios-oauth") && !document.querySelector("#pairing").hidden);
     console.log("PASS: real Unpair button clears credentials and returns to setup.");
     await context.close();
+    // Simulate stale iPhone Home Screen viewport units and late geometry after
+    // cold launch. This is a controlled reproduction, not a physical iOS test.
+    const iphoneContext = await browser.newContext({ viewport: { width: 844, height: 390 }, screen: { width: 390, height: 844 }, isMobile: true, hasTouch: true, userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1" });
+    await fixtures(iphoneContext);
+    await iphoneContext.addInitScript(auth => {
+      Object.defineProperty(navigator, "standalone", { value: true });
+      window.testViewportHeight = 336;
+      const reportedHeight = () => typeof window.testViewportHeight === "number" ? window.testViewportHeight : window.innerWidth < 500 ? 844 : 390;
+      Object.defineProperty(window, "innerHeight", { configurable: true, get: reportedHeight });
+      Object.defineProperty(window.visualViewport, "height", { configurable: true, get: reportedHeight });
+      localStorage.setItem("turntable-ios-oauth", JSON.stringify(auth));
+      localStorage.setItem("turntable-session", "github-pages");
+      localStorage.setItem("turntable-now-playing-guide-v1", "completed");
+      sessionStorage.setItem("turntable-fullscreen-dismissed", "true");
+    }, fakeAuth);
+    await iphoneContext.route("**/styles.css?*", route => route.fulfill({ contentType: "text/css", body: fs.readFileSync(path.join(root, "styles.css"), "utf8").replaceAll("height:100svh", "height:calc(100svh - 54px)").replaceAll("height:100dvh", "height:calc(100dvh - 54px)") }));
+    let releaseViewport;
+    const holdViewport = new Promise(resolve => { releaseViewport = resolve; });
+    await iphoneContext.route("**/viewport-resume.js?*", async route => {
+      await holdViewport;
+      await route.fulfill({ contentType: "text/javascript", body: fs.readFileSync(path.join(root, "viewport-resume.js"), "utf8") });
+    });
+    const iphone = await iphoneContext.newPage(), iphoneErrors = [];
+    iphone.on("pageerror", error => iphoneErrors.push(error.message));
+    let navigations = 0;
+    iphone.on("framenavigated", frame => { if (frame === iphone.mainFrame()) navigations++; });
+    await iphone.goto(origin, { waitUntil: "domcontentloaded" });
+    await iphone.waitForFunction(() => document.querySelector("#title")?.textContent === "Security Test Song");
+    const beforeLayout = await iphone.evaluate(() => ({ height: document.querySelector("#remote").getBoundingClientRect().height, controls: document.querySelector(".transport").getBoundingClientRect().bottom, bottom: getComputedStyle(document.querySelector(".transport")).bottom, title: document.querySelector("#title").textContent }));
+    assert.equal(beforeLayout.height, 336, "controlled reproduction leaves a 54px bottom gap");
+    await iphone.screenshot({ path: path.join(process.env.TEMP, "turntable-startup-before.png") });
+    releaseViewport();
+    await iphone.waitForFunction(() => document.documentElement.style.getPropertyValue("--turntable-viewport-height") === "336px");
+    // OS geometry settles later without sending resize: the startup burst must
+    // catch it; a resize-only workaround would leave this page broken.
+    await iphone.evaluate(() => { window.testViewportHeight = 390; });
+    await iphone.waitForFunction(() => document.querySelector("#remote").getBoundingClientRect().height === 390);
+    const afterLayout = await iphone.evaluate(() => ({ controls: document.querySelector(".transport").getBoundingClientRect().bottom, bottom: getComputedStyle(document.querySelector(".transport")).bottom, title: document.querySelector("#title").textContent }));
+    assert(Math.abs(afterLayout.controls - beforeLayout.controls - 54) < 1);
+    assert.equal(afterLayout.bottom, beforeLayout.bottom, "normal safe-area/control spacing is unchanged");
+    assert.equal(afterLayout.title, beforeLayout.title);
+    await iphone.screenshot({ path: path.join(process.env.TEMP, "turntable-startup-after.png") });
+    await iphone.waitForFunction(() => !document.querySelector("#track-like").disabled);
+    await iphone.evaluate(() => { clearTimeout(refreshTimer); refreshTimer = null; });
+    const requestsBeforeResume = calls.length;
+    await iphone.evaluate(() => { window.testViewportHeight = 336; window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })); });
+    await iphone.waitForFunction(() => document.querySelector("#remote").getBoundingClientRect().height === 336);
+    await iphone.evaluate(() => { window.testViewportHeight = 390; });
+    await iphone.waitForFunction(() => document.querySelector("#remote").getBoundingClientRect().height === 390);
+    assert.equal(calls.length, requestsBeforeResume, "layout recovery does not call Spotify or other services");
+    assert.equal(navigations, 1, "recovery does not reload the app");
+    await iphone.evaluate(() => { window.testViewportHeight = "auto"; });
+    await iphone.setViewportSize({ width: 390, height: 844 });
+    await iphone.waitForFunction(() => document.querySelector("#remote").getBoundingClientRect().height === 844);
+    await iphone.setViewportSize({ width: 844, height: 390 });
+    await iphone.waitForFunction(() => document.querySelector("#remote").getBoundingClientRect().height === 390);
+    assert(await iphone.locator("#play").isVisible());
+    const likedBefore = liked;
+    await iphone.locator("#track-like").click();
+    await iphone.waitForFunction(expected => document.querySelector("#track-like").getAttribute("aria-pressed") === String(expected), !likedBefore);
+    assert.equal(liked, !likedBefore);
+    assert.deepEqual(iphoneErrors, []);
+    console.log("PASS: simulated iPhone cold launch and frozen-page resume recover a 54px gap after late geometry, without reload, extra requests, or changed safe-area spacing; rotation and heart still work.");
+    await iphoneContext.close();
     const callbackContext = await browser.newContext();
     await fixtures(callbackContext);
     await callbackContext.addInitScript(() => {

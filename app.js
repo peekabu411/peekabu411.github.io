@@ -2607,3 +2607,7 @@ setLyricOffset(lyricOffset);
 setTopBarHidden(localStorage.getItem("turntable-topbar-hidden") !== "false");
 if (session) { pairing.hidden = true; remote.hidden = false; hydrateClientSnapshot(); void startStatusRefreshCycle(); scheduleFullscreenPrompt(); maybeRequestNowPlayingGuide(1200); }
 window.addEventListener("resize", () => applyLayoutProfile(layoutProfile));
+window.addEventListener("turntable:viewport-layout", () => {
+  applyLayoutProfile(layoutProfile);
+  requestAnimationFrame(refreshLyricsTrackMarquee);
+});
