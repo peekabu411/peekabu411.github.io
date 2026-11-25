@@ -62,7 +62,7 @@ async function swipe(page, x, y, dy) {
       if (localStorage.getItem("turntable-session")) return;
       localStorage.setItem("turntable-ios-oauth", JSON.stringify({ client_id: "t", access_token: "a", refresh_token: "r", expires_at: Date.now() + 600000, scope: "user-library-read user-library-modify" }));
       localStorage.setItem("turntable-session", "github-pages");
-      localStorage.setItem("turntable-now-playing-guide-v1", "completed");
+      localStorage.setItem("turntable-now-playing-guide-v2", "completed");
       sessionStorage.setItem("turntable-fullscreen-dismissed", "true");
     });
     const page = await context.newPage(), errors = [];

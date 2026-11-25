@@ -936,91 +936,37 @@ async function restoreNowPlayingMotion() {
   updateActiveLyrics(clockPosition());
 }
 
-const NOW_PLAYING_GUIDE_KEY = "turntable-now-playing-guide-v1";
-let nowPlayingGuideStep = -1;
+// The welcome card offers the tour; the tour itself spotlights the real player
+// (now-playing-tour.js). v2 shows the new tour once to people who saw the old cards.
+const NOW_PLAYING_GUIDE_KEY = "turntable-now-playing-guide-v2";
 let nowPlayingGuideScheduled = false;
-const nowPlayingGuidePages = [
-  {
-    kicker: "NOW PLAYING · 1 OF 5",
-    title: "The record is your skip control",
-    copy: "Swipe the album artwork left or right to move through songs. The gesture lives right on the center of the record.",
-    visual: '<div class="guide-demo guide-demo-skip-examples"><div class="guide-demo-skip-option"><div class="guide-demo-record-disc"><div class="guide-demo-record-swipe"><i>&larr;</i><b>SWIPE</b><i>&rarr;</i></div></div><small>VINYL</small></div><div class="guide-demo-skip-option"><div class="guide-demo-square-swipe"><div class="guide-demo-record-swipe"><i>&larr;</i><b>SWIPE</b><i>&rarr;</i></div></div><small>SQUARE</small></div></div>'
-  },
-  {
-    kicker: "NOW PLAYING · 2 OF 5",
-    title: "Keep playback close",
-    copy: "Use the timeline to seek. Play, previous, next, shuffle, repeat, and the queue are always part of the Now Playing deck.",
-    visual: '<div class="guide-demo guide-demo-playback"><div class="guide-demo-timeline"><i></i></div><div class="guide-demo-transport"><span>&#8644;</span><span>&#9664;&#9664;</span><b>&#9654;</b><span>&#9654;&#9654;</span><span>&#8635;</span></div><small>PLAYBACK CONTROLS</small></div>'
-  },
-  {
-    kicker: "NOW PLAYING · 3 OF 5",
-    title: "Press for tabs. Swipe for volume.",
-    copy: "Press the top arrow to reveal the tab row. On the right, swipe either volume control up or down to adjust volume.",
-    visual: '<div class="guide-demo guide-demo-clean-player"><div class="guide-clean-tab"><span></span><i>&#8964;</i><b>PRESS TO OPEN TABS</b></div><div class="guide-clean-content"><div class="guide-clean-track"><div class="guide-clean-art"></div><div><b>NOW PLAYING</b><strong>Song title</strong><small>Artist name</small></div></div><div class="guide-clean-volume"><small>VOLUME</small><div class="guide-clean-slider"><i></i><b></b></div><div class="guide-clean-swipe"><i>&uarr;</i><b>SWIPE</b><i>&darr;</i></div></div><div class="guide-clean-dial"><div><b></b><i></i></div></div></div></div>'
-  },
-  {
-    kicker: "NOW PLAYING · 4 OF 5",
-    title: "Your tabs are always one press away",
-    copy: "The revealed row gives you a direct route to every Turntable page and a quick refresh without leaving the controller.",
-    visual: '<div class="guide-demo guide-demo-tab-row"><div class="guide-demo-tab-trigger">&#8963;</div><div class="guide-demo-presets"><b>Now Playing</b><span>Playlists</span><span>Devices</span><span>Settings</span><i aria-label="Refresh">&#8635;</i></div></div>'
-  },
-  {
-    kicker: "NOW PLAYING · 5 OF 5",
-    title: "Next: explore each tab",
-    copy: "Playlists, Devices, and Settings each have their own visual guide next. You can return to this overview anytime from Settings.",
-    visual: '<div class="guide-demo guide-demo-next-tabs"><span>PLAYLISTS</span><span>DEVICES</span><span>SETTINGS</span><small>MORE GUIDES COMING NEXT</small></div>'
-  }
-];
-function openNowPlayingGuide(step = -1) {
+function openNowPlayingGuide() {
   const tour = $("now-playing-guide");
-  if (!tour || !session) return;
-  switchView("player");
-  setTopBarHidden(false);
-  nowPlayingGuideStep = step;
+  if (!tour || window.turntableTour?.isOpen()) return;
   tour.hidden = false;
-  renderNowPlayingGuide();
   requestAnimationFrame(() => $("now-playing-guide-card")?.focus());
 }
 function closeNowPlayingGuide(outcome = "completed") {
   const tour = $("now-playing-guide");
-  if (!tour) return;
-  tour.hidden = true;
-  nowPlayingGuideStep = -1;
+  if (tour) tour.hidden = true;
   if (outcome) localStorage.setItem(NOW_PLAYING_GUIDE_KEY, outcome);
 }
-function renderNowPlayingGuide() {
-  const guideCard = $("now-playing-guide-card");
-  const isWelcome = nowPlayingGuideStep < 0;
-  const page = isWelcome ? null : nowPlayingGuidePages[nowPlayingGuideStep];
-  $("now-playing-guide-kicker").textContent = isWelcome ? "WELCOME TO TURNTABLE" : page.kicker;
-  $("now-playing-guide-title").textContent = isWelcome ? "A quick Now Playing tour" : page.title;
-  $("now-playing-guide-count").textContent = isWelcome ? "Overview" : `${nowPlayingGuideStep + 1} / ${nowPlayingGuidePages.length}`;
-  $("now-playing-guide-copy").textContent = isWelcome ? "A simple visual guide to the controls on this page. It takes less than a minute, and you can replay it from Settings anytime." : page.copy;
-  $("now-playing-guide-visual").innerHTML = isWelcome
-    ? '<div class="guide-demo guide-demo-welcome"><div class="guide-demo-welcome-disc"><span></span></div><div><b>NOW PLAYING</b><small>Music, playback, tabs, and volume</small></div></div>'
-    : page.visual;
-  $("now-playing-guide-back").hidden = isWelcome || nowPlayingGuideStep === 0;
-  $("now-playing-guide-dismiss").textContent = isWelcome ? "Not now" : "Skip guide";
-  $("now-playing-guide-next").textContent = isWelcome ? "Start guide" : nowPlayingGuideStep === nowPlayingGuidePages.length - 1 ? "Done" : "Next";
-  guideCard.scrollTop = 0;
+function startNowPlayingTour() {
+  closeNowPlayingGuide(null);
+  if (!window.turntableTour) { closeNowPlayingGuide("completed"); return; }
+  window.turntableTour.start({ onDone: () => localStorage.setItem(NOW_PLAYING_GUIDE_KEY, "completed") });
 }
 function maybeRequestNowPlayingGuide(delay = 900) {
   if (!session || nowPlayingGuideScheduled || localStorage.getItem(NOW_PLAYING_GUIDE_KEY)) return;
   nowPlayingGuideScheduled = true;
-  window.setTimeout(() => {
+  setTimeout(() => {
     nowPlayingGuideScheduled = false;
     if (session && !localStorage.getItem(NOW_PLAYING_GUIDE_KEY)) openNowPlayingGuide();
   }, delay);
 }
-$("now-playing-guide-next").onclick = () => {
-  if (nowPlayingGuideStep < 0) { nowPlayingGuideStep = 0; renderNowPlayingGuide(); return; }
-  if (nowPlayingGuideStep >= nowPlayingGuidePages.length - 1) { closeNowPlayingGuide("completed"); return; }
-  nowPlayingGuideStep += 1;
-  renderNowPlayingGuide();
-};
-$("now-playing-guide-back").onclick = () => { if (nowPlayingGuideStep > 0) { nowPlayingGuideStep -= 1; renderNowPlayingGuide(); } };
-$("now-playing-guide-dismiss").onclick = () => closeNowPlayingGuide(nowPlayingGuideStep < 0 ? "dismissed" : "completed");
-$("start-now-playing-guide").onclick = () => openNowPlayingGuide();
+$("now-playing-guide-next").onclick = startNowPlayingTour;
+$("now-playing-guide-dismiss").onclick = () => closeNowPlayingGuide("dismissed");
+$("start-now-playing-guide").onclick = startNowPlayingTour;
 function showRateWarning(detail = {}) {
   const warning = $("rate-warning");
   if (!warning) return;

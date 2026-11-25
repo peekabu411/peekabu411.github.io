@@ -1,0 +1,18 @@
+/* Now Playing spotlight tour (now-playing-tour.js). */
+.np-tour{position:fixed;inset:0;z-index:10001;color:#f8f8f8;font-family:inherit;touch-action:none}
+.np-tour-hole{position:fixed;border-radius:20px;box-shadow:0 0 0 200vmax rgba(0,0,0,.74);outline:2px solid #1ed760;outline-offset:2px;pointer-events:none;transition:left .32s cubic-bezier(.2,.8,.2,1),top .32s cubic-bezier(.2,.8,.2,1),width .32s cubic-bezier(.2,.8,.2,1),height .32s cubic-bezier(.2,.8,.2,1)}
+.np-tour-hole[hidden]{display:block;outline:0;width:0!important;height:0!important}
+.np-tour-card{position:fixed;box-sizing:border-box;padding:14px 16px 14px;border:1px solid #ffffff22;border-radius:20px;background:linear-gradient(145deg,#202020,#121212);box-shadow:0 20px 50px #000a;outline:0;transition:left .32s cubic-bezier(.2,.8,.2,1),top .32s cubic-bezier(.2,.8,.2,1)}
+.np-tour-card header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.np-tour-card header small{color:#1ed760;font-size:10px;font-weight:800;letter-spacing:.15em}
+.np-tour-card header span{color:#9a9a9a;font-size:11px;font-weight:700;letter-spacing:.08em}
+.np-tour-card h2{margin:5px 0 6px;font-size:20px;line-height:1.1;letter-spacing:-.03em;font-weight:800}
+.np-tour-card p{margin:0;color:#d9d9d9;font-size:13.5px;line-height:1.4}
+.np-tour-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.np-tour-actions button{min-height:36px;padding:0 14px;border:1px solid #ffffff1f;border-radius:999px;background:#262626;color:#f2f2f2;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.np-tour-actions button[hidden]{display:none}
+.np-tour-actions button.primary{border-color:#1ed760;background:#1ed760;color:#000}
+.np-tour-actions button:first-child{margin-right:auto;background:transparent;border-color:transparent;color:#a8a8a8}
+.np-tour-card button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media (min-width:1000px) and (min-height:650px){.np-tour-card{padding:18px 20px}.np-tour-card h2{font-size:24px}.np-tour-card p{font-size:15px}}
+@media (prefers-reduced-motion:reduce){.np-tour-hole,.np-tour-card{transition:none}}
