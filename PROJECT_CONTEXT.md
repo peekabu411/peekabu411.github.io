@@ -10,7 +10,7 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 - Repository: https://github.com/peekabu411/peekabu411.github.io
 - Local project folder: `C:\Users\Luigi Mendoza\OneDrive\Documents\New project\peekabu411.github.io`
 - Default branch: `main`
-- Current release/version: `ver(I.10.1)` (tag `vI.9.9` is the last pushed tag; tags could not be pushed from the cloud). Every publish gets a new number; never reuse one. I.9.10-I.9.19 already appear in the old update log, so patch releases use I.9.9.x.
+- Current release/version: `ver(I.10.7)` (tag `vI.9.9` is the last pushed tag; tags could not be pushed from the cloud). Every publish gets a new number; never reuse one. I.9.10-I.9.19 already appear in the old update log, so patch releases use I.9.9.x.
 
 ## Current deployed state
 
