@@ -55,8 +55,6 @@
   });
   const save = value => localStorage.setItem(KEY, JSON.stringify(value));
   const redirectUri = new URL("./", location.href).href;
-  const response = (body, status = 200) => new Response(body === null ? null : JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
-  const error = (message, status = 400) => response({ error: message }, status);
   const base64url = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   const random = () => base64url(crypto.getRandomValues(new Uint8Array(64)));
   const challenge = async verifier => base64url(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier))));
@@ -89,37 +87,38 @@
     const r = await nativeFetch(`${API}${path}`, { ...options, headers: { Authorization: `Bearer ${token}`, ...(options.headers || {}) } });
     if (r.status === 204) return null; const data = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(data.error?.message || `Spotify returned ${r.status}.`), { status: r.status, retryAfter: Number(r.headers.get("retry-after")) || 0 }); return data;
   }
-  async function trackLibrary(path, options, body) {
-    const method = (options.method || "GET").toUpperCase();
-    if (!["GET", "PUT"].includes(method)) return error("Unsupported library action.", 405);
-    const uri = method === "GET" ? new URL(path, location.href).searchParams.get("uri") : body.uri;
-    if (!/^spotify:track:[A-Za-z0-9]{22}$/.test(uri || "")) return error("Only Spotify songs can be added to Liked Songs.");
-    if (method === "PUT" && typeof body.saved !== "boolean") return error("Choose whether to save or remove the song.");
+  const failure = (message, status, extra = {}) => Object.assign(new Error(message), { status, ...extra });
+  const SONG_URI = /^spotify:track:[A-Za-z0-9]{22}$/;
+  const missingScope = (auth, scope) => typeof auth.scope === "string" && !auth.scope.split(/\s+/).includes(scope);
+  // Reads (saved === undefined) or changes (saved = true/false) whether a song is in Liked Songs.
+  async function trackLibrary(uri, saved) {
+    const writing = saved !== undefined;
+    if (!SONG_URI.test(uri || "")) throw failure("Only Spotify songs can be added to Liked Songs.", 400);
+    if (writing && typeof saved !== "boolean") throw failure("Choose whether to save or remove the song.", 400);
     const generation = authGeneration;
     await accessToken(); // Authenticate even when returning a cached library status.
     if (generation !== authGeneration) throw unauthorized("Connect Spotify first.");
     const auth = read();
-    const scope = method === "PUT" ? "user-library-modify" : "user-library-read";
-    if (typeof auth.scope === "string" && !auth.scope.split(/\s+/).includes(scope)) {
-      return response({ error: "Approve Spotify library access once to use Liked Songs.", needs_reconnect: true }, 403);
+    if (missingScope(auth, writing ? "user-library-modify" : "user-library-read")) {
+      throw failure("Approve Spotify library access once to use Liked Songs.", 403, { needsReconnect: true });
     }
     const cached = trackLikes.get(uri);
-    if (method === "GET" && cached && Date.now() - cached.at < 60_000) {
-      return response({ uri, saved: cached.saved, needs_reconnect: typeof auth.scope === "string" && !auth.scope.split(/\s+/).includes("user-library-modify") });
+    if (!writing && cached && Date.now() - cached.at < 60_000) {
+      return { uri, saved: cached.saved, needs_reconnect: missingScope(auth, "user-library-modify") };
     }
     try {
       const query = `?uris=${encodeURIComponent(uri)}`;
-      const result = await spotify(method === "GET" ? `/me/library/contains${query}` : `/me/library${query}`, method === "GET" ? {} : { method: body.saved ? "PUT" : "DELETE" });
+      const result = await spotify(writing ? `/me/library${query}` : `/me/library/contains${query}`, writing ? { method: saved ? "PUT" : "DELETE" } : {});
       if (generation !== authGeneration) throw unauthorized("Connect Spotify first.");
-      if (method === "GET" && (!Array.isArray(result) || typeof result[0] !== "boolean")) throw new Error("Spotify could not confirm this song's library status.");
+      if (!writing && (!Array.isArray(result) || typeof result[0] !== "boolean")) throw new Error("Spotify could not confirm this song's library status.");
       const latest = trackLikes.get(uri);
-      const saved = method === "GET" ? (latest && latest !== cached ? latest.saved : result[0]) : body.saved;
-      trackLikes.set(uri, { saved, at: Date.now() });
+      const nowSaved = writing ? saved : (latest && latest !== cached ? latest.saved : result[0]);
+      trackLikes.set(uri, { saved: nowSaved, at: Date.now() });
       if (trackLikes.size > 100) trackLikes.delete(trackLikes.keys().next().value);
-      if (method === "PUT") likedSongsSummaryCache = null;
-      return response({ uri, saved, needs_reconnect: typeof auth.scope === "string" && !auth.scope.split(/\s+/).includes("user-library-modify") });
+      if (writing) likedSongsSummaryCache = null;
+      return { uri, saved: nowSaved, needs_reconnect: missingScope(auth, "user-library-modify") };
     } catch (cause) {
-      if (cause.status === 403 && /scope|permission/i.test(cause.message)) return response({ error: "Approve Spotify library access once to use Liked Songs.", needs_reconnect: true }, 403);
+      if (cause.status === 403 && /scope|permission/i.test(cause.message)) throw failure("Approve Spotify library access once to use Liked Songs.", 403, { needsReconnect: true });
       throw cause;
     }
   }
@@ -225,26 +224,78 @@
     main.textContent = message;
     document.body.replaceChildren(main);
   }
-  async function route(path, options = {}) {
-    const body = options.body ? JSON.parse(options.body) : {};
-    if (path === "/api/pair") { const id = body.pin?.trim(); if (!id) return error("Paste your Spotify Client ID."); await authorize(id); return response({}); }
-    if (path === "/api/reauthorize") { const id = read().client_id; if (!id) return error("Reconnect from the setup screen to enable Liked Songs.", 403); await authorize(id); return response({}); }
-    if (path.split("?")[0] === "/api/library/track") return trackLibrary(path, options, body);
-    if (path.startsWith("/api/status")) return response({ playback: await spotify("/me/player"), connection: { fresh: true, cached: false, updated_at: Date.now() } });
-    if (path.startsWith("/api/devices")) return response({ items: (await spotify("/me/player/devices"))?.devices || [] });
-    if (path.startsWith("/api/queue")) return response({ items: (await spotify("/me/player/queue"))?.queue?.slice(0, 6) || [] });
-    if (path === "/api/playlists") { const data = await spotify("/me/playlists?limit=50"); const liked = await likedSongsSummary(); return response({ items: [liked, ...(data.items || []).filter(Boolean).map(p => ({ id:p.id, type:"playlist", uri:p.uri, name:p.name, description:p.description || "", image:p.images?.[0]?.url || "", owner:p.owner?.display_name || "Spotify", tracks:p.items?.total ?? p.tracks?.total }))] }); }
-    if (path.startsWith("/api/lyrics")) { const q = path.split("?")[1] || ""; const params = new URLSearchParams(q); const recordId = params.get("id"); const lyricsSource = recordId && /^\d+$/.test(recordId) ? "https://lrclib.net/api/get/" + recordId : "https://lrclib.net/api/get?" + q; const r = await nativeFetch(lyricsSource); if (r.status === 404) return response({ found:false, instrumental:false, syncedLyrics:null, plainLyrics:null }); if (!r.ok) return new Response(await r.text(), { status:r.status, headers:{"Content-Type":"application/json"} }); const lyrics = await r.json(); return response({ found:true, instrumental:!!lyrics.instrumental, syncedLyrics:lyrics.syncedLyrics || null, plainLyrics:lyrics.plainLyrics || null }); }
-    if (path.startsWith("/api/artwork")) return nativeFetch(new URL(path, location.href).searchParams.get("url"));
-    if (path === "/api/diagnostics") { const now = Date.now(); const lastMinute = telemetry.events.filter(event => event.at >= now - 60_000); const lastHour = telemetry.events.filter(event => event.at >= now - 3_600_000); const paths = {}; for (const event of lastHour) paths[event.path] = (paths[event.path] || 0) + 1; return response({ requests: { last_minute: lastMinute.length, last_hour: lastHour.length, cache_hits_since_start: 0, total_since_start: telemetry.events.length, top_paths: Object.entries(paths).sort((a,b) => b[1] - a[1]).slice(0,5).map(([path,count]) => ({ path, count })) }, connection: { state: "direct", cooldown_seconds: 0, playback_cache_age_seconds: 0 }, uptime_seconds: Math.floor((now - telemetry.startedAt) / 1000) }); }
-    if (path === "/api/player/liked-songs") return response(await playLikedSongs(body));
-    if (path === "/api/player/playlist") { await spotify(`/me/player/play${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({context_uri:body.context_uri}) }); return response(null,204); }
-    if (path === "/api/player/skip-count") { for(let i=0;i<body.count;i++) await spotify(`/me/player/next${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`, {method:"POST"}); return response({ requested:body.count, completed:body.count }); }
-    if (path.startsWith("/api/player/")) { const action = path.split("/").pop(), endpoint = action === "next" || action === "previous" ? `/me/player/${action}` : `/me/player/${action}`; await spotify(`${endpoint}${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`, {method: action === "next" || action === "previous" ? "POST" : "PUT"}); return response(null,204); }
-    if (path === "/api/settings") { const target = body.target_device_id ? `&device_id=${encodeURIComponent(body.target_device_id)}` : ""; if(Number.isFinite(body.position_ms)) await spotify(`/me/player/seek?position_ms=${Math.round(body.position_ms)}${target}`,{method:"PUT"}); if(Number.isFinite(body.volume_percent)) await spotify(`/me/player/volume?volume_percent=${Math.round(body.volume_percent)}${target}`,{method:"PUT"}); if(typeof body.shuffle === "boolean") await spotify(`/me/player/shuffle?state=${body.shuffle}${target}`,{method:"PUT"}); if(body.repeat) await spotify(`/me/player/repeat?state=${body.repeat}${target}`,{method:"PUT"}); if(body.device_id) await spotify("/me/player",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({device_ids:[body.device_id],play:true})}); return response(null,204); }
-    if (path.startsWith("/api/health")) return response({version:"GitHub Pages"}); return error("Unsupported local route.",404);
+  const onDevice = deviceId => deviceId ? `?device_id=${encodeURIComponent(deviceId)}` : "";
+  const putJson = body => ({ method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const playlistCard = p => ({ id: p.id, type: "playlist", uri: p.uri, name: p.name, description: p.description || "", image: p.images?.[0]?.url || "", owner: p.owner?.display_name || "Spotify", tracks: p.items?.total ?? p.tracks?.total });
+  async function lyrics({ query = "", recordId = null } = {}) {
+    const source = recordId && /^\d+$/.test(String(recordId)) ? "https://lrclib.net/api/get/" + recordId : "https://lrclib.net/api/get?" + query;
+    const r = await nativeFetch(source);
+    if (r.status === 404) return { found: false, instrumental: false, syncedLyrics: null, plainLyrics: null };
+    if (!r.ok) throw failure("Lyrics provider unavailable", r.status);
+    const found = await r.json();
+    return { found: true, instrumental: !!found.instrumental, syncedLyrics: found.syncedLyrics || null, plainLyrics: found.plainLyrics || null };
   }
-  window.fetch = async (input, options) => { const url = new URL(typeof input === "string" ? input : input.url, location.href); if (url.origin === location.origin && url.pathname.startsWith("/api/")) { try { return await route(url.pathname + url.search, options); } catch (e) { return response({ error: e.message, retry_after: e.retryAfter || 0 }, e.status || 500); } } return nativeFetch(input, options); };
+  function diagnostics() {
+    const now = Date.now();
+    const lastMinute = telemetry.events.filter(event => event.at >= now - 60_000);
+    const lastHour = telemetry.events.filter(event => event.at >= now - 3_600_000);
+    const paths = {};
+    for (const event of lastHour) paths[event.path] = (paths[event.path] || 0) + 1;
+    return {
+      requests: { last_minute: lastMinute.length, last_hour: lastHour.length, cache_hits_since_start: 0, total_since_start: telemetry.events.length, top_paths: Object.entries(paths).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([path, count]) => ({ path, count })) },
+      connection: { state: "direct", cooldown_seconds: 0, playback_cache_age_seconds: 0 },
+      uptime_seconds: Math.floor((now - telemetry.startedAt) / 1000)
+    };
+  }
+  // The one place the app talks to Spotify. Every method returns plain data or throws an
+  // Error carrying `status` (and `retryAfter` / `needsReconnect` when Spotify gives them).
+  window.turntableSpotify = Object.freeze({
+    async connect(clientId) {
+      const id = String(clientId || "").trim();
+      if (!id) throw failure("Paste your Spotify Client ID.", 400);
+      await authorize(id);
+    },
+    async reauthorize() {
+      const id = read().client_id;
+      if (!id) throw failure("Reconnect from the setup screen to enable Liked Songs.", 403);
+      await authorize(id);
+    },
+    async status() { return { playback: await spotify("/me/player"), connection: { fresh: true, cached: false, updated_at: Date.now() } }; },
+    async devices() { return { items: (await spotify("/me/player/devices"))?.devices || [] }; },
+    async queue() { return { items: (await spotify("/me/player/queue"))?.queue?.slice(0, 6) || [] }; },
+    async playlists() {
+      const data = await spotify("/me/playlists?limit=50");
+      const liked = await likedSongsSummary();
+      return { items: [liked, ...(data.items || []).filter(Boolean).map(playlistCard)] };
+    },
+    // action: "play" | "pause" | "next" | "previous"
+    async player(action, deviceId) {
+      if (!["play", "pause", "next", "previous"].includes(action)) throw failure("Unsupported playback action.", 400);
+      await spotify(`/me/player/${action}${onDevice(deviceId)}`, { method: action === "next" || action === "previous" ? "POST" : "PUT" });
+      return null;
+    },
+    async playPlaylist(contextUri, deviceId) { await spotify(`/me/player/play${onDevice(deviceId)}`, putJson({ context_uri: contextUri })); return null; },
+    playLikedSongs: (deviceId) => playLikedSongs({ device_id: deviceId }),
+    async skip(count, deviceId) {
+      for (let i = 0; i < count; i++) await spotify(`/me/player/next${onDevice(deviceId)}`, { method: "POST" });
+      return { requested: count, completed: count };
+    },
+    // { position_ms, volume_percent, shuffle, repeat, target_device_id } change the current device;
+    // { device_id } moves playback to another device.
+    async settings(body = {}) {
+      const target = body.target_device_id ? `&device_id=${encodeURIComponent(body.target_device_id)}` : "";
+      if (Number.isFinite(body.position_ms)) await spotify(`/me/player/seek?position_ms=${Math.round(body.position_ms)}${target}`, { method: "PUT" });
+      if (Number.isFinite(body.volume_percent)) await spotify(`/me/player/volume?volume_percent=${Math.round(body.volume_percent)}${target}`, { method: "PUT" });
+      if (typeof body.shuffle === "boolean") await spotify(`/me/player/shuffle?state=${body.shuffle}${target}`, { method: "PUT" });
+      if (body.repeat) await spotify(`/me/player/repeat?state=${body.repeat}${target}`, { method: "PUT" });
+      if (body.device_id) await spotify("/me/player", putJson({ device_ids: [body.device_id], play: true }));
+      return null;
+    },
+    trackSaved: uri => trackLibrary(uri),
+    setTrackSaved: (uri, saved) => trackLibrary(uri, saved),
+    lyrics,
+    diagnostics: async () => diagnostics()
+  });
   function load(src) { return new Promise((resolve,reject) => { const s=document.createElement("script"); s.async=false; s.src=src; s.onload=resolve; s.onerror=reject; document.body.append(s); }); }
   document.getElementById("copy-redirect-uri")?.addEventListener("click", async () => {
     const value = "https://peekabu411.github.io/";
@@ -252,7 +303,7 @@
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
   // Download every app script at once; async=false still runs them in this order.
-  const APP_SCRIPTS = ["./app.js?v=I.10.1", "./viewport-resume.js?v=I.10.1", "./track-likes.js?v=I.10.1", "./control-bar.js?v=I.10.1", "./now-playing-tour.js?v=I.10.1", "./settings-help.js?v=I.10.1", "./preset-controls.js?v=I.10.1"];
+  const APP_SCRIPTS = ["./app.js?v=I.10.2", "./viewport-resume.js?v=I.10.2", "./track-likes.js?v=I.10.2", "./control-bar.js?v=I.10.2", "./now-playing-tour.js?v=I.10.2", "./settings-help.js?v=I.10.2", "./preset-controls.js?v=I.10.2"];
   callback().then(async handled => { if (handled) return; await Promise.all(APP_SCRIPTS.map(load)); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
 })();
 

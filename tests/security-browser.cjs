@@ -125,8 +125,8 @@ async function fixtures(context) {
     await page.locator('[data-view="devices"]').click();
     await page.getByText("Test device", { exact: true }).waitFor();
     await page.evaluate(async () => {
-      await fetch("/api/settings", { body: JSON.stringify({ volume_percent: 35 }) });
-      await fetch("/api/lyrics?id=1");
+      await window.turntableSpotify.settings({ volume_percent: 35 });
+      await window.turntableSpotify.lyrics({ recordId: 1 });
     });
     assert(calls.some(call => call.url.includes("/me/player/volume")));
     assert(calls.some(call => call.url.includes("lrclib.net")));

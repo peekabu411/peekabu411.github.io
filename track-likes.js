@@ -19,7 +19,7 @@
   async function check(uri, token) {
     paint(true);
     try {
-      const result = await api(`/api/library/track?uri=${encodeURIComponent(uri)}`);
+      const result = await api(spotify => spotify.trackSaved(uri));
       if (currentUri !== uri || token !== sequence) return;
       saved = result.saved;
       needsReconnect = !!result.needs_reconnect;
@@ -60,7 +60,7 @@
     pending.add(uri);
     paint();
     try {
-      const result = await api("/api/library/track", { method: "PUT", body: JSON.stringify({ uri, saved: nextSaved }) });
+      const result = await api(spotify => spotify.setTrackSaved(uri, nextSaved));
       playlistsLoaded = false; // Refresh the synthetic card next time Playlists opens.
       if (currentUri === uri) { ++sequence; saved = result.saved; }
       setMessage(result.saved ? "Added to Liked Songs." : "Removed from Liked Songs.");
@@ -87,7 +87,7 @@
   document.getElementById("library-permission-connect").onclick = async event => {
     const connect = event.currentTarget;
     connect.disabled = true;
-    try { await api("/api/reauthorize", { method: "POST" }); }
+    try { await api(spotify => spotify.reauthorize(), { cooldown: false }); }
     catch (error) { closePermission(); showError(error); }
     finally { connect.disabled = false; }
   };

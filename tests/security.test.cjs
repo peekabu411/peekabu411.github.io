@@ -20,13 +20,43 @@ function harness({ url = "https://peekabu411.github.io/", saved = {}, pending = 
   const context = { URL, URLSearchParams, Response, TextEncoder, Uint8Array, Date, JSON, Number, Math, Promise, Error, Object, String, setTimeout, crypto: require("node:crypto").webcrypto, btoa: value => Buffer.from(value, "binary").toString("base64"), localStorage: storage(saved), sessionStorage: storage(pending), location, history: { replaceState(_state, _title, value) { location.href = value; } }, document: { body, createElement: () => ({}), getElementById: () => null, querySelector: () => ({}) }, CustomEvent: class {}, window: { addEventListener: (name, callback) => { handlers[name] = callback; }, dispatchEvent: () => {}, fetch: async (url, options) => { requests.push({ url: String(url), options }); return fetcher ? fetcher(url, options) : new Response("{}", { status: 200 }); } } };
   vm.createContext(context);
   vm.runInContext(source, context);
-  return { context, requests, loaded, handlers, body };
+  return { context, requests, loaded, handlers, body, call: (url, init) => callClient(context.window.turntableSpotify, url, init) };
+}
+// Calls the Spotify client the way the app does, keyed by the old local route names so each
+// case reads like before, and reports the outcome as an HTTP-style status.
+async function callClient(spotify, url, init = {}) {
+  const path = new URL(url, "https://peekabu411.github.io").pathname, query = new URL(url, "https://peekabu411.github.io").searchParams;
+  const body = init.body ? JSON.parse(init.body) : {};
+  const routes = {
+    "/api/pair": () => spotify.connect(body.pin),
+    "/api/reauthorize": () => spotify.reauthorize(),
+    "/api/status": () => spotify.status(),
+    "/api/devices": () => spotify.devices(),
+    "/api/queue": () => spotify.queue(),
+    "/api/playlists": () => spotify.playlists(),
+    "/api/player/play": () => spotify.player("play", body.device_id),
+    "/api/player/pause": () => spotify.player("pause", body.device_id),
+    "/api/player/next": () => spotify.player("next", body.device_id),
+    "/api/player/previous": () => spotify.player("previous", body.device_id),
+    "/api/player/playlist": () => spotify.playPlaylist(body.context_uri, body.device_id),
+    "/api/player/liked-songs": () => spotify.playLikedSongs(body.device_id),
+    "/api/player/skip-count": () => spotify.skip(body.count, body.device_id),
+    "/api/settings": () => spotify.settings(body),
+    "/api/library/track": () => init.method === "PUT" ? spotify.setTrackSaved(body.uri, body.saved) : spotify.trackSaved(query.get("uri"))
+  };
+  try {
+    const data = await routes[path]();
+    return { status: 200, ok: true, json: async () => data ?? {} };
+  } catch (error) {
+    const status = error.status || 500;
+    return { status, ok: false, json: async () => ({ error: error.message, retry_after: error.retryAfter || 0, needs_reconnect: !!error.needsReconnect }) };
+  }
 }
 test("all Spotify data/action routes reject forged UI sessions without OAuth", async () => {
   const h = harness({ saved: { "turntable-session": "forged" } });
   await flush();
   for (const [url, body] of [["/api/status", {}], ["/api/devices", {}], ["/api/queue", {}], ["/api/playlists", {}], ["/api/player/play", {}], ["/api/player/playlist", { context_uri: "spotify:playlist:dummy" }], ["/api/player/liked-songs", {}], ["/api/player/skip-count", { count: 1 }], ["/api/settings", { volume_percent: 50 }]]) {
-    assert.equal((await h.context.window.fetch(url, { body: JSON.stringify(body) })).status, 401, url);
+    assert.equal((await h.call(url, { body: JSON.stringify(body) })).status, 401, url);
   }
   assert.equal(h.requests.length, 0);
 });
@@ -41,7 +71,7 @@ test("the actual Unpair handler clears tokens, PKCE, and playback but preserves 
   assert.equal(h.context.sessionStorage.getItem("tt.state"), null);
   assert.equal(h.context.sessionStorage.getItem("tt.verifier"), null);
   assert.equal(h.context.localStorage.getItem("turntable-album-style"), "vinyl");
-  assert.equal((await h.context.window.fetch("/api/status")).status, 401);
+  assert.equal((await h.call("/api/status")).status, 401);
   assert.equal(h.requests.length, 0);
 });
 test("parallel expired-token calls share one refresh", async () => {
@@ -50,21 +80,21 @@ test("parallel expired-token calls share one refresh", async () => {
     if (String(url).includes("/api/token")) { refreshes++; await flush(); return Response.json({ access_token: "renewed", expires_in: 3600 }); }
     return Response.json({});
   } });
-  const results = await Promise.all(["/api/status", "/api/devices", "/api/queue"].map(url => h.context.window.fetch(url)));
+  const results = await Promise.all(["/api/status", "/api/devices", "/api/queue"].map(url => h.call(url)));
   assert(results.every(result => result.ok));
   assert.equal(refreshes, 1);
   assert.equal(JSON.parse(h.context.localStorage.getItem("turntable-ios-oauth")).refresh_token, "dummy-refresh");
 });
 test("unpairing between token lookup and request dispatch prevents the API request", async () => {
   const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify(auth) } });
-  const request = h.context.window.fetch("/api/status");
+  const request = h.call("/api/status");
   h.context.window.turntableAuth.disconnect();
   assert.equal((await request).status, 401);
   assert.equal(h.requests.length, 0);
 });
 test("connecting recovers corrupt OAuth data without clearing the newly generated PKCE state", async () => {
   const h = harness({ saved: { "turntable-ios-oauth": "not JSON" } });
-  const result = await h.context.window.fetch("/api/pair", { body: JSON.stringify({ pin: "dummy-client" }) });
+  const result = await h.call("/api/pair", { body: JSON.stringify({ pin: "dummy-client" }) });
   assert.equal(result.status, 200);
   assert(h.context.sessionStorage.getItem("tt.verifier"));
   const redirect = new URL(h.context.location.assigned);
@@ -74,7 +104,7 @@ test("connecting recovers corrupt OAuth data without clearing the newly generate
 test("a late token refresh cannot restore an unpaired connection", async () => {
   let release;
   const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify({ ...auth, expires_at: 0 }) }, fetcher: () => new Promise(resolve => { release = resolve; }) });
-  const request = h.context.window.fetch("/api/status");
+  const request = h.call("/api/status");
   h.context.window.turntableAuth.disconnect();
   release(Response.json({ access_token: "late-token", expires_in: 3600 }));
   assert.equal((await request).status, 401);
@@ -123,15 +153,17 @@ test("invalid state and denied authorization clear callback details without toke
 });
 test("corrupt saved OAuth data fails closed without rendering parser details", async () => {
   const h = harness({ saved: { "turntable-ios-oauth": "not JSON", "turntable-session": "github-pages" } });
-  assert.equal((await h.context.window.fetch("/api/status")).status, 401);
+  assert.equal((await h.call("/api/status")).status, 401);
   assert.equal(h.context.localStorage.getItem("turntable-ios-oauth"), null);
   assert.equal(h.requests.length, 0);
 });
-test("cross-origin /api URLs are not intercepted as local routes", async () => {
+test("the Spotify client leaves window.fetch alone (no fake local server)", async () => {
   const h = harness();
-  await h.context.window.fetch("https://example.org/api/status");
-  assert.equal(h.requests[0].url, "https://example.org/api/status");
-  assert.equal(h.requests[0].options, undefined);
+  for (const url of ["/api/status", "https://example.org/api/status"]) {
+    await h.context.window.fetch(url);
+    assert.equal(h.requests.at(-1).url, url);
+    assert.equal(h.requests.at(-1).options, undefined);
+  }
 });
 function workerHarness() {
   const handlers = {}, stored = [], deleted = [], outbound = [];
@@ -176,12 +208,12 @@ test("library reads authenticate, cache, and save/remove use the documented libr
     if (options.method) { liked = options.method === "PUT"; return new Response(null, { status: 200 }); }
     return Response.json([liked]);
   } });
-  const read = () => h.context.window.fetch(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
+  const read = () => h.call(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
   assert.equal((await (await read()).json()).saved, false);
   await read();
   assert.equal(h.requests.length, 1);
   for (const saved of [true, false]) {
-    const result = await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved }) });
+    const result = await h.call("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved }) });
     assert.equal((await result.json()).saved, saved);
     assert.equal(h.requests.at(-1).options.method, saved ? "PUT" : "DELETE");
     assert.equal(new URL(h.requests.at(-1).url).pathname, "/v1/me/library");
@@ -195,30 +227,29 @@ test("library reads authenticate, cache, and save/remove use the documented libr
 test("library rejects invalid tracks, unsupported methods, and unauthenticated writes", async () => {
   const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify(libraryAuth) } });
   for (const uri of ["spotify:episode:4iV5W9uYEdYUVa79Axb7Rh", "spotify:local:artist:track", "https://example.org", "spotify:track:bad"]) {
-    assert.equal((await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri, saved: true }) })).status, 400);
+    assert.equal((await h.call("/api/library/track", { method: "PUT", body: JSON.stringify({ uri, saved: true }) })).status, 400);
   }
-  assert.equal((await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: "true" }) })).status, 400);
-  assert.equal((await h.context.window.fetch("/api/library/track", { method: "DELETE" })).status, 405);
+  assert.equal((await h.call("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: "true" }) })).status, 400);
   assert.equal(h.requests.length, 0);
   const unauth = harness();
-  assert.equal((await unauth.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: true }) })).status, 401);
+  assert.equal((await unauth.call("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: true }) })).status, 401);
 });
 test("older read-only connections can check likes but must reconnect before writes", async () => {
   const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify({ ...auth, scope: "user-library-read" }) }, fetcher: () => Response.json([true]) });
-  const result = await h.context.window.fetch(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
+  const result = await h.call(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
   assert.equal((await result.json()).needs_reconnect, true);
-  const write = await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: false }) });
+  const write = await h.call("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: false }) });
   assert.equal(write.status, 403);
   assert.equal((await write.json()).needs_reconnect, true);
   assert.equal(h.requests.length, 1);
-  await h.context.window.fetch("/api/reauthorize", { method: "POST" });
+  await h.call("/api/reauthorize", { method: "POST" });
   assert(new URL(h.context.location.assigned).searchParams.get("scope").split(" ").includes("user-library-modify"));
 });
 test("failed writes retain confirmed status and rate limit retry delay", async () => {
   const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify(libraryAuth) }, fetcher: (_url, options) => options.method ? Response.json({ error: { message: "Too many requests" } }, { status: 429, headers: { "retry-after": "45" } }) : Response.json([false]) });
-  const read = () => h.context.window.fetch(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
+  const read = () => h.call(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
   await read();
-  const write = await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: true }) });
+  const write = await h.call("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: true }) });
   assert.equal(write.status, 429);
   assert.equal((await write.json()).retry_after, 45);
   assert.equal((await (await read()).json()).saved, false);
@@ -226,9 +257,9 @@ test("failed writes retain confirmed status and rate limit retry delay", async (
 test("a delayed pre-save read cannot overwrite a successful save", async () => {
   let release;
   const h = harness({ saved: { "turntable-ios-oauth": JSON.stringify(libraryAuth) }, fetcher: (_url, options) => options.method ? new Response(null, { status: 200 }) : new Promise(resolve => { release = resolve; }) });
-  const read = h.context.window.fetch(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
+  const read = h.call(`/api/library/track?uri=${encodeURIComponent(songUri)}`);
   await flush();
-  await h.context.window.fetch("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: true }) });
+  await h.call("/api/library/track", { method: "PUT", body: JSON.stringify({ uri: songUri, saved: true }) });
   release(Response.json([false]));
   assert.equal((await (await read).json()).saved, true);
 });

@@ -10,7 +10,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 function harness(track = first) {
   const nodes = {}, requests = [], errors = [];
   for (const id of ["track-like", "library-permission", "library-permission-connect", "library-permission-dismiss"]) nodes[id] = { disabled: false, hidden: true, attributes: {}, setAttribute(k, v) { this.attributes[k] = v; }, addEventListener() {}, focus() {} };
-  const context = { document: { getElementById: id => nodes[id] }, window: {}, playback: { item: track }, session: "test", playlistsLoaded: true, physicalFeedback() {}, setMessage() {}, showError: error => errors.push(error), api: (url, options) => new Promise((resolve, reject) => requests.push({ url, options, resolve, reject })) };
+  const context = { document: { getElementById: id => nodes[id] }, window: {}, playback: { item: track }, session: "test", playlistsLoaded: true, physicalFeedback() {}, setMessage() {}, showError: error => errors.push(error), api: call => { let op; call({ trackSaved: uri => { op = { read: uri }; }, setTrackSaved: (uri, saved) => { op = { uri, saved }; }, reauthorize: () => { op = { reauthorize: true }; } }); return new Promise((resolve, reject) => requests.push({ op, resolve, reject })); } };
   vm.createContext(context); vm.runInContext(source, context);
   return { context, requests, errors, button: nodes["track-like"], permission: nodes["library-permission"], sync: context.window.turntableLikes.syncTrack, click: () => nodes["track-like"].onclick({ stopPropagation() {} }) };
 }
@@ -21,12 +21,12 @@ test("same-track polls make one read and heart clicks save/remove without duplic
   h.requests[0].resolve({ saved: false }); await flush();
   const save = h.click(); await h.click();
   assert.equal(h.requests.length, 2);
-  assert.equal(JSON.parse(h.requests[1].options.body).saved, true);
+  assert.equal(h.requests[1].op.saved, true);
   h.requests[1].resolve({ saved: true }); await save;
   assert.equal(h.button.attributes["aria-pressed"], "true");
   assert.equal(h.context.playlistsLoaded, false);
   const remove = h.click();
-  assert.equal(JSON.parse(h.requests[2].options.body).saved, false);
+  assert.equal(h.requests[2].op.saved, false);
   h.requests[2].resolve({ saved: false }); await remove;
   assert.equal(h.button.attributes["aria-pressed"], "false");
 });
