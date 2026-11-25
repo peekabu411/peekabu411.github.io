@@ -303,7 +303,7 @@
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
   // Download every app script at once; async=false still runs them in this order.
-  const APP_SCRIPTS = ["./settings-schema.js?v=I.10.1", "./app.js?v=I.10.1", "./viewport-resume.js?v=I.10.1", "./track-likes.js?v=I.10.1", "./control-bar.js?v=I.10.1", "./now-playing-tour.js?v=I.10.1", "./settings-help.js?v=I.10.1", "./preset-controls.js?v=I.10.1"];
+  const APP_SCRIPTS = ["./settings-schema.js?v=I.10.1", "./app/core.js?v=I.10.1", "./app/artwork.js?v=I.10.1", "./app/lyrics.js?v=I.10.1", "./app/shell.js?v=I.10.1", "./app/queue.js?v=I.10.1", "./app/playlists.js?v=I.10.1", "./app/devices.js?v=I.10.1", "./app/player.js?v=I.10.1", "./app/controls.js?v=I.10.1", "./viewport-resume.js?v=I.10.1", "./track-likes.js?v=I.10.1", "./control-bar.js?v=I.10.1", "./now-playing-tour.js?v=I.10.1", "./settings-help.js?v=I.10.1", "./preset-controls.js?v=I.10.1"];
   callback().then(async handled => { if (handled) return; await Promise.all(APP_SCRIPTS.map(load)); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
 })();
 
