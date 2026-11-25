@@ -15,4 +15,15 @@
 .np-tour-actions button:first-child{margin-right:auto;background:transparent;border-color:transparent;color:#a8a8a8}
 .np-tour-card button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media (min-width:1000px) and (min-height:650px){.np-tour-card{padding:18px 20px}.np-tour-card h2{font-size:24px}.np-tour-card p{font-size:15px}}
-@media (prefers-reduced-motion:reduce){.np-tour-hole,.np-tour-card{transition:none}}
+/* Animated fingertip that acts out each step's gesture. */
+.np-tour-finger{position:fixed;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff,#e6e6e6 60%,#cfcfcf);box-shadow:0 0 0 6px #ffffff2e,0 6px 18px #0008;pointer-events:none;opacity:0;z-index:1;animation:np-swipe 1.9s cubic-bezier(.45,0,.25,1) .35s infinite}
+.np-tour-finger[hidden]{display:none}
+.np-tour-finger::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid #1ed760;opacity:0}
+.np-tour-finger[data-kind="updown"]{animation-name:np-updown;animation-duration:2.2s}
+.np-tour-finger[data-kind="tap"]{animation-name:np-tap;animation-duration:1.6s}
+.np-tour-finger[data-kind="tap"]::after{animation:np-ring 1.6s ease-out .35s infinite}
+@keyframes np-swipe{0%{opacity:0;transform:translate(calc(var(--dx) * -1),calc(var(--dy) * -1)) scale(1.15)}14%{opacity:.95;transform:translate(calc(var(--dx) * -1),calc(var(--dy) * -1)) scale(.92)}70%{opacity:.95;transform:translate(var(--dx),var(--dy)) scale(.92)}86%,100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.1)}}
+@keyframes np-updown{0%{opacity:0;transform:translateY(0) scale(1.15)}10%{opacity:.95;transform:translateY(0) scale(.92)}35%{transform:translateY(calc(var(--travel) * -1)) scale(.92)}70%{transform:translateY(var(--travel)) scale(.92)}82%{opacity:.95;transform:translateY(0) scale(.92)}92%,100%{opacity:0;transform:translateY(0) scale(1.1)}}
+@keyframes np-tap{0%{opacity:0;transform:scale(1.25)}18%{opacity:.95;transform:scale(1)}30%{transform:scale(.78)}42%{transform:scale(1)}75%{opacity:.95}100%{opacity:0;transform:scale(1)}}
+@keyframes np-ring{0%,25%{opacity:0;transform:scale(.8)}32%{opacity:1;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.9)}}
+@media (prefers-reduced-motion:reduce){.np-tour-hole,.np-tour-card{transition:none}.np-tour-finger,.np-tour-finger::after{animation:none!important;opacity:.9}}
