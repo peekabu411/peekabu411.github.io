@@ -153,12 +153,12 @@ async function swipe(page, x, y, dy) {
     assert(line.bottom >= 389 && line.height === 6 && line.width >= 840, "progress line spans the bottom edge");
     assert(line.image.includes("gradient") && line.progress, "progress line is drawn by the timeline and follows the song position");
     assert(seek.y + seek.height >= 388 && seek.width >= 840, "seek area covers the line when there is no home bar");
-    // iPhone home bar (simulated 21px): the line stays near the edge, but the touch area starts above the strip
-    // so a sideways drag never begins where iOS switches apps.
+    // iPhone home bar (simulated 21px): the line sits just above the strip and the touch area covers the line
+    // without reaching into the strip, so a drag on the line never begins where iOS switches apps.
     await page.evaluate(() => document.querySelector(".timeline").style.setProperty("--home-bar", "21px"));
     const homeSeek = await box(page, "#seek"), homeLine = await page.evaluate(() => document.querySelector(".timeline").getBoundingClientRect().bottom);
-    assert(Math.abs(homeLine - 387) < 1.5, `line sits 3px above the edge (${homeLine})`);
-    assert(homeSeek.y + homeSeek.height <= 390 - 21 + 0.5 && homeSeek.height >= 26, `touch area starts above the home bar (${JSON.stringify(homeSeek)})`);
+    assert(Math.abs(homeLine - 366) < 1.5, `line sits just above the home bar (${homeLine})`);
+    assert(Math.abs(homeSeek.y + homeSeek.height - 369) < 1 && homeSeek.y < homeLine - 6 - 8, `touch area starts above the home bar (${JSON.stringify(homeSeek)})`);
     await page.evaluate(() => document.querySelector(".timeline").style.removeProperty("--home-bar"));
     assert(dividerRow.y >= artist.y + artist.height, "row sits under the artist");
     assert(dividerRow.x >= dividerArt.x + dividerArt.width, "row does not overlap the artwork");
