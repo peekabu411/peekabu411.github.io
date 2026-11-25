@@ -30,7 +30,7 @@
 #remote[data-control-bar="hidden"] .timeline>div>.transport{flex:1 1 auto}
 /* Divider playback bar: the row sits under the song or lyrics. */
 #remote[data-control-bar="hidden"] .transport[data-compact-placement="copy"]{justify-content:flex-start!important;margin:14px 0 0 -4px!important}
-#remote[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{margin:10px 0 0!important}
+#remote[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{justify-content:flex-start!important;margin:10px 0 0 -9px!important}
 
 /* Divider playback bar: a thicker progress line hugging the bottom edge (a few px above it on iPhones with a home bar). */
 #remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline{position:absolute!important;z-index:7!important;left:0!important;right:0!important;top:auto!important;bottom:max(0px,calc(env(safe-area-inset-bottom) - 18px))!important;width:auto!important;max-width:none!important;height:18px!important;margin:0!important;transform:none!important;pointer-events:none}
@@ -53,6 +53,10 @@
   #remote[data-control-bar="hidden"] .timeline{margin-top:16px}
   #remote[data-control-bar="hidden"][data-display="info"][data-playback-bar="divider"] .track-copy{left:calc(20px + env(safe-area-inset-left) + var(--control-bar-art) + 30px)!important;top:50%!important}
   #remote[data-control-bar="hidden"][data-display="lyrics"][data-playback-bar="divider"] .lyrics-panel{height:178px}
+  /* Under lyrics the row is anchored to the lyric text's left edge and moves with the lyrics panel
+     when the volume control is swiped away, instead of re-centring. */
+  #remote[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{width:calc(100% - 46px)!important;margin:10px 23px 0!important;padding:0 0 0 7px!important;transition:width .46s cubic-bezier(.22,.61,.36,1),margin .46s cubic-bezier(.22,.61,.36,1)}
+  #remote.side-controls-hidden[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{width:calc(100% - 38px - env(safe-area-inset-right))!important;margin:10px calc(38px + env(safe-area-inset-right)) 0 0!important}
   #remote[data-control-bar="hidden"][data-current-view="player"] .dial-rail{bottom:0!important}
   #remote[data-control-bar="hidden"][data-control="bar"] .dial-rail{top:10px!important;bottom:calc(14px + env(safe-area-inset-bottom))!important}
   #remote[data-control-bar="hidden"][data-control="bar"][data-playback-bar="divider"] .dial-rail{bottom:calc(24px + env(safe-area-inset-bottom))!important}
