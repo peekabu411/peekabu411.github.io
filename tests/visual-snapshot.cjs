@@ -127,7 +127,24 @@ async function capture(root, outDir) {
         if (screen === "settings-bottom") await page.evaluate(() => { const v = document.querySelector('[data-panel="settings"]'); const s = [v, ...v.querySelectorAll("*")].find(e => e.scrollHeight > e.clientHeight + 20 && getComputedStyle(e).overflowY !== "visible"); if (s) s.scrollTop = s.scrollHeight; });
         await page.evaluate(() => document.getAnimations().forEach(a => { a.pause(); a.currentTime = 0; }));
         await page.waitForTimeout(150);
-        await page.screenshot({ path: path.join(outDir, `${deviceName}--${screen}${styleName && screen === "player" ? "--" + styleName : ""}.png`) });
+        const shotName = `${deviceName}--${screen}${styleName && screen === "player" ? "--" + styleName : ""}`;
+        await page.screenshot({ path: path.join(outDir, `${shotName}.png`) });
+        // Computed styles of every element (including hidden dialogs and pseudo-elements), so a
+        // stylesheet refactor is checked beyond what the screenshot happens to show.
+        const styles = await page.evaluate(() => {
+          const out = {}, seen = new Map();
+          const hash = text => { let h = 0; for (let i = 0; i < text.length; i++) h = (h * 31 + text.charCodeAt(i)) | 0; return h; };
+          const dump = (el, pseudo) => { const cs = getComputedStyle(el, pseudo); let text = ""; for (let i = 0; i < cs.length; i++) if (!cs[i].startsWith("--")) text += cs[i] + ":" + cs.getPropertyValue(cs[i]) + ";"; return hash(text); };
+          for (const el of document.querySelectorAll("body *")) {
+            if (el.closest("svg") && el.tagName.toLowerCase() !== "svg") continue;
+            const base = el.tagName.toLowerCase() + (el.id ? "#" + el.id : "") + (el.classList.length ? "." + [...el.classList].sort().join(".") : "");
+            const n = (seen.get(base) || 0) + 1; seen.set(base, n);
+            const key = base + (n > 1 ? "[" + n + "]" : "");
+            out[key] = [dump(el), dump(el, "::before"), dump(el, "::after")];
+          }
+          return out;
+        });
+        fs.writeFileSync(path.join(outDir, `${shotName}.styles.json`), JSON.stringify(styles));
         count++;
         await context.close();
       }
@@ -168,7 +185,14 @@ async function compare(beforeDir, afterDir, diffDir) {
     }
   }
   await browser.close();
-  console.log(`${names.length - failures.length}/${names.length} snapshots identical`);
+  for (const name of fs.readdirSync(beforeDir).filter(n => n.endsWith(".styles.json")).sort()) {
+    const b = path.join(afterDir, name);
+    if (!fs.existsSync(b)) continue;
+    const before = JSON.parse(fs.readFileSync(path.join(beforeDir, name))), after = JSON.parse(fs.readFileSync(b));
+    const changed = Object.keys({ ...before, ...after }).filter(key => JSON.stringify(before[key]) !== JSON.stringify(after[key]));
+    if (changed.length) failures.push(`${name}: computed styles changed on ${changed.length} elements, e.g. ${changed.slice(0, 4).join(", ")}`);
+  }
+  console.log(`${names.length - failures.filter(f => f.includes(".png")).length}/${names.length} snapshots identical`);
   failures.forEach(f => console.log("  DIFF " + f));
   process.exitCode = failures.length ? 1 : 0;
 }
