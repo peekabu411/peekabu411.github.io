@@ -181,7 +181,7 @@ async function fixtures(context) {
       localStorage.setItem("turntable-now-playing-guide-v2", "completed");
       sessionStorage.setItem("turntable-fullscreen-dismissed", "true");
     }, fakeAuth);
-    await iphoneContext.route("**/styles.css?*", route => route.fulfill({ contentType: "text/css", body: fs.readFileSync(path.join(root, "styles.css"), "utf8").replaceAll("height:100svh", "height:calc(100svh - 54px)").replaceAll("height:100dvh", "height:calc(100dvh - 54px)") }));
+    await iphoneContext.route("**/styles.css?*", route => route.fulfill({ contentType: "text/css", body: fs.readFileSync(path.join(root, "styles.css"), "utf8").replaceAll("height: 100svh", "height: calc(100svh - 54px)").replaceAll("height: 100dvh", "height: calc(100dvh - 54px)") }));
     let releaseViewport;
     const holdViewport = new Promise(resolve => { releaseViewport = resolve; });
     await iphoneContext.route("**/viewport-resume.js?*", async route => {
