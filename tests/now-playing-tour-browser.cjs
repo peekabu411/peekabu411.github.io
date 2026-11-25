@@ -81,6 +81,7 @@ const overlaps = (a, b) => a.l < b.r - 1 && b.l < a.r - 1 && a.t < b.b - 1 && b.
         await page.waitForTimeout(450);
         const s = await tourState(page);
         titles.push(s.title);
+        if (!/tabs/i.test(s.title)) assert(await page.locator("#remote.topbar-hidden").count(), `${label}: tab row hidden on "${s.title}"`);
         assert(s.hole.r - s.hole.l > 10 && s.hole.b - s.hole.t > 10, `${label}: step "${s.title}" outlines its control`);
         assert(!overlaps(s.hole, s.card), `${label}: card for "${s.title}" does not cover its control`);
         assert(s.card.l >= 0 && s.card.t >= 0 && s.card.r <= viewport.width && s.card.b <= viewport.height, `${label}: card for "${s.title}" stays on screen`);
@@ -99,12 +100,15 @@ const overlaps = (a, b) => a.l < b.r - 1 && b.l < a.r - 1 && a.t < b.b - 1 && b.
       assert.equal(calls.slice(callsBefore).filter(c => c.method !== "GET").length, 0, `${label}: the tour sends no playback commands`);
 
       // Replay from Settings: the tour returns to Now Playing; Escape closes it.
-      await page.evaluate(() => switchView("settings"));
+      // The tab row is open when replaying from Settings: the tour closes it, then reopens it at the end.
+      await page.evaluate(() => { setTopBarHidden(false); switchView("settings"); });
       await page.evaluate(() => document.getElementById("start-now-playing-guide").click());
       await page.waitForTimeout(400);
       assert.equal(await page.locator("#remote").getAttribute("data-current-view"), "player");
       assert(await page.evaluate(() => window.turntableTour.isOpen()));
+      assert(await page.locator("#remote.topbar-hidden").count(), `${label}: tab row hidden while the tour runs`);
       await page.keyboard.press("Escape");
+      assert.equal(await page.locator("#remote.topbar-hidden").count(), 0, `${label}: tab row restored after the tour`);
       assert.equal(await page.evaluate(() => window.turntableTour.isOpen()), false);
       assert.deepEqual(errors, []);
       await context.close();
