@@ -2,10 +2,6 @@
    #remote[data-control-bar="hidden"] collapses the full-width transport bar into a compact row
    placed by control-bar.js, lets the artwork and title grow into the freed space, and moves the
    volume dial or bar down to use the full height. */
-.settings-group .control-bar-visibility-setting {
-  grid-column: 1/-1;
-}
-
 .tap-play-hint {
   display: none;
   font-style: normal;
