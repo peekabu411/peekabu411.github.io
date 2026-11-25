@@ -124,24 +124,23 @@ const CLIENT_SNAPSHOT_KEY = "turntable-last-playback";
 let spotifyPauseUntil = Number(sessionStorage.getItem("turntable-spotify-pause-until")) || 0;
 let lastSnapshotSavedAt = 0;
 
-async function api(path, options = {}) {
-  const spotifyPath = /^\/api\/(status|devices|queue|playlists|player\/|library\/|settings)/.test(path);
-  if (spotifyPath && Date.now() < spotifyPauseUntil) {
+// Runs one Spotify call from bridge.js (window.turntableSpotify) with the app's shared
+// handling: a local cool-down after Spotify rate-limits us, sign-out on 401, offline state.
+// Pass { cooldown: false } for calls that are not Spotify playback/library requests.
+async function api(call, { cooldown = true } = {}) {
+  if (cooldown && Date.now() < spotifyPauseUntil) {
     const retryAfter = Math.max(1, Math.ceil((spotifyPauseUntil - Date.now()) / 1000));
     throw Object.assign(new Error(`Spotify is cooling down. Trying again in ${retryAfter} seconds.`), { status: 429, retryAfter, localCooldown: true });
   }
-  let response;
   try {
-    response = await fetch(path, {
-      ...options,
-      headers: { "Content-Type": "application/json", "x-remote-session": session, ...(options.headers || {}) }
-    });
+    return await call(window.turntableSpotify);
   } catch (error) {
-    setConnectionState("offline", "Spotify is unreachable. Showing the last saved playback.");
-    throw Object.assign(new Error("Spotify could not be reached. Check your internet connection."), { status: 503, cause: error });
-  }  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    if (response.status === 401) {
+    if (error instanceof TypeError) {
+      setConnectionState("offline", "Spotify is unreachable. Showing the last saved playback.");
+      throw Object.assign(new Error("Spotify could not be reached. Check your internet connection."), { status: 503, cause: error });
+    }
+    const status = error.status || 500;
+    if (status === 401) {
       session = null;
       localStorage.removeItem("turntable-session");
       if (refreshTimer) clearTimeout(refreshTimer);
@@ -150,14 +149,13 @@ async function api(path, options = {}) {
       pairing.hidden = false;
       $("pair-error").textContent = "Your Spotify connection expired. Connect Spotify again.";
     }
-    const retryAfter = Math.max(0, Number(body.retry_after || response.headers.get("retry-after")) || 0);
-    if (response.status === 429 && retryAfter) {
+    const retryAfter = Math.max(0, Number(error.retryAfter) || 0);
+    if (status === 429 && retryAfter) {
       spotifyPauseUntil = Math.max(spotifyPauseUntil, Date.now() + retryAfter * 1000);
       sessionStorage.setItem("turntable-spotify-pause-until", String(spotifyPauseUntil));
     }
-    throw Object.assign(new Error(body.error || "Spotify did not respond."), { status: response.status, retryAfter, needsReconnect: !!body.needs_reconnect });
+    throw Object.assign(new Error(error.message || "Spotify did not respond."), { status, retryAfter, needsReconnect: !!error.needsReconnect });
   }
-  return response.status === 204 ? null : response.json();
 }
 
 const formatTime = (ms = 0) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}`;
@@ -532,16 +530,9 @@ function cacheLyricsResult(cacheKey, result) {
   return result;
 }
 async function requestLyricsResult(query, sourceRecordId = null) {
-  try {
-    return await api(sourceRecordId ? "/api/lyrics?id=" + sourceRecordId : "/api/lyrics?" + query);
-  } catch {
-    const lyricsSource = sourceRecordId ? "https://lrclib.net/api/get/" + sourceRecordId : "https://lrclib.net/api/get?" + query;
-    const response = await fetch(lyricsSource, { headers: { "Lrclib-Client": "Turntable (https://peekabu411.github.io/)" } });
-    if (response.status === 404) return { found: false, instrumental: false, syncedLyrics: null, plainLyrics: null };
-    if (!response.ok) throw new Error("Lyrics provider unavailable");
-    const direct = await response.json();
-    return { found: true, instrumental: !!direct.instrumental, syncedLyrics: direct.syncedLyrics || null, plainLyrics: direct.plainLyrics || null };
-  }
+  const request = () => api(spotify => spotify.lyrics({ query, recordId: sourceRecordId }), { cooldown: false });
+  try { return await request(); }
+  catch { return await request(); } // One quick retry: the lyrics provider occasionally drops a request.
 }
 function prefetchLyrics(track) {
   if (!track?.uri) return Promise.resolve(null);
@@ -705,7 +696,7 @@ async function updateAlbumColor(url, uri) {
     let objectUrl = null;
     try { await image.decode(); sampleColor(image); }
     catch {
-      const response = await fetch(`/api/artwork?url=${encodeURIComponent(url)}`, { headers: { "x-remote-session": session } });
+      const response = await fetch(url);
       if (!response.ok) throw new Error("Artwork unavailable");
       objectUrl = URL.createObjectURL(await response.blob());
       image = new Image(); image.src = objectUrl; await image.decode();
@@ -828,7 +819,7 @@ function applyLyricFontScale(value = lyricFontScale, persist = true) {
 }
 async function loadDiagnostics() {
   try {
-    const data = await api("/api/diagnostics");
+    const data = await api(spotify => spotify.diagnostics(), { cooldown: false });
     $("diag-minute").textContent = data.requests.last_minute;
     $("diag-hour").textContent = data.requests.last_hour;
     $("diag-cache-hits").textContent = data.requests.cache_hits_since_start;
@@ -1224,10 +1215,7 @@ async function advanceToQueuedTarget(incomingUri) {
       updateTrackCopy((state?.queue || [])[target.index], null, false);
       fadeBackground(artwork((state?.queue || [])[target.index]));
       setMessage("Skipping " + remainingSkips + " time" + (remainingSkips === 1 ? "" : "s") + " to " + target.name + "...");
-      await api("/api/player/skip-count", {
-        method: "PUT",
-        body: JSON.stringify({ count: remainingSkips, device_id: activeDeviceId() })
-      });
+      await api(spotify => spotify.skip(remainingSkips, activeDeviceId()));
       const snapshot = await requestStatus(true);
       renderStatusSnapshot(snapshot);
       currentUri = snapshot.data.playback?.item?.uri || null;
@@ -1284,7 +1272,7 @@ async function loadQueue(force = false) {
   if (queueLoaded && !force) return;
   queueLoading = true;
   try {
-    const result = await api("/api/queue" + (force ? "?force=1" : ""));
+    const result = await api(spotify => spotify.queue());
     const queue = result.items || [];
     state = { ...(state || {}), queue };
     if (queuedPlayNextTarget && !queuedPlayNextRunning) {
@@ -1524,7 +1512,7 @@ async function loadPlaylists(force = false) {
     grid.append(loading);
   }
   try {
-    const result = await api("/api/playlists");
+    const result = await api(spotify => spotify.playlists());
     playlistLibrary = result.items || [];
     renderPlaylists(playlistLibrary);
     playlistsLoaded = true;
@@ -1550,13 +1538,11 @@ async function playPlaylist(playlist, button) {
   try {
     if (playlist.needs_reconnect) {
       setMessage("Opening Spotify to enable Liked Songs...");
-      await api("/api/reauthorize", { method: "POST" });
+      await api(spotify => spotify.reauthorize(), { cooldown: false });
       return;
     }
-    const result = await api(playlist.type === "liked-songs" ? "/api/player/liked-songs" : "/api/player/playlist", {
-      method: "PUT",
-      body: JSON.stringify({ context_uri: playlist.uri, device_id: activeDeviceId() })
-    });
+    const deviceId = activeDeviceId();
+    const result = await api(spotify => playlist.type === "liked-songs" ? spotify.playLikedSongs(deviceId) : spotify.playPlaylist(playlist.uri, deviceId));
     switchView("player");
     setTopBarHidden(true);
     if (result?.limited) setMessage(`Playing your ${result.played_count} most recent Liked Songs.`);
@@ -1605,7 +1591,7 @@ async function loadDevices(force = false) {
   if (devicesLoading || (devicesLoaded && !force)) return;
   devicesLoading = true;
   try {
-    const result = await api(`/api/devices${force ? "?force=1" : ""}`);
+    const result = await api(spotify => spotify.devices());
     const devices = result.items || [];
     state = { ...(state || {}), devices };
     renderDevices(devices);
@@ -1810,7 +1796,7 @@ function render(data) {
 
 async function requestStatus(force = false) {
   const sequence = ++statusRequestSequence;
-  return { sequence, data: await api(`/api/status${force ? "?force=1" : ""}`) };
+  return { sequence, data: await api(spotify => spotify.status()) };
 }
 
 function renderStatusSnapshot(snapshot) {
@@ -1917,10 +1903,10 @@ async function playerAction(action, options = {}) {
       }
     }
     if (action === "previous" && options.forceTrackChange) {
-      await api("/api/settings", { method: "PUT", body: JSON.stringify({ position_ms: 0, target_device_id: activeDeviceId() }) });
+      await api(spotify => spotify.settings({ position_ms: 0, target_device_id: activeDeviceId() }));
       await new Promise((resolve) => setTimeout(resolve, 100));
-      await api("/api/player/previous", { method: "PUT", body: JSON.stringify({ device_id: activeDeviceId() }) });
-    } else await api(`/api/player/${action}`, { method: "PUT", body: JSON.stringify({ device_id: activeDeviceId() }) });
+      await api(spotify => spotify.player("previous", activeDeviceId()));
+    } else await api(spotify => spotify.player(action, activeDeviceId()));
     await new Promise((resolve) => setTimeout(resolve, 650));
     const statusSnapshot = await requestStatus(true);
     const nextState = statusSnapshot.data;
@@ -1969,7 +1955,7 @@ async function setting(body, refreshAfter = true) {
   commandPending = true; setMessage();
   clearScheduledStatusRefresh();
   try {
-    await api("/api/settings", { method: "PUT", body: JSON.stringify({ ...body, target_device_id: body.device_id ? undefined : activeDeviceId() }) });
+    await api(spotify => spotify.settings({ ...body, target_device_id: body.device_id ? undefined : activeDeviceId() }));
     if (refreshAfter) {
       const settleDelay = Number.isFinite(body.position_ms) ? 650 : 250;
       await new Promise((resolve) => setTimeout(resolve, settleDelay));
@@ -2105,25 +2091,10 @@ $("pair").onclick = async () => {
   const originalLabel = pairButton.textContent;
   pairButton.disabled = true;
   pairButton.textContent = "Connecting...";
-  $("pair-error").textContent = "Checking Spotify and loading saved playback...";
+  $("pair-error").textContent = "Opening Spotify...";
   try {
-    const response = await fetch("/api/pair", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: $("pin").value }) });
-    const data = await response.json(); if (!response.ok) throw new Error(data.error);
-    session = data.session;
-    localStorage.setItem("turntable-session", session);
-    pairing.hidden = true;
-    remote.hidden = false;
-    const hydrated = hydrateClientSnapshot();
-    if (!hydrated && data.snapshot?.playback) {
-      render(data.snapshot);
-      renderQueue(data.snapshot.queue || []);
-      saveClientSnapshot(true);
-    }
-    setConnectionState("syncing", "Paired successfully. Checking the latest Spotify playback.");
-    switchView("player");
-    void startStatusRefreshCycle();
-    scheduleFullscreenPrompt(500);
-    maybeRequestNowPlayingGuide(750);
+    // Sends the browser to Spotify to approve access; Spotify returns to Turntable afterwards.
+    await window.turntableSpotify.connect($("pin").value);
   } catch (error) {
     $("pair-error").textContent = error.message;
   } finally {
@@ -2133,44 +2104,34 @@ $("pair").onclick = async () => {
 };$("pin").addEventListener("keydown", (event) => { if (event.key === "Enter") $("pair").click(); });
 document.querySelectorAll("[data-view]").forEach((button) => button.onclick = () => { switchView(button.dataset.view); setTopBarHidden(true); });
 if ($("back")) $("back").onclick = () => { switchView("player"); setTopBarHidden(true); };
+// Reloads the newest published Turntable, checking first that the site answers so a
+// failed download leaves the current app running instead of a blank page.
 $("refresh").onclick = async () => {
   const button = $("refresh");
   if (button.classList.contains("refreshing")) return;
   physicalFeedback("press");
   button.classList.add("refreshing");
   button.setAttribute("aria-busy", "true");
-  setMessage("Checking Spotify...");
-  const stamp = Date.now();
-  const fetchFresh = async (url, attempts = 10) => {
-    let lastError = new Error("Spotify did not answer.");
-    for (let attempt = 0; attempt < attempts; attempt += 1) {
-      try {
-        const response = await fetch(url, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
-        if (response.ok) return response;
-        lastError = new Error(`Spotify returned ${response.status}.`);
-      } catch (error) { lastError = error; }
-      if (attempt < attempts - 1) {
-        setMessage("The server is applying an update. Reconnecting...");
-        await new Promise((resolve) => setTimeout(resolve, 600));
+  setMessage("Checking for the latest Turntable...");
+  const nextUrl = new URL(location.href);
+  nextUrl.searchParams.set("app_refresh", String(Date.now()));
+  nextUrl.hash = "";
+  let lastError = new Error("Turntable did not answer.");
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const response = await fetch(nextUrl, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+      if (response.ok) {
+        setMessage("Loading the latest Turntable...");
+        setTimeout(() => location.replace(nextUrl.toString()), 100);
+        return;
       }
-    }
-    throw lastError;
-  };
-  try {
-    const healthResponse = await fetchFresh(`/api/health?app_refresh=${stamp}`);
-    const health = await healthResponse.json();
-    const nextUrl = new URL(location.href);
-    nextUrl.searchParams.set("app_refresh", String(stamp));
-    nextUrl.hash = "";
-    setMessage(`Loading Turntable ${health.version || "update"}...`);
-    await fetchFresh(nextUrl.toString());
-    setTimeout(() => location.replace(nextUrl.toString()), 100);
-  } catch (error) {
-    button.classList.remove("refreshing");
-    button.setAttribute("aria-busy", "false");
-    setConnectionState("offline", "The update could not be loaded because Spotify did not answer.");
-    setMessage(`Refresh failed: ${error.message} Try again in a moment.`);
+      lastError = new Error(`The site returned ${response.status}.`);
+    } catch (error) { lastError = error; }
+    if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 600));
   }
+  button.classList.remove("refreshing");
+  button.setAttribute("aria-busy", "false");
+  setMessage(`Refresh failed: ${lastError.message} Check your connection and try again.`);
 };
 $("play").onclick = () => playerAction(playback?.is_playing ? "pause" : "play");
 $("previous").onclick = () => playerAction("previous"); $("next").onclick = () => playerAction("next");

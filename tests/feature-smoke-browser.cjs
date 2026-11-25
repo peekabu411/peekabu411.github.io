@@ -160,7 +160,19 @@ const openView = (page, view) => dismissRateWarning(page).then(() => page.evalua
     assert.equal(await page.locator("#pairing").isVisible(), true);
     console.log("  ok  disconnect clears the saved sign-in and shows setup");
 
+    // Setup: pasting a Client ID and pressing Connect hands off to Spotify's approval page.
+    let authorizeUrl = null;
+    await context.route("https://accounts.spotify.com/authorize**", route => { authorizeUrl = route.request().url(); return route.fulfill({ contentType: "text/html", body: "<p>Spotify approval</p>" }); });
+    await page.fill("#pin", "smoke-client-id");
+    await page.click("#pair");
+    await page.waitForURL(/accounts\.spotify\.com\/authorize/);
+    const approval = new URL(authorizeUrl);
+    assert.equal(approval.searchParams.get("client_id"), "smoke-client-id");
+    assert.equal(approval.searchParams.get("code_challenge_method"), "S256");
+    console.log("  ok  setup Connect opens Spotify approval with the pasted Client ID");
+
     assert.deepEqual(errors, [], "no uncaught page errors");
+    if (process.env.SMOKE_LOG) fs.writeFileSync(process.env.SMOKE_LOG, calls.filter(c => c.host === "api.spotify.com" || c.host === "lrclib.net").map(c => `${c.method} ${c.host}${c.path}${c.query} ${c.body}`).join("\n") + "\n");
     console.log("Feature smoke test passed.");
   } finally { await browser.close(); server.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
