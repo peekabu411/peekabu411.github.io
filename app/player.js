@@ -165,6 +165,7 @@ function render(data) {
   if (!dialStart && performance.now() > dialVolumeHoldUntil) updateVolume(playback?.device?.volume_percent ?? Number($("volume").value));
   const displayedShuffle = optimisticSettingValue("shuffle", !!playback?.shuffle_state);
   $("shuffle").classList.toggle("active", displayedShuffle);
+  window.turntableSmartMix?.syncPlayback(playback, displayedShuffle, data?.connection?.cached === true);
   const displayedRepeat = optimisticSettingValue("repeat", playback?.repeat_state || "off");
   paintRepeatButton(displayedRepeat);
   if (displayedRepeat === "track" && incomingUri && !repeatOneAutoOffPending && repeatOneArmedUri !== incomingUri) repeatOneArmedUri = incomingUri;

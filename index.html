@@ -17,19 +17,20 @@
     <link rel="icon" href="./icons/turntable-remote.ico" sizes="any">
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
     <title>Turntable</title>
-    <link rel="stylesheet" href="./styles.css?v=I.10.6">
-    <link rel="stylesheet" href="./settings-help.css?v=I.10.6">
-    <link rel="stylesheet" href="./settings-help-previews.css?v=I.10.6">
-    <link rel="stylesheet" href="./screen-fit.css?v=I.10.6">
-    <link rel="stylesheet" href="./preset-controls.css?v=I.10.6">
-    <link rel="stylesheet" href="./desktop-layout.css?v=I.10.6">
-    <link rel="stylesheet" href="./track-likes.css?v=I.10.6">
-    <link rel="stylesheet" href="./viewport-resume.css?v=I.10.6">
-    <link rel="stylesheet" href="./control-bar.css?v=I.10.6">
-    <link rel="stylesheet" href="./now-playing-tour.css?v=I.10.6">
-    <link rel="stylesheet" href="./refinements.css?v=I.10.6">
-    <link rel="stylesheet" href="./settings.css?v=I.10.6">
-    <link rel="stylesheet" href="./devices.css?v=I.10.6">
+    <link rel="stylesheet" href="./styles.css?v=I.10.7">
+    <link rel="stylesheet" href="./settings-help.css?v=I.10.7">
+    <link rel="stylesheet" href="./settings-help-previews.css?v=I.10.7">
+    <link rel="stylesheet" href="./screen-fit.css?v=I.10.7">
+    <link rel="stylesheet" href="./preset-controls.css?v=I.10.7">
+    <link rel="stylesheet" href="./desktop-layout.css?v=I.10.7">
+    <link rel="stylesheet" href="./track-likes.css?v=I.10.7">
+    <link rel="stylesheet" href="./viewport-resume.css?v=I.10.7">
+    <link rel="stylesheet" href="./control-bar.css?v=I.10.7">
+    <link rel="stylesheet" href="./smart-mix.css?v=I.10.7">
+    <link rel="stylesheet" href="./now-playing-tour.css?v=I.10.7">
+    <link rel="stylesheet" href="./refinements.css?v=I.10.7">
+    <link rel="stylesheet" href="./settings.css?v=I.10.7">
+    <link rel="stylesheet" href="./devices.css?v=I.10.7">
   </head>
   <body>
     <main class="shell">
@@ -157,7 +158,7 @@
                 <button type="button" data-settings-link="lyrics">Lyrics</button>
                 <button type="button" data-settings-link="display">Display</button>
                 <button type="button" data-settings-link="help">Help &amp; tour</button>
-                <div class="settings-nav-footer"><button id="version-indicator" class="version-indicator" type="button" aria-label="Turntable version I.10.6"><small>Turntable</small><b>ver(I.10.6)</b><span class="settings-log-hint">Update log &#8250;</span></button></div>
+                <div class="settings-nav-footer"><button id="version-indicator" class="version-indicator" type="button" aria-label="Turntable version I.10.7"><small>Turntable</small><b>ver(I.10.7)</b><span class="settings-log-hint">Update log &#8250;</span></button></div>
               </nav>
               <div class="settings-controls">
                 <section class="settings-group settings-group-layout" id="settings-section-layout" aria-labelledby="settings-title-layout">
@@ -410,6 +411,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
+            <li><b>ver(I.10.7)</b><span>Smart Mix, a Smart Shuffle stand-in. Hold the Shuffle button for Shuffle off, Shuffle, Smart Mix, or a shortcut that opens Spotify's own Smart Shuffle. While Turntable is open, Smart Mix adds one of your songs after every 3 songs, picked from the current artist, your top songs, Liked Songs and recent plays, with no repeats within a day. Picks show a SMART PICK tag in the queue. Spotify asks once for access to your top songs and recent plays.</span></li>
             <li><b>ver(I.10.6)</b><span>Hidden control bar: the compact buttons and their icons are larger and easier to hit. In Divider style the buttons now spread across the space under the song or lyrics, starting at the left edge, and space out further when you swipe the volume control away, just like Default.</span></li>
             <li><b>ver(I.10.5)</b><span>Settings now has a side list of groups (Layout, Playback, Lyrics, Display, Help &amp; tour): tap one to jump to it, and each setting shows a short note beside a compact choice. Selected options stay green. Devices is one clean list: the playing device shows in green, the others have a Play here button, and Disconnect Spotify sits at the bottom.</span></li>
             <li><b>ver(I.10.4)</b><span>Behind-the-scenes cleanup: your settings are now read and saved in one place for both the app and presets, and the app's main code is split into smaller files by area (lyrics, queue, playlists, devices, player and so on). Everything works the same as before.</span></li>
@@ -485,7 +487,7 @@
           </section>
         </section>
       </div>    </main>
-    <script src="./bridge.js?v=I.10.6"></script>
+    <script src="./bridge.js?v=I.10.7"></script>
   </body>
 </html>
 

@@ -99,7 +99,7 @@ function renderQueue(queue = []) {
   }
   queue.forEach((track, index) => {
     preloadArtwork(artwork(track));
-    const row = document.createElement("div"); row.className = "queue-item";
+    const row = document.createElement("div"); row.className = "queue-item"; row.dataset.uri = track.uri || "";
     const image = document.createElement("img"); image.src = artwork(track); image.alt = "";
     const copy = document.createElement("div");
     const title = document.createElement("b"); title.textContent = track.name;
@@ -116,6 +116,7 @@ function renderQueue(queue = []) {
     actions.append(number, playNext);
     copy.append(title, artist); row.append(image, copy, actions); list.append(row);
   });
+  window.turntableSmartMix?.markQueue();
 }
 
 async function loadQueue(force = false) {

@@ -9,6 +9,7 @@
   let likedSongsSummaryCache = null;
   const trackLikes = new Map();
   let spotifyUserId = null;
+  let likedSongsPickTotal = null;
   const recordRequest = path => {
     const now = Date.now();
     telemetry.events.push({ at: now, path: path.split("?")[0] });
@@ -34,6 +35,7 @@
     clearPendingAuthorization();
     likedSongsSummaryCache = null;
     trackLikes.clear();
+    likedSongsPickTotal = null;
     spotifyUserId = null;
   }
   const read = () => {
@@ -122,6 +124,49 @@
       throw cause;
     }
   }
+  // Smart Mix: Spotify no longer gives these apps recommendations, so picks come from the
+  // listener's own top songs, recent plays, Liked Songs and the current artist's albums.
+  const SMART_MIX_SCOPES = { top: "user-top-read", recent: "user-read-recently-played", liked: "user-library-read" };
+  const SPOTIFY_ID = /^[A-Za-z0-9]{22}$/;
+  const pickTrack = (track, album = track?.album) => !track || track.is_local || !SONG_URI.test(track.uri || "") ? null : {
+    type: "track", uri: track.uri, id: track.id, name: track.name || "", explicit: !!track.explicit, duration_ms: track.duration_ms || 0,
+    artists: (track.artists || []).map(artist => ({ id: artist.id, name: artist.name })),
+    album: { name: album?.name || "", images: (album?.images || []).slice(0, 1) }
+  };
+  // name: "top" | "recent" | "liked" | "artist" (with an artist id). Returns { items, needs_reconnect }.
+  async function smartMixSource(name, artist) {
+    const scope = SMART_MIX_SCOPES[name];
+    if (name !== "artist" && !scope) throw failure("Unknown Smart Mix source.", 400);
+    if (name === "artist" && !SPOTIFY_ID.test(artist || "")) throw failure("Choose a Spotify artist.", 400);
+    const generation = authGeneration;
+    await accessToken();
+    if (generation !== authGeneration) throw unauthorized("Connect Spotify first.");
+    if (scope && missingScope(read(), scope)) return { items: [], needs_reconnect: true };
+    let items = [];
+    try {
+      if (name === "top") items = ((await spotify("/me/top/tracks?limit=50&time_range=short_term")).items || []).map(track => pickTrack(track));
+      else if (name === "recent") items = ((await spotify("/me/player/recently-played?limit=50")).items || []).map(entry => { const track = pickTrack(entry?.track); return track && { ...track, played_at: Date.parse(entry.played_at) || 0 }; });
+      else if (name === "liked") {
+        const offset = likedSongsPickTotal > 50 ? Math.floor(Math.random() * (likedSongsPickTotal - 49)) : 0;
+        const data = await spotify(`/me/tracks?limit=50&offset=${offset}`);
+        if (Number.isFinite(data.total)) likedSongsPickTotal = data.total;
+        items = (data.items || []).map(entry => pickTrack(entry?.track));
+      } else {
+        const albums = (await spotify(`/artists/${artist}/albums?include_groups=album,single&limit=10`)).items || [];
+        const album = albums[Math.floor(Math.random() * albums.length)];
+        if (SPOTIFY_ID.test(album?.id || "")) items = ((await spotify(`/albums/${album.id}/tracks?limit=50`)).items || []).map(track => pickTrack(track, album));
+      }
+    } catch (cause) {
+      if (cause.status === 403) return { items: [], needs_reconnect: !!scope };
+      throw cause;
+    }
+    return { items: items.filter(Boolean) };
+  }
+  async function smartMixQueue(uri, deviceId) {
+    if (!SONG_URI.test(uri || "")) throw failure("Smart Mix can only queue Spotify songs.", 400);
+    await spotify(`/me/player/queue?uri=${encodeURIComponent(uri)}${deviceId ? `&device_id=${encodeURIComponent(deviceId)}` : ""}`, { method: "POST" });
+    return null;
+  }
   function likedSongsCard(total = null, options = {}) {
     return {
       id: LIKED_SONGS_ID,
@@ -193,7 +238,7 @@
     refreshInFlight = null;
     const verifier = random(), state = random(); sessionStorage.setItem("tt.verifier", verifier); sessionStorage.setItem("tt.state", state); save({ ...auth, client_id: clientId });
     trackLikes.clear();
-    const query = new URLSearchParams({ client_id: clientId, response_type: "code", redirect_uri: redirectUri, state, scope: "user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative user-library-read user-library-modify user-read-private", code_challenge_method: "S256", code_challenge: await challenge(verifier) });
+    const query = new URLSearchParams({ client_id: clientId, response_type: "code", redirect_uri: redirectUri, state, scope: "user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative user-library-read user-library-modify user-read-private user-top-read user-read-recently-played", code_challenge_method: "S256", code_challenge: await challenge(verifier) });
     location.assign(`${ACCOUNTS}/authorize?${query}`);
   }
   async function callback() {
@@ -292,6 +337,8 @@
       return null;
     },
     trackSaved: uri => trackLibrary(uri),
+    smartMixSource,
+    smartMixQueue,
     setTrackSaved: (uri, saved) => trackLibrary(uri, saved),
     lyrics,
     diagnostics: async () => diagnostics()
@@ -303,7 +350,7 @@
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
   // Download every app script at once; async=false still runs them in this order.
-  const APP_SCRIPTS = ["./settings-schema.js?v=I.10.6", "./app/core.js?v=I.10.6", "./app/artwork.js?v=I.10.6", "./app/lyrics.js?v=I.10.6", "./app/shell.js?v=I.10.6", "./app/queue.js?v=I.10.6", "./app/playlists.js?v=I.10.6", "./app/devices.js?v=I.10.6", "./app/player.js?v=I.10.6", "./app/controls.js?v=I.10.6", "./viewport-resume.js?v=I.10.6", "./track-likes.js?v=I.10.6", "./control-bar.js?v=I.10.6", "./now-playing-tour.js?v=I.10.6", "./settings-help.js?v=I.10.6", "./settings-nav.js?v=I.10.6", "./preset-controls.js?v=I.10.6"];
+  const APP_SCRIPTS = ["./settings-schema.js?v=I.10.7", "./app/core.js?v=I.10.7", "./app/artwork.js?v=I.10.7", "./app/lyrics.js?v=I.10.7", "./app/shell.js?v=I.10.7", "./app/queue.js?v=I.10.7", "./app/playlists.js?v=I.10.7", "./app/devices.js?v=I.10.7", "./app/player.js?v=I.10.7", "./app/controls.js?v=I.10.7", "./viewport-resume.js?v=I.10.7", "./track-likes.js?v=I.10.7", "./smart-mix.js?v=I.10.7", "./control-bar.js?v=I.10.7", "./now-playing-tour.js?v=I.10.7", "./settings-help.js?v=I.10.7", "./settings-nav.js?v=I.10.7", "./preset-controls.js?v=I.10.7"];
   callback().then(async handled => { if (handled) return; await Promise.all(APP_SCRIPTS.map(load)); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
 })();
 
