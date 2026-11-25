@@ -125,8 +125,8 @@ async function fixtures(context) {
     await page.locator('[data-view="devices"]').click();
     await page.getByText("Test device", { exact: true }).waitFor();
     await page.evaluate(async () => {
-      await fetch("/api/settings", { body: JSON.stringify({ volume_percent: 35 }) });
-      await fetch("/api/lyrics?id=1");
+      await window.turntableSpotify.settings({ volume_percent: 35 });
+      await window.turntableSpotify.lyrics({ recordId: 1 });
     });
     assert(calls.some(call => call.url.includes("/me/player/volume")));
     assert(calls.some(call => call.url.includes("lrclib.net")));
@@ -181,7 +181,7 @@ async function fixtures(context) {
       localStorage.setItem("turntable-now-playing-guide-v2", "completed");
       sessionStorage.setItem("turntable-fullscreen-dismissed", "true");
     }, fakeAuth);
-    await iphoneContext.route("**/styles.css?*", route => route.fulfill({ contentType: "text/css", body: fs.readFileSync(path.join(root, "styles.css"), "utf8").replaceAll("height:100svh", "height:calc(100svh - 54px)").replaceAll("height:100dvh", "height:calc(100dvh - 54px)") }));
+    await iphoneContext.route("**/styles.css?*", route => route.fulfill({ contentType: "text/css", body: fs.readFileSync(path.join(root, "styles.css"), "utf8").replaceAll("height: 100svh", "height: calc(100svh - 54px)").replaceAll("height: 100dvh", "height: calc(100dvh - 54px)") }));
     let releaseViewport;
     const holdViewport = new Promise(resolve => { releaseViewport = resolve; });
     await iphoneContext.route("**/viewport-resume.js?*", async route => {

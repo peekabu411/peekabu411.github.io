@@ -132,7 +132,7 @@
   spotifyLink.addEventListener("click", () => { closeMenu(); });
   reconnectRow.onclick = async () => {
     reconnectRow.disabled = true;
-    try { await api("/api/reauthorize", { method: "POST" }); }
+    try { await api(spotify => spotify.reauthorize(), { cooldown: false }); }
     catch (error) { closeMenu(true); showError(error); }
     finally { reconnectRow.disabled = false; }
   };
@@ -195,9 +195,7 @@
   async function pool(name, key = name, artist = "") {
     const cached = pools.get(key);
     if (cached && Date.now() - cached.at < POOL_MS) return cached.items;
-    const query = new URLSearchParams({ name });
-    if (artist) query.set("artist", artist);
-    const result = await api(`/api/smart-mix/source?${query}`);
+    const result = await api(spotify => spotify.smartMixSource(name, artist));
     if (result.needs_reconnect) needsReconnect = true;
     const items = Array.isArray(result.items) ? result.items : [];
     pools.set(key, { at: Date.now(), items });
@@ -242,7 +240,7 @@
       const pick = await choosePick(pb);
       if (!enabled) return;
       if (!pick) { setMessage("Smart Mix could not find a new song yet. It will try again soon."); return; }
-      await api("/api/smart-mix/queue", { method: "POST", body: JSON.stringify({ uri: pick.uri, device_id: pb.device?.id || "" }) });
+      await api(spotify => spotify.smartMixQueue(pick.uri, pb.device?.id || ""));
       remember(pick.uri);
       retryAt = 0;
       pendingPick = pick.uri;

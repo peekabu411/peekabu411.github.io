@@ -1,13 +1,12 @@
 /* Only the iPhone Home Screen shell uses measured pixels. Do not change safe
    areas, control positions, fonts, or browser/tablet/desktop sizing. */
-@media (orientation:landscape) and (max-height:500px) and (max-width:1200px),
-       (orientation:portrait) and (max-width:760px){
-  html[data-standalone-viewport="iphone"] .shell{
-    height:var(--turntable-viewport-height);
-    min-height:var(--turntable-viewport-height);
+@media (orientation:landscape) and (max-height:500px) and (max-width:1200px), (orientation:portrait) and (max-width:760px) {
+  html[data-standalone-viewport="iphone"] .shell {
+    height: var(--turntable-viewport-height);
+    min-height: var(--turntable-viewport-height);
   }
-  html[data-standalone-viewport="iphone"] .shell>.device{
-    height:var(--turntable-viewport-height);
-    min-height:0;
+  html[data-standalone-viewport="iphone"] .shell>.device {
+    height: var(--turntable-viewport-height);
+    min-height: 0;
   }
 }

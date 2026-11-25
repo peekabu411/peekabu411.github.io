@@ -16,18 +16,21 @@
     <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png">
     <link rel="icon" href="./icons/turntable-remote.ico" sizes="any">
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
-    <title>Turntable — LAN Music Remote</title>
-    <link rel="stylesheet" href="./styles.css?v=I.9.8-song-likes">
-    <link rel="stylesheet" href="./settings-help.css">
-    <link rel="stylesheet" href="./settings-help-previews.css">
-    <link rel="stylesheet" href="./screen-fit.css">
-    <link rel="stylesheet" href="./preset-controls.css">
-    <link rel="stylesheet" href="./desktop-layout.css?v=I.9.8-ipad-mini-layout">
-    <link rel="stylesheet" href="./track-likes.css?v=I.9.8-song-likes-corners">
-    <link rel="stylesheet" href="./viewport-resume.css?v=I.9.8-viewport-resume">
-    <link rel="stylesheet" href="./control-bar.css?v=I.9.9-control-bar-2">
-    <link rel="stylesheet" href="./now-playing-tour.css?v=I.9.9-spotlight-tour">
-    <link rel="stylesheet" href="./smart-mix.css?v=I.9.9-smart-mix">
+    <title>Turntable</title>
+    <link rel="stylesheet" href="./styles.css?v=I.10.5">
+    <link rel="stylesheet" href="./settings-help.css?v=I.10.5">
+    <link rel="stylesheet" href="./settings-help-previews.css?v=I.10.5">
+    <link rel="stylesheet" href="./screen-fit.css?v=I.10.5">
+    <link rel="stylesheet" href="./preset-controls.css?v=I.10.5">
+    <link rel="stylesheet" href="./desktop-layout.css?v=I.10.5">
+    <link rel="stylesheet" href="./track-likes.css?v=I.10.5">
+    <link rel="stylesheet" href="./viewport-resume.css?v=I.10.5">
+    <link rel="stylesheet" href="./control-bar.css?v=I.10.5">
+    <link rel="stylesheet" href="./smart-mix.css?v=I.10.5">
+    <link rel="stylesheet" href="./now-playing-tour.css?v=I.10.5">
+    <link rel="stylesheet" href="./refinements.css?v=I.10.5">
+    <link rel="stylesheet" href="./settings.css?v=I.10.5">
+    <link rel="stylesheet" href="./devices.css?v=I.10.5">
   </head>
   <body>
     <main class="shell">
@@ -58,7 +61,7 @@
           <button class="preset" data-view="devices"><span>Devices</span></button>
           <button class="preset" data-view="settings"><span>Settings</span></button>
           <button id="refresh" class="status-button" aria-label="Refresh Spotify status"><span class="refresh-icon" aria-hidden="true">&#8635;</span></button>
-          <span id="connection-dot" class="connection-indicator waiting" role="status" aria-label="Connection status: waiting" title="Waiting for the PC"></span>
+          <span id="connection-dot" class="connection-indicator waiting" role="status" aria-label="Connection status: waiting" title="Waiting for Spotify"></span>
         </nav>
         <button id="bar-handle" class="bar-handle" aria-label="Show quick views"><span class="topbar-chevron" aria-hidden="true">&#8964;</span></button>
         <p class="topbar-hint guide-copy">PRESS FOR TABS</p>
@@ -101,9 +104,9 @@
             </div>
             <div class="player-info">
               <div class="track-copy">
-                <p class="context" id="context">PLAYING FROM YOUR PC</p>
+                <p class="context" id="context">NOW PLAYING</p>
                 <h2 id="title" tabindex="0">Nothing playing</h2>
-                <p id="artist">Open Spotify on your PC and start a song</p>
+                <p id="artist">Open Spotify on any device and start a song</p>
               </div>
               <section id="lyrics-panel" class="lyrics-panel" aria-live="polite">
                 <p id="lyrics-status">Lyrics will appear here.</p>
@@ -130,55 +133,64 @@
           </section>
 
           <section class="view list-view devices-view" data-panel="devices">
-            <div class="section-heading"><p>SPOTIFY CONNECT + PHONE</p><h2>Devices &amp; pairing</h2></div>
+            <div class="section-heading"><p>SPOTIFY CONNECT</p><h2>Devices</h2></div>
             <section id="connection-status-card" class="connection-status-card" aria-live="polite">
               <span id="connection-status-dot" class="connection-status-dot waiting"></span>
-              <div class="connection-status-copy"><small>REMOTE CONNECTION</small><strong id="connection-status-title">Checking connection</strong><p id="connection-status-detail">Contacting the PC and Spotify...</p><p class="connection-recommendation"><span>Recommended action</span><b id="connection-recommended-action">Wait for the current connection check to finish.</b></p></div>
+              <div class="connection-status-copy"><small>REMOTE CONNECTION</small><strong id="connection-status-title">Checking connection</strong><p id="connection-status-detail">Contacting Spotify...</p><p class="connection-recommendation"><span>Recommended action</span><b id="connection-recommended-action">Wait for the current connection check to finish.</b></p></div>
               <div class="connection-facts"><span>Last sync <b id="connection-last-sync">—</b></span><span>Playback cache <b id="connection-cache-age">—</b></span></div><div class="connection-legend" aria-label="Connection light legend"><span><i class="connected"></i>Ready</span><span><i class="syncing"></i>Syncing</span><span><i class="cached"></i>Cached</span><span><i class="cooldown"></i>Cooldown</span><span><i class="offline"></i>Offline</span><span><i class="waiting"></i>Waiting</span></div>
             </section>
-            <div class="devices-layout">
+            <section class="devices-panel" aria-label="Spotify devices">
               <div id="device-list" class="device-list"><p class="empty">Looking for Spotify devices...</p></div>
-              <section class="pair-another" aria-labelledby="pair-another-title">
-                <div><small>PAIR ANOTHER PHONE</small><b id="pair-another-title">Open this address</b></div>
-                <button id="copy-address" class="address-button"><span id="pair-address">Loading LAN address...</span><small>Tap to copy</small></button>
-                <div class="pair-code-row"><span>PAIRING PIN</span><strong id="settings-pin">••••</strong></div>
-                <button id="unpair-phone" class="unpair-button">Unpair this phone</button>
-              </section>
-            </div>
+              <p class="devices-help">Don't see a speaker? Open Spotify on it once and it appears here.</p>
+              <div class="this-device-card">
+                <button id="unpair-phone" class="unpair-button">Disconnect Spotify</button>
+                <p class="this-device-note">Your Spotify login is saved only on this device. Disconnecting signs Turntable out here.</p>
+              </div>
+            </section>
           </section>
 
           <section class="view controls-view" data-panel="settings">
-            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Remote version I.9.9"><small>REMOTE VERSION</small><b>ver(I.9.9)</b></button></div>
-            <div class="settings-columns">
+            <div class="section-heading settings-heading"><h2>Settings</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div></div>
+            <div class="settings-layout">
+              <nav class="settings-nav" aria-label="Settings sections">
+                <button type="button" data-settings-link="layout" class="active" aria-current="true">Layout</button>
+                <button type="button" data-settings-link="playback">Playback</button>
+                <button type="button" data-settings-link="lyrics">Lyrics</button>
+                <button type="button" data-settings-link="display">Display</button>
+                <button type="button" data-settings-link="help">Help &amp; tour</button>
+                <div class="settings-nav-footer"><button id="version-indicator" class="version-indicator" type="button" aria-label="Turntable version I.10.5"><small>Turntable</small><b>ver(I.10.5)</b><span class="settings-log-hint">Update log &#8250;</span></button></div>
+              </nav>
               <div class="settings-controls">
-                <section class="theme-picker" aria-labelledby="theme-title">
-                  <div class="theme-picker-heading"><small>REMOTE CUSTOMIZATION</small><strong id="theme-title">Appearance &amp; controls</strong></div>
-                  <section class="settings-group settings-group-layout" aria-labelledby="layout-settings-title">
-                    <div class="settings-group-heading"><small>LAYOUT</small><strong id="layout-settings-title">Player structure</strong></div>
-                    <div class="appearance-setting">
-                      <span>ALBUM</span>
-                      <div class="theme-options">
+                <section class="settings-group settings-group-layout" id="settings-section-layout" aria-labelledby="settings-title-layout">
+                  <h3 class="settings-group-title" id="settings-title-layout">Layout</h3>
+                  <div class="appearance-setting">
+                    <span>Album</span>
+                    <p class="setting-note">Sliding card or spinning record</p>
+                    <div class="theme-options">
                         <button data-album-choice="square"><b>Square</b><span>Album cover</span></button>
                         <button data-album-choice="vinyl"><b>Vinyl</b><span>Turntable disc</span></button>
                       </div>
-                    </div>
-                    <div class="appearance-setting">
-                      <span>CONTROL</span>
-                      <div class="theme-options">
+                  </div>
+                  <div class="appearance-setting">
+                    <span>Volume control</span>
+                    <p class="setting-note">Weighted knob or vertical bar</p>
+                    <div class="theme-options">
                         <button data-control-choice="dial"><b>Dial</b><span>Round control</span></button>
                         <button data-control-choice="bar"><b>Bar</b><span>Vertical control</span></button>
                       </div>
-                    </div>
-                    <div class="appearance-setting">
-                      <span>DISPLAY</span>
-                      <div class="theme-options">
+                  </div>
+                  <div class="appearance-setting">
+                    <span>Beside the artwork</span>
+                    <p class="setting-note">Lyrics fall back to song info</p>
+                    <div class="theme-options">
                         <button data-display-choice="info"><b>Song info</b><span>Title + artist</span></button>
                         <button data-display-choice="lyrics"><b>Lyrics</b><span>Synced words</span></button>
                       </div>
-                    </div>
-                    <div class="appearance-setting player-background-setting">
-                      <span>BACKGROUND</span>
-                      <div class="background-setting-body">
+                  </div>
+                  <div class="appearance-setting player-background-setting">
+                    <span>Background</span>
+                    <p class="setting-note">Color from the artwork, or one solid color</p>
+                    <div class="background-setting-body">
                         <div class="theme-options player-background-options">
                           <button data-player-background-choice="artwork"><b>Artwork</b><span>Album fade</span></button>
                           <button data-player-background-choice="solid"><b>Solid</b><span>Full color</span></button>
@@ -191,94 +203,88 @@
                           <label class="manual-background-color" for="background-color-picker"><input id="background-color-picker" type="color" value="#34261f" aria-label="Manual background color"><span>Color</span></label>
                         </div>
                       </div>
-                    </div>
-                  </section>
-                  <section class="settings-group settings-group-playback" aria-labelledby="playback-settings-title">
-                    <div class="settings-group-heading"><small>PLAYBACK</small><strong id="playback-settings-title">Progress &amp; controls</strong></div>
-                    <div class="appearance-setting playback-bar-setting">
-                      <span>PLAYBACK BAR</span>
-                      <div class="theme-options">
+                  </div>
+                </section>
+                <section class="settings-group settings-group-playback" id="settings-section-playback" aria-labelledby="settings-title-playback">
+                  <h3 class="settings-group-title" id="settings-title-playback">Playback</h3>
+                  <div class="appearance-setting playback-bar-setting">
+                    <span>Playback bar</span>
+                    <p class="setting-note">Above the controls, or along the bottom edge</p>
+                    <div class="theme-options">
                         <button data-playback-bar-choice="default"><b>Default</b><span>Above controls</span></button>
                         <button data-playback-bar-choice="divider"><b>Divider</b><span>Control edge</span></button>
                       </div>
-                    </div>
-                    <div class="appearance-setting control-bar-visibility-setting">
-                      <span>CONTROL BAR</span>
-                      <div class="theme-options">
+                  </div>
+                  <div class="appearance-setting control-bar-visibility-setting">
+                    <span>Control bar</span>
+                    <p class="setting-note">Full bottom bar, or compact controls beside the song</p>
+                    <div class="theme-options">
                         <button data-control-bar-choice="shown"><b>Shown</b><span>Full bottom bar</span></button>
                         <button data-control-bar-choice="hidden"><b>Hidden</b><span>Compact controls</span></button>
                       </div>
-                    </div>
-                    <div class="appearance-setting volume-weight-setting">
-                      <span>VOLUME WEIGHT</span>
-                      <div class="theme-options volume-weight-options">
+                  </div>
+                  <div class="appearance-setting volume-weight-setting">
+                    <span>Volume weight</span>
+                    <p class="setting-note">How much each swipe moves the volume</p>
+                    <div class="theme-options volume-weight-options">
                         <button data-volume-weight-choice="light"><b>Light</b><span>Quick response</span></button>
                         <button data-volume-weight-choice="medium"><b>Medium</b><span>Balanced movement</span></button>
                         <button data-volume-weight-choice="heavy"><b>Heavy</b><span>Weighted movement</span></button>
                       </div>
-                    </div>
-                    <div class="appearance-setting control-bar-background-setting">
-                      <span>CONTROL BAR BG</span>
-                      <div class="theme-options control-bar-background-options">
+                  </div>
+                  <div class="appearance-setting control-bar-background-setting">
+                    <span>Control bar background</span>
+                    <p class="setting-note">What sits behind the bottom bar</p>
+                    <div class="theme-options control-bar-background-options">
                         <button data-control-bar-background-choice="opaque"><b>Solid</b><span>Auto/manual color</span></button>
                         <button data-control-bar-background-choice="translucent"><b>Translucent</b><span>Frosted background</span></button>
                         <button data-control-bar-background-choice="transparent"><b>Transparent</b><span>No background</span></button>
                       </div>
-                    </div>
-                  </section>
-                  <section class="settings-group settings-group-lyrics" aria-labelledby="lyrics-settings-title">
-                    <div class="settings-group-heading"><small>LYRICS</small><strong id="lyrics-settings-title">Style &amp; timing</strong></div>
-                    <div class="appearance-setting lyric-style-setting">
-                      <span>LYRIC STYLE</span>
-                      <div class="theme-options lyric-style-options">
+                  </div>
+                </section>
+                <section class="settings-group settings-group-lyrics" id="settings-section-lyrics" aria-labelledby="settings-title-lyrics">
+                  <h3 class="settings-group-title" id="settings-title-lyrics">Lyrics</h3>
+                  <div class="appearance-setting lyric-style-setting">
+                    <span>Lyric style</span>
+                    <p class="setting-note">How synced lyrics appear</p>
+                    <div class="theme-options lyric-style-options">
                         <button data-lyric-style-choice="scroll"><b>Scroll</b><span>Synced lines</span></button>
                         <button data-lyric-style-choice="word"><b>Word</b><span>One at a time</span></button>
                         <button data-lyric-style-choice="karaoke"><b>Karaoke</b><span>Highlight words</span></button>
                         <button data-lyric-style-choice="reveal"><b>Reveal</b><span>Build the line</span></button>
                         <button data-lyric-style-choice="focus"><b>Focus</b><span>Center word</span></button>
                       </div>
-                    </div>
-                    <div class="appearance-setting">
-                      <span>LYRIC BG</span>
-                      <div class="theme-options">
+                  </div>
+                  <div class="appearance-setting">
+                    <span>Lyric background</span>
+                    <p class="setting-note">Behind the lyrics panel</p>
+                    <div class="theme-options">
                         <button data-lyrics-background-choice="solid"><b>Solid</b><span>Album color</span></button>
                         <button data-lyrics-background-choice="transparent"><b>Clear</b><span>Transparent</span></button>
                       </div>
-                    </div>
-                    <div class="appearance-setting lyric-size-setting">
-                      <span>LYRIC SIZE</span>
-                      <label class="lyric-size-control" for="lyric-font-size">
+                  </div>
+                  <div class="appearance-setting lyric-size-setting">
+                    <span>Lyric size</span>
+                    <p class="setting-note">Text size of the lyrics</p>
+                    <label class="lyric-size-control" for="lyric-font-size">
                         <input id="lyric-font-size" type="range" min="90" max="130" step="5" value="110" aria-label="Lyrics font size" aria-valuetext="110 percent">
                         <output id="lyric-font-size-value" for="lyric-font-size">110%</output>
                       </label>
-                    </div>
-                    <div class="appearance-setting lyric-offset-setting">
-                      <span>LYRIC OFFSET</span>
-                      <label class="lyric-offset-control" for="lyric-offset">
+                  </div>
+                  <div class="appearance-setting lyric-offset-setting">
+                    <span>Lyric timing</span>
+                    <p class="setting-note">Move lyrics earlier or later</p>
+                    <label class="lyric-offset-control" for="lyric-offset">
                         <input id="lyric-offset" type="range" min="-1.2" max="-0.2" step="0.1" value="-0.7" aria-label="Lyric timing offset from 0.5 seconds earlier to 0.5 seconds later than the default" aria-valuetext="-0.7 seconds" aria-describedby="lyric-offset-value">
                         <output id="lyric-offset-value" for="lyric-offset">-0.7s</output>
                       </label>
-                    </div>
-                  </section>
-                  <section class="settings-group settings-group-interface" aria-labelledby="interface-settings-title">
-                    <div class="settings-group-heading"><small>INTERFACE</small><strong id="interface-settings-title">On-screen guidance</strong></div>
-                    <div class="appearance-setting">
-                      <span>HINTS</span>
-                      <div class="theme-options">
-                        <button data-guide-choice="shown" aria-label="Show control hint text"><b>Show text</b><span>Press + swipe hints</span></button>
-                        <button data-guide-choice="hidden" aria-label="Hide control hint text"><b>Hide text</b><span>Clean display</span></button>
-                      </div>
-                    </div>
-                    <div class="appearance-setting guide-replay-setting">
-                      <span>OVERVIEW</span>
-                      <button id="start-now-playing-guide" class="guide-replay-button" type="button"><b>Now Playing tour</b><span>Highlights each control on your player</span><i aria-hidden="true">&#8594;</i></button>
-                    </div>
-                  </section>
+                  </div>
                 </section>
-                <section class="settings-group settings-group-display" aria-labelledby="display-settings-title">
-                  <div class="settings-group-heading"><small>DISPLAY</small><strong id="display-settings-title">Fit &amp; readability</strong></div>
+                <section class="settings-group settings-group-display" id="settings-section-display" aria-labelledby="settings-title-display">
+                  <h3 class="settings-group-title" id="settings-title-display">Display</h3>
                   <div class="appearance-setting layout-profile-setting">
-                    <span>SCREEN FIT</span>
+                    <span>Screen fit</span>
+                    <p class="setting-note">Auto picks the layout for this screen</p>
                     <div class="theme-options layout-profile-options">
                       <button data-layout-profile-choice="auto"><b>Auto</b><span>Detect screen</span></button>
                       <button data-layout-profile-choice="compact"><b>Compact</b><span>Small landscape</span></button>
@@ -288,20 +294,36 @@
                     <output id="screen-fit-status" class="screen-fit-status" aria-live="polite">Auto</output>
                   </div>
                   <div class="appearance-setting ui-font-setting">
-                    <span>UI TEXT</span>
+                    <span>Text size</span>
+                    <p class="setting-note">Size of labels and buttons</p>
                     <label class="ui-font-control" for="ui-font-size">
                       <input id="ui-font-size" type="range" min="90" max="110" step="5" value="100" aria-label="Interface font size" aria-valuetext="100 percent">
                       <output id="ui-font-size-value" for="ui-font-size">100%</output>
                     </label>
                   </div>
-                </section>                <input id="volume" type="range" min="0" max="100" value="50" aria-label="Volume" hidden>
+                </section>
+                <section class="settings-group settings-group-help" id="settings-section-help" aria-labelledby="settings-title-help">
+                  <h3 class="settings-group-title" id="settings-title-help">Help &amp; tour</h3>
+                  <div class="appearance-setting">
+                    <span>Gesture hints</span>
+                    <p class="setting-note">Press and swipe hints on Now Playing</p>
+                    <div class="theme-options">
+                        <button data-guide-choice="shown" aria-label="Show control hint text"><b>Show text</b><span>Press + swipe hints</span></button>
+                        <button data-guide-choice="hidden" aria-label="Hide control hint text"><b>Hide text</b><span>Clean display</span></button>
+                      </div>
+                  </div>
+                  <div class="appearance-setting guide-replay-setting">
+                    <span>Now Playing tour</span>
+                    <p class="setting-note">Highlights each control on your player</p>
+                    <button id="start-now-playing-guide" class="guide-replay-button" type="button"><b>Start tour</b><span>Highlights each control on your player</span><i aria-hidden="true">&#8594;</i></button>
+                  </div>
+                </section>
+                <p class="hint guide-copy">Swipe down in the center to show the top keys; swipe up to hide them.</p>
                 <p class="spotify-disclaimer">Turntable is not affiliated with, endorsed by, or sponsored by Spotify</p>
+                <input id="volume" type="range" min="0" max="100" value="50" aria-label="Volume" hidden>
                 <span id="volume-value" hidden>50%</span>
-
               </div>
-
             </div>
-            <p class="hint guide-copy">Swipe down in the center to show the top keys; swipe up to hide them.</p>
           </section>
         </div>
 
@@ -389,7 +411,14 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
-            <li><b>ver(I.9.9)</b><span>Rebuilt the Now Playing tour as a spotlight on your real player: it highlights each control in place, follows your album, volume, playback bar and control bar styles, and now covers Liked Songs, the queue, the Spotify shortcut, tap-to-play, and the dial and bar tap gestures.</span></li>
+            <li><b>ver(I.10.5)</b><span>Settings now has a side list of groups (Layout, Playback, Lyrics, Display, Help &amp; tour): tap one to jump to it, and each setting shows a short note beside a compact choice. Selected options stay green. Devices is one clean list: the playing device shows in green, the others have a Play here button, and Disconnect Spotify sits at the bottom.</span></li>
+            <li><b>ver(I.10.4)</b><span>Behind-the-scenes cleanup: your settings are now read and saved in one place for both the app and presets, and the app's main code is split into smaller files by area (lyrics, queue, playlists, devices, player and so on). Everything works the same as before.</span></li>
+            <li><b>ver(I.10.3)</b><span>Behind-the-scenes cleanup: the stylesheets are now readable, with one shared set of colours and fonts, and 330 style lines that could never take effect are gone. Every screen looks exactly the same as before.</span></li>
+            <li><b>ver(I.10.2)</b><span>Behind-the-scenes cleanup: Turntable now talks to Spotify directly. The old stand-in for the retired PC server, which pretended to be a local server inside the page, is gone. Every button sends exactly the same requests to Spotify as before, and nothing looks or works differently.</span></li>
+            <li><b>ver(I.10.1)</b><span>Behind-the-scenes cleanup: removed about 300 unused style rules and 9 MB of unused images, and every file now updates together with the version, so a new release no longer leaves old files stuck in Safari or the Home Screen app. Nothing looks or works differently.</span></li>
+            <li><b>ver(I.10.0)</b><span>Polish pass: removed leftover PC and LAN wording (Now Playing shows "Now playing" when Spotify gives no playlist or album, and the old pairing card in Devices is now a simple Disconnect Spotify card). Long song titles stop at two lines with "…", stay clear of the volume dial on iPhone, and no longer leave stray marks on iPad. The iPad artwork is larger in Song info mode, the logo no longer sits under the queue button, the "Press for tabs" hint no longer covers the Settings preset buttons on small iPhones, and small option labels are easier to read. The app also starts faster by loading its files in parallel, and every style file now updates reliably on the Home Screen app. Hidden control bar, Divider style: the progress line is now a small mini player pill with the times, centred above the home bar. Tap it, or just drag it, to lift a full-width scrubber that tucks away after you let go, so seeking no longer swipes to another app on iPhone.</span></li>
+            <li><b>ver(I.9.9.2)</b><span>Hidden control bar refinements: play/pause is now a plain icon like the other buttons, the compact controls are spaced further apart, the Divider progress line sits closer to the bottom edge, and under lyrics the controls stay anchored to the lyric text when the volume control is swiped away instead of shifting right. The Now Playing tour now keeps the tab row hidden and acts out each gesture with an animated fingertip.</span></li>
+            <li><b>ver(I.9.9.1)</b><span>Rebuilt the Now Playing tour as a spotlight on your real player: it highlights each control in place, follows your album, volume, playback bar and control bar styles, and now covers Liked Songs, the queue, the Spotify shortcut, tap-to-play, and the dial and bar tap gestures. An animated fingertip acts out each gesture, and the tab row stays closed except on the tabs step.</span></li>
             <li><b>ver(I.9.9)</b><span>Added an option to hide the bottom control bar: the controls move into one small row beside the song, the artwork grows, the volume control moves down, and tapping the artwork plays or pauses. Divider moves its thicker progress line to the bottom edge. Saved with each preset; swipe down on the bar to hide it and up from the bottom to bring it back.</span></li>
             <li><b>ver(I.9.8)</b><span>Extended Wide layout to iPad mini and larger tablets, added Liked Songs playback and a separate top-left heart, hardened connection security, and added iPhone Home Screen startup/resume layout recovery.</span></li>
             <li><b>ver(I.9.7.39)</b><span>Fixed Wide mode on large touch tablets: tabs collapse correctly, the volume dial stays half-visible at the right edge, and the tab arrow opens and closes cleanly.</span></li>
@@ -456,7 +485,7 @@
           </section>
         </section>
       </div>    </main>
-    <script src="./bridge.js?v=I.9.9-smart-mix"></script>
+    <script src="./bridge.js?v=I.10.5"></script>
   </body>
 </html>
 

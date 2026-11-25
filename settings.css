@@ -1,0 +1,484 @@
+/* Settings: a side list of groups on the left, the group's rows on the right.
+   Each row has its name and a short note on the left and its choice on the right.
+   Selected choices keep the green fill. On narrow screens the side list becomes a row of tabs. */
+
+#remote .controls-view.active {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#remote .controls-view .settings-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  margin: 0 0 14px;
+}
+
+#remote .controls-view .settings-heading h2 {
+  margin: 0;
+}
+
+/* Preset picker, Save and the preset menu, top right */
+#remote .controls-view .settings-heading .settings-preset-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  margin-left: auto;
+}
+
+#remote .settings-preset-tools .preset-selector-shell {
+  width: 168px;
+  height: 36px;
+}
+
+#remote .settings-preset-tools .preset-selector {
+  padding: 0 26px 0 14px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font: 700 13px/1 var(--font-ui);
+}
+
+#remote .settings-preset-tools .preset-selector-shell::after {
+  right: 12px;
+}
+
+#remote .settings-preset-tools .preset-selector-shell.dirty .preset-selector {
+  padding-left: 22px;
+}
+
+#remote .settings-preset-tools .preset-selector-shell.dirty::before {
+  left: 10px;
+  top: 15px;
+}
+
+#remote .settings-preset-tools > button {
+  height: 36px;
+  min-width: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: 700 13px/1 var(--font-ui);
+}
+
+#remote .settings-preset-tools > #preset-save:not(:disabled) {
+  border-color: var(--green);
+  background: var(--green);
+  color: var(--on-green);
+}
+
+#remote .settings-preset-tools > button:disabled {
+  color: var(--muted);
+}
+
+#remote .settings-preset-tools > #preset-manage {
+  padding: 0;
+}
+
+.settings-layout {
+  display: grid;
+  grid-template-columns: minmax(150px, 210px) minmax(0, 1fr);
+  gap: 18px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Side list */
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.settings-nav > button {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-dim);
+  font: 700 15px/1.2 var(--font-ui);
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-nav > button.active {
+  background: rgba(30, 215, 96, .14);
+  color: var(--green);
+}
+
+.settings-nav-footer {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+#remote .settings-nav .version-indicator {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  margin: 0;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: var(--font-ui);
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-nav .version-indicator small {
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.settings-nav .version-indicator b {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.settings-log-hint {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Rows */
+.settings-controls {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 2px 24px 0;
+}
+
+.settings-group {
+  margin: 0 0 18px;
+  padding: 4px 18px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 18px;
+  background: var(--panel);
+}
+
+.settings-group-title {
+  margin: 14px 0 2px;
+  color: var(--green);
+  font: 800 11px/1.2 var(--font-ui);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+#remote .settings-group .appearance-setting {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "label control" "note control";
+  align-items: center;
+  column-gap: 16px;
+  row-gap: 2px;
+  margin: 0;
+  padding: 12px 0;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+  background: none;
+}
+
+#remote .settings-group-title + .appearance-setting {
+  border-top: 0;
+}
+
+.settings-group .appearance-setting > span,
+.settings-group .appearance-setting > .setting-title-row {
+  grid-area: label;
+  align-self: end;
+  color: var(--white);
+  font: 700 15px/1.25 var(--font-ui);
+}
+
+.settings-group .setting-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-group .setting-title-row > span {
+  font: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+#remote .settings-group .setting-info-button {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-dim);
+  font: 700 11px/1 Georgia, serif;
+}
+
+.settings-group .setting-note {
+  grid-area: note;
+  align-self: start;
+  margin: 0;
+  color: var(--muted);
+  font: 500 13px/1.3 var(--font-ui);
+}
+
+.settings-group .appearance-setting > :not(span):not(.setting-title-row):not(.setting-note) {
+  grid-area: control;
+  justify-self: end;
+}
+
+/* Segmented choices: compact, green when selected */
+#remote .settings-group .theme-options {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 2px;
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 999px;
+  background: var(--black);
+}
+
+#remote .settings-group .theme-options::before,
+#remote .settings-group .theme-options::after {
+  content: none;
+  display: none;
+}
+
+#remote .settings-group .theme-options > button {
+  min-width: 0;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  box-shadow: none;
+  font: 700 14px/1 var(--font-ui);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .18s, color .18s;
+}
+
+#remote .settings-group .theme-options > button b {
+  font: inherit;
+  color: inherit;
+}
+
+#remote .settings-group .theme-options > button span {
+  display: none;
+}
+
+#remote .settings-group .theme-options > button.active {
+  background: var(--green);
+  color: var(--on-green);
+}
+
+/* Background row: segmented choice, then Auto / Manual and the colour swatch */
+.settings-group .background-setting-body {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.settings-group .background-color-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#remote .settings-group .background-color-mode {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--black);
+}
+
+#remote .settings-group .background-color-mode button {
+  min-height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  font: 700 12px/1 var(--font-ui);
+}
+
+#remote .settings-group .background-color-mode button.active {
+  background: var(--green);
+  color: var(--on-green);
+}
+
+.settings-group .manual-background-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  font: 700 12px/1 var(--font-ui);
+}
+
+.settings-group .manual-background-color input {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 50%;
+  background: none;
+}
+
+/* Sliders */
+.settings-group .lyric-size-control,
+.settings-group .lyric-offset-control,
+.settings-group .ui-font-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(260px, 40vw);
+}
+
+.settings-group .appearance-setting input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--green);
+}
+
+.settings-group .appearance-setting output {
+  min-width: 44px;
+  color: var(--text);
+  font: 700 13px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.settings-group .screen-fit-status {
+  grid-area: note;
+  justify-self: start;
+  display: none;
+}
+
+/* Tour button */
+#remote .settings-group .guide-replay-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--green);
+  color: var(--on-green);
+  font: 700 14px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+#remote .settings-group .guide-replay-button b {
+  font: inherit;
+  color: inherit;
+}
+
+#remote .settings-group .guide-replay-button span {
+  display: none;
+}
+
+#remote .settings-group .guide-replay-button i {
+  font-style: normal;
+}
+
+.settings-controls > .hint,
+.settings-controls > .spotify-disclaimer {
+  margin: 0 4px 8px;
+  color: var(--muted);
+  font: 500 12px/1.4 var(--font-ui);
+}
+
+/* Phones in landscape: a narrower side list */
+@media (max-width: 960px) {
+  .settings-layout {
+    grid-template-columns: 128px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .settings-nav > button {
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 14px;
+  }
+  #remote .settings-nav .version-indicator {
+    padding: 8px 10px;
+  }
+  .settings-group {
+    padding: 2px 14px;
+  }
+  #remote .settings-group .appearance-setting {
+    padding: 10px 0;
+    column-gap: 12px;
+  }
+  .settings-group .appearance-setting > span,
+  .settings-group .appearance-setting > .setting-title-row {
+    font-size: 14px;
+  }
+  .settings-group .setting-note {
+    font-size: 12px;
+  }
+  #remote .settings-group .theme-options > button {
+    min-height: 30px;
+    padding: 0 11px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 700px) {
+  #remote .settings-preset-tools .preset-selector-shell {
+    width: 124px;
+  }
+}
+
+/* Portrait phones and very narrow windows: the side list becomes a row of tabs */
+@media (max-width: 560px) {
+  .settings-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .settings-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .settings-nav > button {
+    flex: none;
+  }
+  .settings-nav-footer {
+    flex: none;
+    margin: 0 0 0 auto;
+    padding: 0;
+  }
+  #remote .settings-group .appearance-setting {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "label" "note" "control";
+    row-gap: 6px;
+  }
+  .settings-group .appearance-setting > :not(span):not(.setting-title-row):not(.setting-note) {
+    justify-self: start;
+  }
+}
