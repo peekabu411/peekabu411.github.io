@@ -16,21 +16,23 @@
 /* Compact control row. */
 #remote[data-control-bar="hidden"] .player-view .transport{position:relative!important;inset:auto!important;z-index:3;display:flex!important;align-items:center!important;justify-content:center!important;gap:clamp(10px,2.2vw,20px)!important;width:auto!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transform:none!important;isolation:auto!important}
 #remote[data-control-bar="hidden"] .player-view .transport::before{display:none!important}
-#remote[data-control-bar="hidden"] .player-view .transport button{position:relative!important;inset:auto!important;top:0!important;flex:none;width:30px!important;height:30px!important;min-width:0!important;margin:0!important;padding:0!important;display:grid!important;place-items:center!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;font-size:13px!important;line-height:1!important}
-#remote[data-control-bar="hidden"] .player-view .transport #previous,#remote[data-control-bar="hidden"] .player-view .transport #next{font-size:10px!important;letter-spacing:-.14em}
-#remote[data-control-bar="hidden"] .player-view .transport .play-button{color:#fff!important;font-size:13px!important;letter-spacing:-.08em}
+#remote[data-control-bar="hidden"] .player-view .transport button{position:relative!important;inset:auto!important;top:0!important;flex:none;width:34px!important;height:34px!important;min-width:0!important;margin:0!important;padding:0!important;display:grid!important;place-items:center!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;font-size:15px!important;line-height:1!important}
+#remote[data-control-bar="hidden"] .player-view .transport #previous,#remote[data-control-bar="hidden"] .player-view .transport #next{font-size:12px!important;letter-spacing:-.14em}
+#remote[data-control-bar="hidden"] .player-view .transport .play-button{color:#fff!important;font-size:16px!important;letter-spacing:-.08em}
 #remote[data-control-bar="hidden"] .player-view .transport .play-button:disabled{opacity:.45}
 #remote[data-control-bar="hidden"] .player-view .transport .queue-toggle{opacity:1!important;pointer-events:auto!important;transform:none;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-#remote[data-control-bar="hidden"] .player-view .transport .queue-toggle .queue-icon{transform:scale(.62)!important}
+#remote[data-control-bar="hidden"] .player-view .transport .queue-toggle .queue-icon{transform:scale(.72)!important}
 #remote[data-control-bar="hidden"].queue-open .player-view .transport .queue-toggle{color:var(--green)}
-#remote[data-control-bar="hidden"] .player-view .transport .repeat-icon{font-size:15px}
+#remote[data-control-bar="hidden"] .player-view .transport .repeat-icon{font-size:17px}
 
 /* Default playback bar: the row sits between the elapsed and total times. */
 #remote[data-control-bar="hidden"] .timeline>div{align-items:center}
 #remote[data-control-bar="hidden"] .timeline>div>.transport{flex:1 1 auto}
 /* Divider playback bar: the row sits under the song or lyrics. */
-#remote[data-control-bar="hidden"] .transport[data-compact-placement="copy"]{justify-content:flex-start!important;margin:14px 0 0 -4px!important}
-#remote[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{justify-content:flex-start!important;margin:10px 0 0 -9px!important}
+/* The buttons spread across the text column (or lyric width), starting at its left edge, so they
+   space out further when the volume control is swiped away instead of shifting sideways. */
+#remote[data-control-bar="hidden"] .transport[data-compact-placement="copy"]{justify-content:space-between!important;width:min(calc(100% - 42px),540px)!important;margin:14px 0 0 -4px!important;gap:6px!important}
+#remote[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{justify-content:space-between!important;margin:10px 0 0 -9px!important;gap:6px!important}
 
 /* Divider playback bar: a small "mini player" pill (times and progress) centred on the screen just
    above the iPhone/iPad home bar strip. iOS treats a sideways drag that starts inside that strip as
@@ -75,7 +77,7 @@
   #remote[data-control-bar="hidden"][data-display="lyrics"][data-playback-bar="divider"] .lyrics-panel{height:178px}
   /* Under lyrics the row is anchored to the lyric text's left edge and moves with the lyrics panel
      when the volume control is swiped away, instead of re-centring. */
-  #remote[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{width:calc(100% - 46px)!important;margin:10px 23px 0!important;padding:0 0 0 7px!important;transition:width .46s cubic-bezier(.22,.61,.36,1),margin .46s cubic-bezier(.22,.61,.36,1)}
+  #remote[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{width:calc(100% - 68px)!important;margin:10px 45px 0 23px!important;padding:0 0 0 2px!important;transition:width .46s cubic-bezier(.22,.61,.36,1),margin .46s cubic-bezier(.22,.61,.36,1)}
   #remote.side-controls-hidden[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{width:calc(100% - 38px - env(safe-area-inset-right))!important;margin:10px calc(38px + env(safe-area-inset-right)) 0 0!important}
   #remote[data-control-bar="hidden"][data-current-view="player"] .dial-rail{bottom:0!important}
   #remote[data-control-bar="hidden"][data-control="bar"] .dial-rail{top:10px!important;bottom:calc(14px + env(safe-area-inset-bottom))!important}
@@ -89,10 +91,10 @@
   #remote[data-control-bar="hidden"] .player-view{padding-bottom:clamp(36px,5vh,60px)!important}
   #remote[data-control-bar="hidden"][data-current-view="player"] .art-stage{width:min(41.6vw,72vh,810px)!important}
   #remote[data-control-bar="hidden"] .player-view .transport{gap:clamp(16px,2vw,30px)!important}
-  #remote[data-control-bar="hidden"] .player-view .transport button{width:38px!important;height:38px!important;font-size:16px!important}
-  #remote[data-control-bar="hidden"] .player-view .transport #previous,#remote[data-control-bar="hidden"] .player-view .transport #next{font-size:13px!important}
-  #remote[data-control-bar="hidden"] .player-view .transport .play-button{font-size:17px!important}
-  #remote[data-control-bar="hidden"] .player-view .transport .queue-toggle .queue-icon{transform:scale(.8)!important}
+  #remote[data-control-bar="hidden"] .player-view .transport button{width:44px!important;height:44px!important;font-size:19px!important}
+  #remote[data-control-bar="hidden"] .player-view .transport #previous,#remote[data-control-bar="hidden"] .player-view .transport #next{font-size:15px!important}
+  #remote[data-control-bar="hidden"] .player-view .transport .play-button{font-size:21px!important}
+  #remote[data-control-bar="hidden"] .player-view .transport .queue-toggle .queue-icon{transform:scale(.92)!important}
   #remote[data-control-bar="hidden"] .transport[data-compact-placement="copy"]{margin-top:clamp(18px,2.4vh,30px)!important}
   #remote[data-control-bar="hidden"][data-current-view="player"] .dial-rail{bottom:0!important}
   #remote[data-control-bar="hidden"][data-control="bar"] .dial-rail{bottom:28px!important}
