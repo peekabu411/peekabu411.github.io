@@ -10,7 +10,7 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 - Repository: https://github.com/peekabu411/peekabu411.github.io
 - Local project folder: `C:\Users\Luigi Mendoza\OneDrive\Documents\New project\peekabu411.github.io`
 - Default branch: `main`
-- Current release/version: `ver(I.10.0)` (tag `vI.9.9` is the last pushed tag; tags could not be pushed from the cloud). Every publish gets a new number; never reuse one. I.9.10-I.9.19 already appear in the old update log, so patch releases use I.9.9.x.
+- Current release/version: `ver(I.10.1)` (tag `vI.9.9` is the last pushed tag; tags could not be pushed from the cloud). Every publish gets a new number; never reuse one. I.9.10-I.9.19 already appear in the old update log, so patch releases use I.9.9.x.
 
 ## Current deployed state
 
@@ -74,12 +74,13 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 
 - Stylesheets load in this order: `styles.css`, `settings-help.css`, `settings-help-previews.css`, `screen-fit.css`, `preset-controls.css`, `desktop-layout.css`.
 - A style in an earlier stylesheet can be overridden later. For critical final layout overrides, add scoped rules to `desktop-layout.css`.
-- When changing a CSS file, update its `?v=` query value in `index.html` so Safari/Home Screen does not keep an older stylesheet.
+- Do not edit `?v=` tags by hand. Add the newest `<b>ver(I.x.y)</b>` entry at the top of the update log in `index.html`, then run `node tools/release.cjs I.x.y`: it stamps every stylesheet and script in `index.html` and `bridge.js` with `?v=I.x.y`, sets the Settings version button, and rebuilds the `sw.js` cache name and offline file list. `tests/release.test.cjs` fails if anything disagrees or a version number is reused.
+- The end of `styles.css` used to hold ~6 KB of rules that never applied (a missing `)` in the marquee keyframes swallowed them). They were removed in I.10.1; the lyrics marquee keyframes still have an empty `to{}` because that is how browsers always read them.
 - The last setup fix intentionally removes `.setup-action` from the Step 3/4 arrow links because that shared class makes regular setup actions full-width.
 
 ## Release and deployment workflow
 
-1. Make scoped changes in this repository.
+1. Make scoped changes in this repository. Gates for every change: `node --test tests/*.test.cjs`, the browser tests including `tests/feature-smoke-browser.cjs`, and `node tests/visual-snapshot.cjs capture` on main and on the branch followed by `compare` (60 screens over five device sizes).
 2. Check changes with `git diff --check` and `git status --short`.
 3. Commit and push to `main`.
 4. Do not bump the version unless the user explicitly requests it. Version format uses capital letter I, for example `I.9.5`, never `1.9.5`.
