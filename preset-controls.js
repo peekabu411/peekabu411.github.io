@@ -1,14 +1,7 @@
 (() => {
   const STORAGE_KEY = "turntable-setting-presets-v1";
   const ACTIVE_KEY = "turntable-active-setting-preset";
-  const DEFAULT_SETTINGS = {
-    album: "square", control: "dial", display: "info", lyricsBackground: "transparent",
-    playerBackground: "artwork", backgroundColorMode: "auto", manualBackgroundColor: "#34261f",
-    lyricStyle: "scroll", playbackBar: "default", guides: "shown",
-    controlBarBackground: "transparent", volumeWeight: "heavy",
-    layoutProfile: "auto", uiFontScale: 100, lyricFontScale: 110, lyricOffset: -0.7,
-    controlBar: "shown"
-  };
+  const DEFAULT_SETTINGS = window.turntableSettings.DEFAULTS;
   const BUILT_IN_PRESETS = [
     { id: "default", name: "Vinyl \u00b7 Default", settings: { ...DEFAULT_SETTINGS, album: "vinyl", control: "dial", display: "info", playbackBar: "default" } },
     { id: "set-1", name: "Square \u00b7 Divider", settings: { ...DEFAULT_SETTINGS, album: "square", control: "bar", display: "info", playbackBar: "divider", controlBarBackground: "translucent" } },
@@ -41,28 +34,7 @@
     };
   }
 
-  function normalizeSettings(value = {}) {
-    const merged = { ...DEFAULT_SETTINGS, ...value };
-    return {
-      album: merged.album === "vinyl" ? "vinyl" : "square",
-      control: merged.control === "bar" ? "bar" : "dial",
-      display: merged.display === "lyrics" ? "lyrics" : "info",
-      lyricsBackground: merged.lyricsBackground === "solid" ? "solid" : "transparent",
-      playerBackground: merged.playerBackground === "solid" ? "solid" : "artwork",
-      backgroundColorMode: merged.backgroundColorMode === "manual" ? "manual" : "auto",
-      manualBackgroundColor: /^#[0-9a-f]{6}$/i.test(merged.manualBackgroundColor) ? merged.manualBackgroundColor.toLowerCase() : "#34261f",
-      lyricStyle: ["scroll", "word", "karaoke", "reveal", "focus"].includes(merged.lyricStyle) ? merged.lyricStyle : "scroll",
-      playbackBar: merged.playbackBar === "divider" ? "divider" : "default",
-      guides: merged.guides === "hidden" ? "hidden" : "shown",
-      controlBarBackground: ["opaque", "translucent", "transparent"].includes(merged.controlBarBackground) ? merged.controlBarBackground : "transparent",
-      volumeWeight: ["light", "medium", "heavy"].includes(merged.volumeWeight) ? merged.volumeWeight : "heavy",
-      layoutProfile: ["auto", "compact", "standard", "wide"].includes(merged.layoutProfile) ? merged.layoutProfile : "auto",
-      uiFontScale: Math.max(90, Math.min(110, Math.round(Number(merged.uiFontScale) / 5) * 5)),
-      lyricFontScale: Math.max(90, Math.min(130, Math.round(Number(merged.lyricFontScale) / 5) * 5)),
-      lyricOffset: Math.max(-1.2, Math.min(-0.2, Math.round(Number(merged.lyricOffset) * 10) / 10)),
-      controlBar: merged.controlBar === "hidden" ? "hidden" : "shown"
-    };
-  }
+  const normalizeSettings = value => window.turntableSettings.normalize(value);
 
   function initialLibrary() {
     return BUILT_IN_PRESETS.map((preset) => ({ ...preset, settings: normalizeSettings(preset.settings) }));
