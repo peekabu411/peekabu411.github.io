@@ -1,6 +1,7 @@
-﻿{
+{
   "name": "Turntable iOS",
   "short_name": "Turntable",
+  "description": "A private landscape Spotify controller for iPhone and iPad.",
   "start_url": "https://peekabu411.github.io/",
   "display": "fullscreen",
   "display_override": ["fullscreen", "standalone"],

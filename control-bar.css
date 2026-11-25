@@ -32,25 +32,45 @@
 #remote[data-control-bar="hidden"] .transport[data-compact-placement="copy"]{justify-content:flex-start!important;margin:14px 0 0 -4px!important}
 #remote[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{justify-content:flex-start!important;margin:10px 0 0 -9px!important}
 
-/* Divider playback bar: a thicker progress line hugging the bottom edge (a few px above it on iPhones with a home bar). */
-#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline{position:absolute!important;z-index:7!important;left:0!important;right:0!important;top:auto!important;bottom:max(0px,calc(env(safe-area-inset-bottom) - 18px))!important;width:auto!important;max-width:none!important;height:18px!important;margin:0!important;transform:none!important;pointer-events:none}
-#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]{position:absolute!important;left:0!important;right:0!important;top:auto!important;bottom:-12px!important;width:100%!important;height:30px!important;margin:0!important;transform:none!important;pointer-events:auto}
-#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-webkit-slider-runnable-track{height:6px!important}
-#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-webkit-slider-thumb{margin-top:-11px!important}
-#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-moz-range-track{height:6px!important}
-#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-moz-range-progress{height:6px!important}
+/* Divider playback bar: a small "mini player" pill (times and progress) centred on the screen just
+   above the iPhone/iPad home bar strip. iOS treats a sideways drag that starts inside that strip as
+   the swipe between apps and a web app cannot block it, so nothing draggable sits there. Tapping or
+   dragging the pill lifts it into a full-width scrubber (control-bar.js), which tucks away again. */
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline{--home-bar:env(safe-area-inset-bottom,0px);--pill-w:min(280px,calc(100vw - 40px));position:fixed!important;z-index:7!important;top:auto!important;bottom:calc(var(--home-bar) + 4px)!important;left:calc(50vw - var(--pill-w) / 2)!important;right:auto!important;width:var(--pill-w)!important;max-width:none!important;height:30px!important;margin:0!important;padding:0 14px!important;box-sizing:border-box!important;transform:none!important;display:grid!important;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:10px;border:1px solid #ffffff26;border-radius:15px;background:#ffffff12;box-shadow:0 4px 14px #0006;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);pointer-events:auto;touch-action:none;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;transition:left .32s cubic-bezier(.22,.61,.36,1),width .32s cubic-bezier(.22,.61,.36,1),height .32s cubic-bezier(.22,.61,.36,1),border-radius .32s ease,padding .32s ease,background-color .32s ease}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline>div{display:contents!important}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline #elapsed,#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline #duration{grid-row:1;margin:0!important;font-size:11px!important;font-weight:600;line-height:1;color:#ffffffc8;font-variant-numeric:tabular-nums;transition:font-size .32s ease}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline #elapsed{grid-column:1}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline #duration{grid-column:3}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]{grid-column:2;grid-row:1;position:relative!important;inset:auto!important;width:100%!important;height:20px!important;margin:0!important;transform:none!important;pointer-events:none}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-webkit-slider-runnable-track{height:4px!important;border-radius:2px!important;background:linear-gradient(to right,var(--divider-line-fill,#fff) 0 var(--seek-progress),var(--divider-line-rest,#ffffff42) var(--seek-progress) 100%)!important}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-webkit-slider-thumb{width:10px!important;height:10px!important;margin-top:-3px!important;border-radius:50%!important;background:#fff!important;box-shadow:0 1px 4px #0007!important}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-moz-range-track{height:4px!important;border-radius:2px!important;background:var(--divider-line-rest,#ffffff42)!important}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-moz-range-progress{height:4px!important;border-radius:2px!important;background:var(--divider-line-fill,#fff)!important}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-moz-range-thumb{width:10px!important;height:10px!important;border-radius:50%!important;background:#fff!important}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted{--pill-w:calc(100vw - 28px - env(safe-area-inset-left) - env(safe-area-inset-right));height:46px!important;padding:0 20px!important;column-gap:14px;border-radius:23px;background:#0b0b0bd9}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted #elapsed,#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted #duration{font-size:13px!important}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted input[type="range"]::-webkit-slider-runnable-track{height:8px!important;border-radius:4px!important}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted input[type="range"]::-webkit-slider-thumb{width:18px!important;height:18px!important;margin-top:-5px!important}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted input[type="range"]::-moz-range-track,#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted input[type="range"]::-moz-range-progress{height:8px!important;border-radius:4px!important}
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted input[type="range"]::-moz-range-thumb{width:18px!important;height:18px!important}
+@media (prefers-reduced-motion:reduce){#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline{transition:none}}
 #remote[data-control-bar="hidden"][data-playback-bar="divider"][data-display="info"] .player-info{padding-bottom:0!important}
 
 /* iPhone landscape: artwork about 30% larger, content lower, volume control uses the full height. */
 @media (orientation:landscape) and (max-height:500px) and (max-width:1200px){
-  #remote[data-control-bar="hidden"]{--control-bar-art:min(calc(100dvh - 96px),300px,40vw)}
-  #remote[data-control-bar="hidden"][data-layout-resolved="compact"]{--control-bar-art:min(calc(100dvh - 100px),284px,38vw)}
-  #remote[data-control-bar="hidden"][data-layout-resolved="wide"]{--control-bar-art:min(calc(100dvh - 92px),330px,41vw)}
+  #remote[data-control-bar="hidden"]{--control-bar-art:min(calc(100dvh - 96px - var(--divider-art-trim,0px)),300px,40vw)}
+  #remote[data-control-bar="hidden"][data-layout-resolved="compact"]{--control-bar-art:min(calc(100dvh - 100px - var(--divider-art-trim,0px)),284px,38vw)}
+  #remote[data-control-bar="hidden"][data-layout-resolved="wide"]{--control-bar-art:min(calc(100dvh - 92px - var(--divider-art-trim,0px)),330px,41vw)}
   #remote[data-control-bar="hidden"] .player-view{padding-top:calc(30px + env(safe-area-inset-top))!important;padding-bottom:calc(26px + env(safe-area-inset-bottom))!important}
   #remote[data-control-bar="hidden"][data-current-view="player"] .art-stage{width:var(--control-bar-art)!important;min-width:0!important}
   #remote[data-control-bar="hidden"] .player-info h2{font-size:clamp(29px,5vw,46px)}
   #remote[data-control-bar="hidden"][data-playback-bar="divider"] .player-info h2{font-size:clamp(34px,5.8vw,54px)}
   #remote[data-control-bar="hidden"] .timeline{margin-top:16px}
+  /* The centred pill would collide with the swipe hint under the artwork on phones, so the hint is
+     hidden here; with a home bar the artwork also gives up a little height to clear the pill. */
+  #remote[data-control-bar="hidden"][data-playback-bar="divider"]{--divider-art-trim:min(env(safe-area-inset-bottom),22px)}
+  #remote[data-control-bar="hidden"][data-playback-bar="divider"] .swipe-hint{visibility:hidden}
+  #remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline{--divider-line-fill:var(--green);--divider-line-rest:#ffffff2d}
   #remote[data-control-bar="hidden"][data-display="info"][data-playback-bar="divider"] .track-copy{left:calc(20px + env(safe-area-inset-left) + var(--control-bar-art) + 30px)!important;top:50%!important}
   #remote[data-control-bar="hidden"][data-display="lyrics"][data-playback-bar="divider"] .lyrics-panel{height:178px}
   /* Under lyrics the row is anchored to the lyric text's left edge and moves with the lyrics panel
@@ -76,4 +96,8 @@
   #remote[data-control-bar="hidden"] .transport[data-compact-placement="copy"]{margin-top:clamp(18px,2.4vh,30px)!important}
   #remote[data-control-bar="hidden"][data-current-view="player"] .dial-rail{bottom:0!important}
   #remote[data-control-bar="hidden"][data-control="bar"] .dial-rail{bottom:28px!important}
+  #remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline{--pill-w:min(380px,calc(100vw - 40px));height:36px!important;border-radius:18px;bottom:calc(var(--home-bar) + 8px)!important}
+  #remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline #elapsed,#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline #duration{font-size:12px!important}
+  #remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted{height:50px!important;border-radius:25px}
+  #remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted #elapsed,#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline.lifted #duration{font-size:14px!important}
 }

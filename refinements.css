@@ -1,0 +1,34 @@
+/* I.10.0 refinements. Loaded last so these scoped fixes win over the older layered rules. */
+
+/* Song title: at most two lines that end in "…". The old padding below the title let the top of a
+   hidden third line peek out as small marks, so the spacing now comes from the line height instead. */
+#remote:not([data-display="lyrics"]) .player-info #title,
+#remote[data-lyrics-fallback="true"] .player-info #title{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;white-space:normal;overflow:hidden;text-overflow:ellipsis;overflow-wrap:anywhere;padding-bottom:0;max-height:none;line-height:1.08}
+
+/* iPhone: keep a long title clear of the "Swipe to adjust" hint and the volume dial on the right. */
+#remote[data-layout-resolved="compact"]:not(.side-controls-hidden) .player-info #title{max-width:calc(100% - 48px)}
+
+/* Small iPhones (SE): the "Press for tabs" hint sat on top of the Settings preset buttons.
+   Outside Now Playing the arrow alone is enough there. */
+@media (max-width:700px){
+  #remote:not([data-current-view="player"]) .topbar-hint{display:none!important}
+  #remote .settings-heading .settings-preset-tools{width:auto!important;margin-left:auto!important;margin-right:4px;grid-template-columns:70px 44px 32px}
+  #remote .settings-heading .version-indicator{margin-left:0!important}
+  #remote[data-current-view="settings"] .bar-handle{width:54px}
+}
+
+/* iPad and desktop: the small "turntable" logo no longer sits under the queue button. */
+#remote[data-current-view="player"] .hardware-brand{display:none!important}
+
+/* iPad: bigger artwork in Song info mode, using the empty space above and below it. */
+@media (pointer:coarse) and (min-width:1000px) and (min-height:650px){
+  #remote[data-layout-resolved="wide"][data-current-view="player"][data-display="info"]:not([data-control-bar="hidden"]) .art-stage{width:min(46vh,36vw,440px)!important;min-width:0!important}
+}
+
+/* Settings: readable small labels, including on the selected green option. */
+.theme-options button span{color:#959595}
+.theme-options button.active span{color:#0c4a22}
+
+/* Devices: the old LAN pairing card is now a simple card for this device's Spotify connection. */
+.devices-view .this-device-card{min-height:0!important}
+.devices-view .this-device-note{margin:0;color:#9a9a9a;font-size:11px;line-height:1.4}

@@ -25,7 +25,6 @@ let artSwipe = null;
 let lastFeedbackAt = 0;
 let buttonHapticDispatchActive = false;
 let barGesture = null;
-let pairingInfo = null;
 let playlistsLoaded = false;
 let playlistsLoading = false;
 let playlistLibrary = [];
@@ -138,8 +137,8 @@ async function api(path, options = {}) {
       headers: { "Content-Type": "application/json", "x-remote-session": session, ...(options.headers || {}) }
     });
   } catch (error) {
-    setConnectionState("offline", "The PC server is unreachable. Showing the last saved playback.");
-    throw Object.assign(new Error("The PC remote is offline or unavailable on this network."), { status: 503, cause: error });
+    setConnectionState("offline", "Spotify is unreachable. Showing the last saved playback.");
+    throw Object.assign(new Error("Spotify could not be reached. Check your internet connection."), { status: 503, cause: error });
   }  if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     if (response.status === 401) {
@@ -149,14 +148,14 @@ async function api(path, options = {}) {
       refreshTimer = null;
       remote.hidden = true;
       pairing.hidden = false;
-      $("pair-error").textContent = "The server restarted or this pairing expired. Enter your PIN again.";
+      $("pair-error").textContent = "Your Spotify connection expired. Connect Spotify again.";
     }
     const retryAfter = Math.max(0, Number(body.retry_after || response.headers.get("retry-after")) || 0);
     if (response.status === 429 && retryAfter) {
       spotifyPauseUntil = Math.max(spotifyPauseUntil, Date.now() + retryAfter * 1000);
       sessionStorage.setItem("turntable-spotify-pause-until", String(spotifyPauseUntil));
     }
-    throw Object.assign(new Error(body.error || "The PC remote did not respond."), { status: response.status, retryAfter, needsReconnect: !!body.needs_reconnect });
+    throw Object.assign(new Error(body.error || "Spotify did not respond."), { status: response.status, retryAfter, needsReconnect: !!body.needs_reconnect });
   }
   return response.status === 204 ? null : response.json();
 }
@@ -537,7 +536,7 @@ async function requestLyricsResult(query, sourceRecordId = null) {
     return await api(sourceRecordId ? "/api/lyrics?id=" + sourceRecordId : "/api/lyrics?" + query);
   } catch {
     const lyricsSource = sourceRecordId ? "https://lrclib.net/api/get/" + sourceRecordId : "https://lrclib.net/api/get?" + query;
-    const response = await fetch(lyricsSource, { headers: { "Lrclib-Client": "Turntable LAN Remote v0.1 (local personal project)" } });
+    const response = await fetch(lyricsSource, { headers: { "Lrclib-Client": "Turntable (https://peekabu411.github.io/)" } });
     if (response.status === 404) return { found: false, instrumental: false, syncedLyrics: null, plainLyrics: null };
     if (!response.ok) throw new Error("Lyrics provider unavailable");
     const direct = await response.json();
@@ -724,22 +723,22 @@ async function updateAlbumColor(url, uri) {
 function setMessage(text = "") { message.textContent = text; }
 function connectionCopy(kind) {
   return {
-    connected: ["Connected", "The phone, PC server, and Spotify playback are synchronized."],
+    connected: ["Connected", "This device and Spotify playback are synchronized."],
     syncing: ["Syncing", "Applying the latest playback state from Spotify."],
     cached: ["Reconnecting", "Showing the last known playback while Spotify reconnects."],
     cooldown: ["Spotify cooldown", "Playback is cached until Spotify allows another request."],
-    offline: ["PC unavailable", "The last saved playback remains visible while the LAN connection recovers."],
-    waiting: ["Waiting for Spotify", "Start a song in the desktop Spotify client to synchronize playback."]
-  }[kind] || ["Checking connection", "Contacting the PC and Spotify..."];
+    offline: ["Offline", "The last saved playback remains visible until Spotify can be reached again."],
+    waiting: ["Waiting for Spotify", "Start a song in Spotify on any device to synchronize playback."]
+  }[kind] || ["Checking connection", "Contacting Spotify..."];
 }
 function connectionAction(kind) {
   return {
     connected: "No action needed.",
-    syncing: "Keep Spotify open on the PC and allow the update to finish.",
-    cached: "Confirm the PC server is running and both devices are on the same Wi-Fi.",
+    syncing: "Keep Spotify open and allow the update to finish.",
+    cached: "Check your internet connection. Turntable retries automatically.",
     cooldown: "Wait for the automatic retry and avoid repeatedly pressing Refresh.",
-    offline: "Open the Turntable Remote Dashboard, confirm the server says Running, and check that both devices use the same Wi-Fi.",
-    waiting: "Play a song in the Spotify desktop app, then press Refresh once."
+    offline: "Check your internet connection, then press Refresh once.",
+    waiting: "Play a song in Spotify on any device, then press Refresh once."
   }[kind] || "Wait for the current connection check to finish.";
 }
 function relativeSyncTime(timestamp) {
@@ -1155,15 +1154,6 @@ function syncAppearanceSliders() {
     group.style.setProperty("--segment-width", `calc(${100 / buttons.length}% - ${6 / buttons.length}px)`);
     group.style.setProperty("--segment-shift", `${activeIndex * 100}%`);
   });
-}
-
-async function loadPairingInfo(force = false) {
-  if (pairingInfo && !force) return;
-  try {
-    pairingInfo = await api("/api/pairing-info");
-    $("settings-pin").textContent = pairingInfo.pin;
-    $("pair-address").textContent = pairingInfo.urls?.[0] || location.origin;
-  } catch (error) { showError(error); }
 }
 
 function clearQueuedPlayNextTarget() {
@@ -1583,7 +1573,7 @@ async function playPlaylist(playlist, button) {
 
 function renderDevices(devices = []) {
   const list = $("device-list"); list.replaceChildren();
-  if (!devices.length) { const empty = document.createElement("p"); empty.className = "empty"; empty.textContent = "Open Spotify on your PC to make it appear here."; list.append(empty); return; }
+  if (!devices.length) { const empty = document.createElement("p"); empty.className = "empty"; empty.textContent = "Open Spotify on a phone, computer or speaker to make it appear here."; list.append(empty); return; }
   devices.forEach((device) => {
     const row = document.createElement("div"); row.className = `device-item${device.is_active ? " active" : ""}`;
     const icon = document.createElement("span"); icon.className = "device-icon"; icon.textContent = device.type === "Computer" ? "▣" : "◉";
@@ -1598,7 +1588,7 @@ function renderDevices(devices = []) {
 
 function refreshDevicesView() {
   const devicesStale = !devicesLastRefreshAt || Date.now() - devicesLastRefreshAt >= DEVICES_VIEW_REFRESH_MS;
-  return Promise.allSettled([loadDevices(devicesStale), loadPairingInfo(true)]);
+  return Promise.allSettled([loadDevices(devicesStale)]);
 }
 function scheduleDevicesViewRefresh(delay = DEVICES_VIEW_REFRESH_MS) {
   if (devicesViewRefreshTimer) clearTimeout(devicesViewRefreshTimer);
@@ -1621,7 +1611,7 @@ async function loadDevices(force = false) {
     renderDevices(devices);
     devicesLoaded = true;
     devicesLastRefreshAt = Date.now();
-    setConnectionState("connected", "The PC server and Spotify device list responded.", {
+    setConnectionState("connected", "The Spotify device list responded.", {
       updatedAt: devicesLastRefreshAt,
       cacheAge: connectionState.cacheAge,
     });
@@ -1708,9 +1698,9 @@ function updateTrackCopy(track, context = playback?.context, updateContext = tru
     title.textContent = nextTitle;
     title.scrollTop = 0;
   }
-  $("artist").textContent = track ? artists(track) : "Open Spotify on your PC and start a song";
+  $("artist").textContent = track ? artists(track) : "Open Spotify on any device and start a song";
   updateLyricsTrackMarquee(track);
-  if (updateContext) $("context").textContent = displayStyle === "lyrics" && lyricsAvailability === "unavailable" ? "LYRICS NOT AVAILABLE" : context?.type ? "PLAYING FROM " + context.type.toUpperCase() : "PLAYING FROM YOUR PC";
+  if (updateContext) $("context").textContent = displayStyle === "lyrics" && lyricsAvailability === "unavailable" ? "LYRICS NOT AVAILABLE" : context?.type ? "PLAYING FROM " + context.type.toUpperCase() : "NOW PLAYING";
 }
 
 function spotifyTrackUrl(track) {
@@ -1857,7 +1847,7 @@ async function refresh(force = false) {
       setConnectionState("cached", data.connection?.last_error?.message || "Showing the last known playback while Spotify reconnects.", { updatedAt, cacheAge });
       setMessage("Spotify is reconnecting — showing the last known playback.");
     } else {
-      setConnectionState(data.playback ? "connected" : "waiting", data.playback ? "Playback is synchronized with the desktop Spotify client." : "Start a song in the desktop Spotify client to synchronize playback.", { updatedAt, cacheAge });
+      setConnectionState(data.playback ? "connected" : "waiting", data.playback ? "Playback is synchronized with Spotify." : "Start a song in Spotify on any device to synchronize playback.", { updatedAt, cacheAge });
       setMessage();
     }
   } catch (error) {
@@ -1866,7 +1856,7 @@ async function refresh(force = false) {
       setConnectionState("cooldown", `Spotify requested a pause. Retrying in ${seconds} seconds.`);
       setMessage(`Spotify cooldown active — retrying in ${seconds} seconds.`);
     } else {
-      setConnectionState("offline", "The PC server or Spotify connection is unavailable. Showing the last saved playback.");
+      setConnectionState("offline", "Spotify is unavailable. Showing the last saved playback.");
       setMessage("Reconnecting — the last known playback remains available.");
     }
   } finally { refreshInFlight = false; }
@@ -2115,7 +2105,7 @@ $("pair").onclick = async () => {
   const originalLabel = pairButton.textContent;
   pairButton.disabled = true;
   pairButton.textContent = "Connecting...";
-  $("pair-error").textContent = "Checking the PC and loading saved playback...";
+  $("pair-error").textContent = "Checking Spotify and loading saved playback...";
   try {
     const response = await fetch("/api/pair", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: $("pin").value }) });
     const data = await response.json(); if (!response.ok) throw new Error(data.error);
@@ -2149,15 +2139,15 @@ $("refresh").onclick = async () => {
   physicalFeedback("press");
   button.classList.add("refreshing");
   button.setAttribute("aria-busy", "true");
-  setMessage("Checking the PC server...");
+  setMessage("Checking Spotify...");
   const stamp = Date.now();
   const fetchFresh = async (url, attempts = 10) => {
-    let lastError = new Error("The PC server did not answer.");
+    let lastError = new Error("Spotify did not answer.");
     for (let attempt = 0; attempt < attempts; attempt += 1) {
       try {
         const response = await fetch(url, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
         if (response.ok) return response;
-        lastError = new Error(`PC server returned ${response.status}.`);
+        lastError = new Error(`Spotify returned ${response.status}.`);
       } catch (error) { lastError = error; }
       if (attempt < attempts - 1) {
         setMessage("The server is applying an update. Reconnecting...");
@@ -2178,8 +2168,8 @@ $("refresh").onclick = async () => {
   } catch (error) {
     button.classList.remove("refreshing");
     button.setAttribute("aria-busy", "false");
-    setConnectionState("offline", "The app update could not be loaded because the PC server did not answer.");
-    setMessage(`Refresh failed: ${error.message} Keep the Dashboard running and try again.`);
+    setConnectionState("offline", "The update could not be loaded because Spotify did not answer.");
+    setMessage(`Refresh failed: ${error.message} Try again in a moment.`);
   }
 };
 $("play").onclick = () => playerAction(playback?.is_playing ? "pause" : "play");
@@ -2363,11 +2353,6 @@ remote.addEventListener("pointerup", (event) => {
   }
 }, true);
 remote.addEventListener("pointercancel", () => { sideControlGesture = null; }, true);
-$("copy-address").onclick = async () => {
-  const address = pairingInfo?.urls?.[0] || location.origin;
-  try { await navigator.clipboard.writeText(address); setMessage("LAN address copied."); }
-  catch { setMessage(`Open ${address} on the other phone.`); }
-};
 $("unpair-phone").onclick = () => { physicalFeedback("press"); window.turntableAuth.disconnect(); location.reload(); };
 
 const screen = document.querySelector(".screen");

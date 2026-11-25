@@ -236,7 +236,6 @@
     if (path === "/api/playlists") { const data = await spotify("/me/playlists?limit=50"); const liked = await likedSongsSummary(); return response({ items: [liked, ...(data.items || []).filter(Boolean).map(p => ({ id:p.id, type:"playlist", uri:p.uri, name:p.name, description:p.description || "", image:p.images?.[0]?.url || "", owner:p.owner?.display_name || "Spotify", tracks:p.items?.total ?? p.tracks?.total }))] }); }
     if (path.startsWith("/api/lyrics")) { const q = path.split("?")[1] || ""; const params = new URLSearchParams(q); const recordId = params.get("id"); const lyricsSource = recordId && /^\d+$/.test(recordId) ? "https://lrclib.net/api/get/" + recordId : "https://lrclib.net/api/get?" + q; const r = await nativeFetch(lyricsSource); if (r.status === 404) return response({ found:false, instrumental:false, syncedLyrics:null, plainLyrics:null }); if (!r.ok) return new Response(await r.text(), { status:r.status, headers:{"Content-Type":"application/json"} }); const lyrics = await r.json(); return response({ found:true, instrumental:!!lyrics.instrumental, syncedLyrics:lyrics.syncedLyrics || null, plainLyrics:lyrics.plainLyrics || null }); }
     if (path.startsWith("/api/artwork")) return nativeFetch(new URL(path, location.href).searchParams.get("url"));
-    if (path === "/api/pairing-info") return response({ address: location.origin + location.pathname, pin: "This device" });
     if (path === "/api/diagnostics") { const now = Date.now(); const lastMinute = telemetry.events.filter(event => event.at >= now - 60_000); const lastHour = telemetry.events.filter(event => event.at >= now - 3_600_000); const paths = {}; for (const event of lastHour) paths[event.path] = (paths[event.path] || 0) + 1; return response({ requests: { last_minute: lastMinute.length, last_hour: lastHour.length, cache_hits_since_start: 0, total_since_start: telemetry.events.length, top_paths: Object.entries(paths).sort((a,b) => b[1] - a[1]).slice(0,5).map(([path,count]) => ({ path, count })) }, connection: { state: "direct", cooldown_seconds: 0, playback_cache_age_seconds: 0 }, uptime_seconds: Math.floor((now - telemetry.startedAt) / 1000) }); }
     if (path === "/api/player/liked-songs") return response(await playLikedSongs(body));
     if (path === "/api/player/playlist") { await spotify(`/me/player/play${body.device_id ? `?device_id=${encodeURIComponent(body.device_id)}` : ""}`, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({context_uri:body.context_uri}) }); return response(null,204); }
@@ -246,13 +245,15 @@
     if (path.startsWith("/api/health")) return response({version:"GitHub Pages"}); return error("Unsupported local route.",404);
   }
   window.fetch = async (input, options) => { const url = new URL(typeof input === "string" ? input : input.url, location.href); if (url.origin === location.origin && url.pathname.startsWith("/api/")) { try { return await route(url.pathname + url.search, options); } catch (e) { return response({ error: e.message, retry_after: e.retryAfter || 0 }, e.status || 500); } } return nativeFetch(input, options); };
-  function load(src) { return new Promise((resolve,reject) => { const s=document.createElement("script"); s.src=src; s.onload=resolve; s.onerror=reject; document.body.append(s); }); }
+  function load(src) { return new Promise((resolve,reject) => { const s=document.createElement("script"); s.async=false; s.src=src; s.onload=resolve; s.onerror=reject; document.body.append(s); }); }
   document.getElementById("copy-redirect-uri")?.addEventListener("click", async () => {
     const value = "https://peekabu411.github.io/";
     try { await navigator.clipboard.writeText(value); } catch { window.prompt("Copy this Redirect URI:", value); return; }
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
-  callback().then(async handled => { if (handled) return; await load("./app.js?v=I.9.9-spotlight-tour"); await load("./viewport-resume.js?v=I.9.8-viewport-resume"); await load("./track-likes.js?v=I.9.8-song-likes"); await load("./control-bar.js?v=I.9.9-control-bar"); await load("./now-playing-tour.js?v=I.9.9-tour-tabs"); await load("./settings-help.js?v=I.9.9-control-bar"); await load("./preset-controls.js?v=I.9.9-control-bar"); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
+  // Download every app script at once; async=false still runs them in this order.
+  const APP_SCRIPTS = ["./app.js?v=I.10.0-refine", "./viewport-resume.js?v=I.9.8-viewport-resume", "./track-likes.js?v=I.9.8-song-likes", "./control-bar.js?v=I.10.0-divider-pill", "./now-playing-tour.js?v=I.9.9-tour-tabs", "./settings-help.js?v=I.9.9-control-bar", "./preset-controls.js?v=I.9.9-control-bar"];
+  callback().then(async handled => { if (handled) return; await Promise.all(APP_SCRIPTS.map(load)); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
 })();
 
 
