@@ -1,0 +1,166 @@
+/* Devices: the connection status (with its light legend) on top, then one panel listing every
+   Spotify device. The playing device is green; the others offer "Play here". Disconnecting
+   Spotify on this device sits at the foot of the panel. */
+
+.devices-panel {
+  width: 100%;
+  margin-top: 12px;
+  padding: 6px 18px 16px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 18px;
+  background: var(--panel);
+}
+
+#remote .devices-panel .device-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  width: 100%;
+}
+
+#remote .devices-panel .device-item {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 0;
+  margin: 0;
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+#remote .devices-panel .device-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .06);
+  color: var(--text-dim);
+  font-size: 18px;
+}
+
+#remote .devices-panel .device-item > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+#remote .devices-panel .device-item b {
+  overflow: hidden;
+  color: var(--white);
+  font: 700 16px/1.2 var(--font-ui);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#remote .devices-panel .device-item small {
+  color: var(--muted);
+  font: 500 13px/1.2 var(--font-ui);
+}
+
+#remote .devices-panel .device-item button {
+  min-height: 34px;
+  margin: 0;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: 700 13px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+#remote .devices-panel .device-item.active .device-icon {
+  background: rgba(30, 215, 96, .16);
+  color: var(--green);
+}
+
+#remote .devices-panel .device-item.active b {
+  color: var(--green);
+}
+
+#remote .devices-panel .device-item.active button,
+#remote .devices-panel .device-item button:disabled {
+  border-color: transparent;
+  background: none;
+  color: var(--green);
+  opacity: 1;
+  cursor: default;
+}
+
+#remote .devices-panel .device-list .empty {
+  margin: 0;
+  padding: 16px 0;
+  color: var(--muted);
+}
+
+.devices-help {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font: 500 13px/1.4 var(--font-ui);
+}
+
+.this-device-card {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  margin-top: 16px;
+}
+
+#remote .this-device-card .unpair-button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #ff8b8b;
+  font: 700 15px/1.3 var(--font-ui);
+  cursor: pointer;
+}
+
+.this-device-card .this-device-note {
+  margin: 0;
+  color: var(--muted);
+  font: 500 12px/1.4 var(--font-ui);
+}
+
+/* Phones in landscape: tighter rows */
+@media (orientation: landscape) and (max-height: 500px) {
+  .devices-panel {
+    margin-top: 8px;
+    padding: 2px 14px 12px;
+  }
+  #remote .devices-panel .device-item {
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 9px 0;
+  }
+  #remote .devices-panel .device-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
+  #remote .devices-panel .device-item b {
+    font-size: 14px;
+  }
+  #remote .devices-panel .device-item small {
+    font-size: 12px;
+  }
+  #remote .devices-panel .device-item button {
+    min-height: 30px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+  .devices-help {
+    margin-top: 9px;
+    font-size: 12px;
+  }
+  .this-device-card {
+    margin-top: 10px;
+  }
+}

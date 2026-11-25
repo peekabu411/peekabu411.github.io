@@ -89,10 +89,14 @@ async function capture(root, outDir) {
   const browser = await chromium.launch();
   let count = 0;
   try {
+    // SNAPSHOT_ONLY=settings,devices limits a quick look to those screens (and SNAPSHOT_DEVICES to those devices).
+    const only = (name, list) => !process.env[name] || process.env[name].split(",").includes(list);
     for (const [deviceName, device] of Object.entries(DEVICES)) {
+      if (!only("SNAPSHOT_DEVICES", deviceName)) continue;
       for (const [screen, styleName] of SCREENS) {
+        if (!only("SNAPSHOT_ONLY", screen)) continue;
         const style = STYLES[styleName || "vinyl-dial-default"];
-        const context = await browser.newContext({ ...device, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+        const context = await browser.newContext({ ...device, isMobile: true, hasTouch: true, deviceScaleFactor: Number(process.env.SNAPSHOT_SCALE) || 1 });
         context.setDefaultTimeout(15000);
         await fixtures(context);
         await context.clock.install({ time: new Date("2026-01-01T12:00:00Z") });

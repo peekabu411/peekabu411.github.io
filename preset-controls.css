@@ -61,38 +61,6 @@
   letter-spacing: .02em;
 }
 
-.settings-preset-tools {
-  position: absolute;
-  right: 124px;
-  top: 0;
-  height: 38px;
-  display: grid;
-  grid-template-columns: 89px 48px 34px;
-  gap: 5px;
-}
-
-.settings-preset-tools button {
-  border: 1px solid #ffffff20;
-  border-radius: 9px;
-  background: #ffffff09;
-  color: #ddd;
-  font-size: 8px;
-  font-weight: 800;
-}
-
-.settings-preset-tools button:disabled {
-  color: #777;
-  opacity: 1;
-}
-
-.settings-preset-tools .preset-selector-shell {
-  height: 38px;
-}
-
-.settings-heading {
-  padding-right: 311px!important;
-}
-
 .preset-modal[hidden] {
   display: none;
 }
@@ -219,17 +187,6 @@
   .preset-bar {
     grid-template-columns: minmax(80px,92px) repeat(4,minmax(72px,1fr)) 64px!important;
   }
-  .settings-preset-tools {
-    right: 119px;
-    grid-template-columns: 80px 44px 32px;
-    height: 34px;
-  }
-  .settings-preset-tools .preset-selector-shell {
-    height: 34px;
-  }
-  .settings-heading {
-    padding-right: 284px!important;
-  }
   .preset-modal-card {
     width: min(510px,calc(100vw - 44px));
     padding: 11px 13px;
@@ -246,23 +203,5 @@
   .preset-modal-actions button {
     min-height: 31px;
     padding: 6px 10px;
-  }
-}
-
-@media(max-width:700px) {
-  .settings-preset-tools {
-    position: relative;
-    right: auto;
-    top: auto;
-    grid-column: 1/-1;
-    width: 100%;
-    margin-bottom: 7px;
-  }
-  .settings-heading {
-    padding-right: 0!important;
-  }
-  .version-indicator {
-    position: relative!important;
-    margin-left: auto;
   }
 }

@@ -28,15 +28,6 @@
   #remote:not([data-current-view="player"]) .topbar-hint {
     display: none!important;
   }
-  #remote .settings-heading .settings-preset-tools {
-    width: auto!important;
-    margin-left: auto!important;
-    margin-right: 4px;
-    grid-template-columns: 70px 44px 32px;
-  }
-  #remote .settings-heading .version-indicator {
-    margin-left: 0!important;
-  }
   #remote[data-current-view="settings"] .bar-handle {
     width: 54px;
   }
@@ -56,22 +47,4 @@
 }
 
 /* Settings: readable small labels, including on the selected green option. */
-.theme-options button span {
-  color: #959595;
-}
 
-.theme-options button.active span {
-  color: #0c4a22;
-}
-
-/* Devices: the old LAN pairing card is now a simple card for this device's Spotify connection. */
-.devices-view .this-device-card {
-  min-height: 0!important;
-}
-
-.devices-view .this-device-note {
-  margin: 0;
-  color: #9a9a9a;
-  font-size: 11px;
-  line-height: 1.4;
-}

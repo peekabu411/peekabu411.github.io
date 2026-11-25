@@ -9,8 +9,8 @@ function renderDevices(devices = []) {
     const icon = document.createElement("span"); icon.className = "device-icon"; icon.textContent = device.type === "Computer" ? "▣" : "◉";
     const copy = document.createElement("div");
     const name = document.createElement("b"); name.textContent = device.name;
-    const detail = document.createElement("small"); detail.textContent = `${device.type} · ${device.volume_percent ?? 0}% volume`;
-    const button = document.createElement("button"); button.textContent = device.is_active ? "Active" : "Connect"; button.disabled = device.is_active;
+    const detail = document.createElement("small"); detail.textContent = `${device.type} · ${device.volume_percent ?? 0}%`;
+    const button = document.createElement("button"); button.textContent = device.is_active ? "Playing" : "Play here"; button.disabled = device.is_active;
     button.onclick = async () => { await setting({ device_id: device.id }); await loadDevices(true); };
     copy.append(name, detail); row.append(icon, copy, button); list.append(row);
   });
