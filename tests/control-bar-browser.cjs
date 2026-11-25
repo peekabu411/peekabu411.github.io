@@ -146,7 +146,20 @@ async function swipe(page, x, y, dy) {
     await page.evaluate(() => applyAppearance(albumStyle, controlStyle, "info", lyricsBackground, playerBackgroundStyle, lyricStyle, "divider"));
     assert.equal(await parentOf(page, ".transport"), ".track-copy");
     const seek = await box(page, "#seek"), artist = await box(page, "#artist"), dividerRow = await box(page, ".transport"), dividerArt = await box(page, ".art-stage");
-    assert(seek.y + seek.height >= 388 && seek.width >= 840, "progress line spans the bottom edge");
+    const line = await page.evaluate(() => {
+      const timeline = document.querySelector(".timeline"), before = getComputedStyle(timeline, "::before"), box = timeline.getBoundingClientRect();
+      return { bottom: box.bottom, height: parseFloat(before.height), width: box.width, image: before.backgroundImage, progress: timeline.style.getPropertyValue("--seek-progress") };
+    });
+    assert(line.bottom >= 389 && line.height === 6 && line.width >= 840, "progress line spans the bottom edge");
+    assert(line.image.includes("gradient") && line.progress, "progress line is drawn by the timeline and follows the song position");
+    assert(seek.y + seek.height >= 388 && seek.width >= 840, "seek area covers the line when there is no home bar");
+    // iPhone home bar (simulated 21px): the line stays near the edge, but the touch area starts above the strip
+    // so a sideways drag never begins where iOS switches apps.
+    await page.evaluate(() => document.querySelector(".timeline").style.setProperty("--home-bar", "21px"));
+    const homeSeek = await box(page, "#seek"), homeLine = await page.evaluate(() => document.querySelector(".timeline").getBoundingClientRect().bottom);
+    assert(Math.abs(homeLine - 387) < 1.5, `line sits 3px above the edge (${homeLine})`);
+    assert(homeSeek.y + homeSeek.height <= 390 - 21 + 0.5 && homeSeek.height >= 26, `touch area starts above the home bar (${JSON.stringify(homeSeek)})`);
+    await page.evaluate(() => document.querySelector(".timeline").style.removeProperty("--home-bar"));
     assert(dividerRow.y >= artist.y + artist.height, "row sits under the artist");
     assert(dividerRow.x >= dividerArt.x + dividerArt.width, "row does not overlap the artwork");
     await page.evaluate(() => applyAppearance(albumStyle, controlStyle, "lyrics", lyricsBackground, playerBackgroundStyle, lyricStyle, "divider"));

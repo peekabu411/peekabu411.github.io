@@ -155,5 +155,23 @@
     playButton.click();
   });
 
+  // Divider playback bar while hidden: the visible line is drawn by the timeline itself so the
+  // invisible slider can sit above the iPhone home bar. Mirror the slider's progress onto it.
+  const seekInput = document.getElementById("seek");
+  const timelineEl = seekInput?.closest(".timeline");
+  if (seekInput && timelineEl) {
+    const mirrorProgress = () => {
+      const value = seekInput.style.getPropertyValue("--seek-progress");
+      if (value) timelineEl.style.setProperty("--seek-progress", value);
+    };
+    new MutationObserver(mirrorProgress).observe(seekInput, { attributes: true, attributeFilter: ["style"] });
+    mirrorProgress();
+    const endSeek = () => timelineEl.classList.remove("seeking");
+    seekInput.addEventListener("pointerdown", () => timelineEl.classList.add("seeking"));
+    seekInput.addEventListener("pointerup", endSeek);
+    seekInput.addEventListener("pointercancel", endSeek);
+    seekInput.addEventListener("blur", endSeek);
+  }
+
   applyControlBarState(state);
 })();
