@@ -150,6 +150,7 @@
     if (!menu.hidden && !menu.contains(event.target) && !shuffle.contains(event.target)) closeMenu();
   }, true);
   window.addEventListener("resize", () => closeMenu());
+  document.addEventListener("keydown", event => { if (event.key === "Escape" && !menu.hidden && !menu.contains(event.target)) closeMenu(true); });
 
   // ---- Hold Shuffle -----------------------------------------------------------------------
   let holdTimer = null, holdStart = null, suppressClickUntil = 0;
