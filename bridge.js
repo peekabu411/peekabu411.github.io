@@ -9,6 +9,7 @@
   let likedSongsSummaryCache = null;
   const trackLikes = new Map();
   let spotifyUserId = null;
+  let likedSongsPickTotal = null;
   const recordRequest = path => {
     const now = Date.now();
     telemetry.events.push({ at: now, path: path.split("?")[0] });
@@ -34,6 +35,7 @@
     clearPendingAuthorization();
     likedSongsSummaryCache = null;
     trackLikes.clear();
+    likedSongsPickTotal = null;
     spotifyUserId = null;
   }
   const read = () => {
@@ -194,7 +196,7 @@
     refreshInFlight = null;
     const verifier = random(), state = random(); sessionStorage.setItem("tt.verifier", verifier); sessionStorage.setItem("tt.state", state); save({ ...auth, client_id: clientId });
     trackLikes.clear();
-    const query = new URLSearchParams({ client_id: clientId, response_type: "code", redirect_uri: redirectUri, state, scope: "user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative user-library-read user-library-modify user-read-private", code_challenge_method: "S256", code_challenge: await challenge(verifier) });
+    const query = new URLSearchParams({ client_id: clientId, response_type: "code", redirect_uri: redirectUri, state, scope: "user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative user-library-read user-library-modify user-read-private user-top-read user-read-recently-played", code_challenge_method: "S256", code_challenge: await challenge(verifier) });
     location.assign(`${ACCOUNTS}/authorize?${query}`);
   }
   async function callback() {
@@ -225,11 +227,59 @@
     main.textContent = message;
     document.body.replaceChildren(main);
   }
+  // Smart Mix: Spotify no longer gives these apps recommendations, so picks come from
+  // the listener's own top songs, recent plays, Liked Songs and the current artist's albums.
+  const SMART_MIX_SCOPES = { top: "user-top-read", recent: "user-read-recently-played", liked: "user-library-read" };
+  const pickTrack = (track, album = track?.album) => !track || track.is_local || !/^spotify:track:[A-Za-z0-9]{22}$/.test(track.uri || "") ? null : {
+    type: "track", uri: track.uri, id: track.id, name: track.name || "", explicit: !!track.explicit, duration_ms: track.duration_ms || 0,
+    artists: (track.artists || []).map(artist => ({ id: artist.id, name: artist.name })),
+    album: { name: album?.name || "", images: (album?.images || []).slice(0, 1) }
+  };
+  async function smartMix(path, options, body) {
+    const method = (options.method || "GET").toUpperCase(), url = new URL(path, location.href);
+    const generation = authGeneration;
+    await accessToken();
+    if (generation !== authGeneration) throw unauthorized("Connect Spotify first.");
+    if (url.pathname === "/api/smart-mix/queue") {
+      if (method !== "POST") return error("Unsupported Smart Mix action.", 405);
+      if (!/^spotify:track:[A-Za-z0-9]{22}$/.test(body.uri || "")) return error("Smart Mix can only queue Spotify songs.");
+      const device = typeof body.device_id === "string" && body.device_id ? `&device_id=${encodeURIComponent(body.device_id)}` : "";
+      await spotify(`/me/player/queue?uri=${encodeURIComponent(body.uri)}${device}`, { method: "POST" });
+      return response(null, 204);
+    }
+    if (url.pathname !== "/api/smart-mix/source" || method !== "GET") return error("Unsupported Smart Mix action.", 404);
+    const name = url.searchParams.get("name");
+    const scope = SMART_MIX_SCOPES[name];
+    const auth = read();
+    if (scope && typeof auth.scope === "string" && !auth.scope.split(/\s+/).includes(scope)) return response({ items: [], needs_reconnect: true });
+    let items = [];
+    try {
+      if (name === "top") items = ((await spotify("/me/top/tracks?limit=50&time_range=short_term")).items || []).map(track => pickTrack(track));
+      else if (name === "recent") items = ((await spotify("/me/player/recently-played?limit=50")).items || []).map(entry => { const track = pickTrack(entry?.track); return track && { ...track, played_at: Date.parse(entry.played_at) || 0 }; });
+      else if (name === "liked") {
+        const offset = likedSongsPickTotal > 50 ? Math.floor(Math.random() * (likedSongsPickTotal - 49)) : 0;
+        const data = await spotify(`/me/tracks?limit=50&offset=${offset}`);
+        if (Number.isFinite(data.total)) likedSongsPickTotal = data.total;
+        items = (data.items || []).map(entry => pickTrack(entry?.track));
+      } else if (name === "artist") {
+        const artist = url.searchParams.get("artist");
+        if (!/^[A-Za-z0-9]{22}$/.test(artist || "")) return error("Choose a Spotify artist.");
+        const albums = (await spotify(`/artists/${artist}/albums?include_groups=album,single&limit=10`)).items || [];
+        const album = albums[Math.floor(Math.random() * albums.length)];
+        if (album?.id && /^[A-Za-z0-9]{22}$/.test(album.id)) items = ((await spotify(`/albums/${album.id}/tracks?limit=50`)).items || []).map(track => pickTrack(track, album));
+      } else return error("Unknown Smart Mix source.", 404);
+    } catch (cause) {
+      if (cause.status === 403) return response({ items: [], needs_reconnect: !!scope });
+      throw cause;
+    }
+    return response({ items: items.filter(Boolean) });
+  }
   async function route(path, options = {}) {
     const body = options.body ? JSON.parse(options.body) : {};
     if (path === "/api/pair") { const id = body.pin?.trim(); if (!id) return error("Paste your Spotify Client ID."); await authorize(id); return response({}); }
     if (path === "/api/reauthorize") { const id = read().client_id; if (!id) return error("Reconnect from the setup screen to enable Liked Songs.", 403); await authorize(id); return response({}); }
     if (path.split("?")[0] === "/api/library/track") return trackLibrary(path, options, body);
+    if (path.startsWith("/api/smart-mix/")) return smartMix(path, options, body);
     if (path.startsWith("/api/status")) return response({ playback: await spotify("/me/player"), connection: { fresh: true, cached: false, updated_at: Date.now() } });
     if (path.startsWith("/api/devices")) return response({ items: (await spotify("/me/player/devices"))?.devices || [] });
     if (path.startsWith("/api/queue")) return response({ items: (await spotify("/me/player/queue"))?.queue?.slice(0, 6) || [] });
@@ -252,7 +302,7 @@
     try { await navigator.clipboard.writeText(value); } catch { window.prompt("Copy this Redirect URI:", value); return; }
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
-  callback().then(async handled => { if (handled) return; await load("./app.js?v=I.9.8-viewport-resume"); await load("./viewport-resume.js?v=I.9.8-viewport-resume"); await load("./track-likes.js?v=I.9.8-song-likes"); await load("./control-bar.js?v=I.9.9-control-bar"); await load("./settings-help.js?v=I.9.9-control-bar"); await load("./preset-controls.js?v=I.9.9-control-bar"); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
+  callback().then(async handled => { if (handled) return; await load("./app.js?v=I.9.9-smart-mix"); await load("./viewport-resume.js?v=I.9.8-viewport-resume"); await load("./track-likes.js?v=I.9.8-song-likes"); await load("./smart-mix.js?v=I.9.9-smart-mix"); await load("./control-bar.js?v=I.9.9-control-bar"); await load("./settings-help.js?v=I.9.9-control-bar"); await load("./preset-controls.js?v=I.9.9-control-bar"); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
 })();
 
 

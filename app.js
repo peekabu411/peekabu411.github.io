@@ -126,7 +126,7 @@ let spotifyPauseUntil = Number(sessionStorage.getItem("turntable-spotify-pause-u
 let lastSnapshotSavedAt = 0;
 
 async function api(path, options = {}) {
-  const spotifyPath = /^\/api\/(status|devices|queue|playlists|player\/|library\/|settings)/.test(path);
+  const spotifyPath = /^\/api\/(status|devices|queue|playlists|player\/|library\/|settings|smart-mix\/)/.test(path);
   if (spotifyPath && Date.now() < spotifyPauseUntil) {
     const retryAfter = Math.max(1, Math.ceil((spotifyPauseUntil - Date.now()) / 1000));
     throw Object.assign(new Error(`Spotify is cooling down. Trying again in ${retryAfter} seconds.`), { status: 429, retryAfter, localCooldown: true });
@@ -949,7 +949,7 @@ const nowPlayingGuidePages = [
   {
     kicker: "NOW PLAYING · 2 OF 5",
     title: "Keep playback close",
-    copy: "Use the timeline to seek. Play, previous, next, shuffle, repeat, and the queue are always part of the Now Playing deck.",
+    copy: "Use the timeline to seek. Play, previous, next, shuffle, repeat, and the queue are always part of the Now Playing deck. Hold shuffle for Smart Mix.",
     visual: '<div class="guide-demo guide-demo-playback"><div class="guide-demo-timeline"><i></i></div><div class="guide-demo-transport"><span>&#8644;</span><span>&#9664;&#9664;</span><b>&#9654;</b><span>&#9654;&#9654;</span><span>&#8635;</span></div><small>PLAYBACK CONTROLS</small></div>'
   },
   {
@@ -1321,7 +1321,7 @@ function renderQueue(queue = []) {
   }
   queue.forEach((track, index) => {
     preloadArtwork(artwork(track));
-    const row = document.createElement("div"); row.className = "queue-item";
+    const row = document.createElement("div"); row.className = "queue-item"; row.dataset.uri = track.uri || "";
     const image = document.createElement("img"); image.src = artwork(track); image.alt = "";
     const copy = document.createElement("div");
     const title = document.createElement("b"); title.textContent = track.name;
@@ -1338,6 +1338,7 @@ function renderQueue(queue = []) {
     actions.append(number, playNext);
     copy.append(title, artist); row.append(image, copy, actions); list.append(row);
   });
+  window.turntableSmartMix?.markQueue();
 }
 
 async function loadQueue(force = false) {
@@ -1854,6 +1855,7 @@ function render(data) {
   if (!dialStart && performance.now() > dialVolumeHoldUntil) updateVolume(playback?.device?.volume_percent ?? Number($("volume").value));
   const displayedShuffle = optimisticSettingValue("shuffle", !!playback?.shuffle_state);
   $("shuffle").classList.toggle("active", displayedShuffle);
+  window.turntableSmartMix?.syncPlayback(playback, displayedShuffle, data?.connection?.cached === true);
   const displayedRepeat = optimisticSettingValue("repeat", playback?.repeat_state || "off");
   paintRepeatButton(displayedRepeat);
   if (displayedRepeat === "track" && incomingUri && !repeatOneAutoOffPending && repeatOneArmedUri !== incomingUri) repeatOneArmedUri = incomingUri;
