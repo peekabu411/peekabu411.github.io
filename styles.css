@@ -182,7 +182,6 @@ input:disabled {
 .status-button {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: .12em;
 }
 
 .screen {
@@ -225,11 +224,9 @@ input:disabled {
 
 .next-card {
   position: absolute;
-  inset: 5%;
   border-radius: 8px;
   overflow: hidden;
   background: #151515;
-  transform: scale(.96);
   box-shadow: 0 18px 40px #000b;
 }
 
@@ -237,7 +234,6 @@ input:disabled {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: .72;
 }
 
 .album-art {
@@ -256,16 +252,6 @@ input:disabled {
 .album-art.swiping {
   transition: none;
   cursor: grabbing;
-}
-
-.album-art.swipe-commit-left {
-  transform: translate3d(-140%,0,0) rotate(-6deg);
-  opacity: 0;
-}
-
-.album-art.swipe-commit-right {
-  transform: translate3d(140%,0,0) rotate(6deg);
-  opacity: 0;
 }
 
 .album-art.swipe-reset {
@@ -328,10 +314,8 @@ input:disabled {
 
 .player-info h2 {
   font-size: clamp(31px,5vw,59px);
-  line-height: .98;
   letter-spacing: -.05em;
   margin: 0 0 10px;
-  max-height: 2em;
   overflow: hidden;
 }
 
@@ -382,10 +366,7 @@ input:disabled {
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: var(--white);
-  color: #090909;
   font-size: 21px;
-  box-shadow: 0 5px 14px #0009;
 }
 
 .transport .active {
@@ -420,27 +401,16 @@ input:disabled {
 }
 
 .dial {
-  --rotation: 0deg;
   position: relative;
   width: 126px;
   height: 126px;
   border-radius: 50%;
   border: 1px solid #4a4a4a;
-  background: repeating-conic-gradient(from -2deg,#333 0 1deg,var(--page) 1deg 4deg);
-  box-shadow: 0 12px 30px var(--black),inset 0 0 0 8px #0b0b0b;
-  transform: rotate(var(--rotation));
   touch-action: none;
 }
 
 .dial-marker {
   position: absolute;
-  top: 10px;
-  left: calc(50% - 2px);
-  width: 4px;
-  height: 15px;
-  border-radius: 4px;
-  background: var(--green);
-  box-shadow: 0 0 8px var(--green);
 }
 
 .dial-center {
@@ -449,10 +419,6 @@ input:disabled {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #1a1a1a;
-  border: 1px solid #333;
-  transform: rotate(calc(-1 * var(--rotation)));
-  font-size: 20px;
 }
 
 .dial:active .dial-center {
@@ -646,8 +612,6 @@ input:disabled {
   }
   .player-info h2 {
     font-size: 28px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
   }
   .player-info>p:not(.context) {
     font-size: 15px;
@@ -778,30 +742,18 @@ input:disabled {
     width: 23px;
     height: 23px;
   }
-  .status-button {
-    display: block;
-  }
   .screen {
     grid-column: 1;
-    grid-row: 2;
     overflow: hidden;
-    padding-right: 54px;
   }
   .player-view {
     height: 100%;
-    padding: 15px 55px 15px 20px;
     display: none;
     flex-direction: row;
-    gap: 22px;
     justify-content: flex-start;
-    align-items: center;
   }
   .player-view.active {
     display: flex;
-  }
-  .art-stage {
-    width: min(37vh,245px);
-    min-width: 210px;
   }
   .player-info {
     width: auto;
@@ -811,37 +763,16 @@ input:disabled {
   .context {
     margin-bottom: 7px;
   }
-  .player-info h2 {
-    font-size: clamp(27px,5vw,43px);
-    max-height: 1em;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  .player-info>p:not(.context) {
-    font-size: 14px;
-  }
-  .timeline {
-    margin-top: 15px;
-  }
   .transport {
     margin-top: 4px;
     gap: clamp(5px,1.7vw,18px);
   }
   .transport button {
     width: 38px;
-    height: 36px;
-  }
-  .transport .play-button {
-    width: 48px;
-    height: 48px;
   }
   .dial-rail {
     position: absolute;
     z-index: 5;
-    right: -69px;
-    top: 52px;
-    bottom: 0;
-    width: 138px;
     border: 0;
     background: transparent;
     padding: 0;
@@ -850,10 +781,7 @@ input:disabled {
     overflow: visible;
   }
   .dial {
-    width: 138px;
-    height: 138px;
     flex: none;
-    box-shadow: 0 10px 32px var(--black),inset 0 0 0 8px #0b0b0b;
   }
   .dial-readout,
   .dial-rail>p {
@@ -881,18 +809,6 @@ input:disabled {
   .queue-list,
   .device-list {
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
-  }
-  .queue-item {
-    grid-template-columns: 42px 1fr auto;
-    padding: 6px;
-  }
-  .queue-item img {
-    width: 42px;
-    height: 42px;
-  }
-  .device-item {
-    padding: 9px;
   }
   .control-card {
     padding: 15px;
@@ -1200,7 +1116,6 @@ input:disabled {
   place-items: center;
   margin: 0;
   color: #d8d8d8;
-  font-size: 16px;
   text-align: center;
 }
 
@@ -1220,11 +1135,6 @@ input:disabled {
   mask-image: linear-gradient(transparent,var(--black) 18%,var(--black) 82%,transparent);
 }
 
-.lyrics-lines.synced {
-  padding-top: 118px;
-  padding-bottom: 64px;
-}
-
 .lyrics-lines::-webkit-scrollbar {
   display: none;
 }
@@ -1233,7 +1143,6 @@ input:disabled {
   margin: 0;
   padding: 7px 0;
   color: #ffffff60;
-  font-size: 18px;
   font-weight: 700;
   line-height: 1.18;
   transform-origin: left center;
@@ -1426,7 +1335,6 @@ input:disabled {
 
 .settings-heading {
   position: relative;
-  padding-right: 126px;
 }
 
 .version-indicator {
@@ -1457,80 +1365,50 @@ input:disabled {
 }
 
 .theme-picker {
-  margin-bottom: 12px;
-  padding: 13px;
-  border: 1px solid #2d2d2d;
   border-radius: 14px;
-  background: #131313;
 }
 
 .theme-picker>div:first-child {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 8px;
 }
 
 .theme-picker small {
   color: var(--green);
-  font-size: 9px;
   letter-spacing: .14em;
   font-weight: 700;
 }
 
 .appearance-setting {
   display: grid;
-  grid-template-columns: 52px 1fr;
-  gap: 7px;
   align-items: center;
-  margin-top: 6px;
 }
 
 .appearance-setting>span {
-  color: #777;
-  font-size: 8px;
-  letter-spacing: .12em;
   font-weight: 700;
 }
 
 .theme-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 7px;
 }
 
 .theme-options button {
   min-width: 0;
-  border: 1px solid #343434;
-  border-radius: 9px;
-  background: #090909;
-  color: var(--white);
-  padding: 7px 9px;
-  text-align: left;
 }
 
 .theme-options b,
 .theme-options span {
   display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.theme-options b {
-  font-size: 11px;
 }
 
 .theme-options span {
-  margin-top: 1px;
   color: #777;
-  font-size: 8px;
 }
 
 .theme-options button.active {
   border-color: var(--green);
-  background: #12311d;
-  box-shadow: inset 0 0 0 1px #1ed76033;
 }
 
 .bar-button-label,
@@ -1749,35 +1627,11 @@ input:disabled {
   display: none;
 }
 
-.device[data-control="bar"] .dial-center {
-  display: block;
-  position: absolute;
-  z-index: 2;
-  inset: 3px auto auto 4px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 36% 30%,#505050 0,#272727 38%,#111 76%);
-  border: 1px solid #595959;
-  box-shadow: 0 6px 10px #000b,inset 0 1px #ffffff38,inset 0 -2px 4px var(--black);
-}
-
-.device[data-control="bar"] .dial.pressing-button .dial-center {
-  transform: translateY(2px);
-  background: radial-gradient(circle at 36% 30%,#3b3b3b,#181818 72%);
-  box-shadow: 0 2px 5px var(--black),inset 0 1px #ffffff20;
-}
-
 .device[data-control="bar"] .bar-button-label {
   display: block;
   position: absolute;
   z-index: 3;
-  top: 20px;
   left: 50%;
-  transform: translateX(-50%);
-  color: var(--text-dim);
-  font-size: 6px;
-  letter-spacing: .14em;
   pointer-events: none;
 }
 
@@ -1794,12 +1648,7 @@ input:disabled {
 }
 
 @media (orientation:landscape) and (max-height:500px) and (max-width:1200px) {
-  .lyrics-lines.synced {
-    padding-top: 76px;
-    padding-bottom: 50px;
-  }
   .preset-bar {
-    position: absolute;
     z-index: 11;
     left: 0;
     right: 0;
@@ -1845,15 +1694,8 @@ input:disabled {
     position: static;
   }
   .player-info h2 {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
     font-size: clamp(27px,4.6vw,42px);
-    line-height: 1.02;
-    max-height: 2.04em;
-    white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis;
     margin: 0 0 7px;
   }
   .player-info>p:not(.context) {
@@ -1880,7 +1722,6 @@ input:disabled {
     padding-bottom: 54px;
   }
   .lyrics-lines p {
-    font-size: 16px;
     padding: 5px 0;
   }
   .device[data-display="lyrics"] .timeline {
@@ -1949,50 +1790,19 @@ input:disabled {
   .controls-view .section-heading {
     display: flex;
     align-items: baseline;
-    gap: 10px;
   }
   .controls-view .section-heading h2 {
-    font-size: 27px;
     margin: 0 0 10px;
   }
   .controls-view .section-heading p {
     margin: 0;
   }
-  .settings-columns {
-    gap: 9px;
-  }
   .theme-picker {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4px 7px;
-    padding: 7px 8px;
-    margin-bottom: 6px;
   }
   .theme-picker>div:first-child {
     grid-column: 1/-1;
-    margin-bottom: 1px;
-  }
-  .appearance-setting {
-    grid-template-columns: 40px 1fr;
-    gap: 4px;
-    margin: 0;
-  }
-  .theme-options {
-    gap: 3px;
-  }
-  .theme-options button {
-    padding: 3px 5px;
-  }
-  .theme-options button span {
-    display: none;
-  }
-  .pair-another {
-    padding: 11px;
-    gap: 7px;
-  }
-  .controls-view .hint {
-    font-size: 10px;
-    margin: 4px 0 0;
   }
   .device[data-control="bar"] .screen {
     padding-right: 58px;
@@ -2001,13 +1811,8 @@ input:disabled {
     padding-right: calc(68px + env(safe-area-inset-right));
   }
   .device[data-control="bar"] .dial-rail {
-    right: env(safe-area-inset-right);
     width: 58px;
     align-items: center;
-  }
-  .device[data-control="bar"] .dial {
-    height: calc(100% - 38px);
-    max-height: 310px;
   }
   .device[data-control="bar"] .transport {
     right: calc(62px + env(safe-area-inset-right));
@@ -2082,32 +1887,6 @@ input:disabled {
     grid-template-columns: minmax(0,1.15fr) minmax(230px,.85fr);
     gap: 14px;
     align-items: start;
-  }
-  .theme-picker {
-    padding: 10px;
-    gap: 7px 9px;
-    margin-bottom: 9px;
-  }
-  .theme-picker>div:first-child {
-    margin-bottom: 2px;
-  }
-  .appearance-setting {
-    grid-template-columns: 42px 1fr;
-    gap: 6px;
-  }
-  .theme-options {
-    gap: 5px;
-  }
-  .theme-options button {
-    min-height: 36px;
-    padding: 6px 8px;
-  }
-  .theme-options b {
-    font-size: 11px;
-  }
-  .theme-options button span {
-    display: block;
-    font-size: 7px;
   }
   .pair-another {
     min-height: 190px;
@@ -2292,9 +2071,6 @@ input:disabled {
     display: block;
     font-size: 9px;
   }
-  .status-button {
-    display: none;
-  }
   .screen {
     grid-column: 1;
     grid-row: 2;
@@ -2329,16 +2105,9 @@ input:disabled {
     font-size: 9px;
   }
   .player-info h2 {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    max-height: 2.08em;
-    white-space: normal;
     font-size: clamp(25px,8vw,36px);
-    line-height: 1.04;
     margin: 0 0 6px;
     overflow: hidden;
-    text-overflow: ellipsis;
   }
   .player-info>p:not(.context) {
     font-size: 14px;
@@ -2455,15 +2224,6 @@ input:disabled {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  .theme-picker {
-    padding: 12px;
-  }
-  .appearance-setting {
-    grid-template-columns: 58px minmax(0,1fr);
-  }
-  .theme-options button {
-    min-height: 42px;
-  }
   .control-grid button {
     min-height: 76px;
   }
@@ -2541,8 +2301,6 @@ input:disabled {
   }
   .player-info h2 {
     font-size: 23px;
-    -webkit-line-clamp: 1;
-    max-height: 1.05em;
   }
   .timeline {
     margin-top: 7px;
@@ -2609,18 +2367,7 @@ input:disabled {
 }
 
 .appearance-setting>span {
-  font-size: 10px;
   line-height: 1.2;
-}
-
-.theme-options {
-  gap: 9px;
-}
-
-.theme-options button {
-  min-height: 54px;
-  padding: 10px 13px;
-  border-radius: 11px;
 }
 
 .theme-options b {
@@ -2649,23 +2396,6 @@ input:disabled {
     gap: 8px;
     margin: 0;
   }
-  .appearance-setting>span {
-    font-size: 9px;
-  }
-  .theme-options {
-    gap: 7px;
-  }
-  .theme-options button {
-    min-height: 46px;
-    padding: 7px 10px;
-  }
-  .theme-options b {
-    font-size: 13px;
-  }
-  .theme-options button span {
-    display: block;
-    font-size: 8px;
-  }
 }
 
 @media (orientation:portrait) and (max-width:760px) {
@@ -2679,13 +2409,6 @@ input:disabled {
     grid-template-columns: 72px minmax(0,1fr);
     gap: 10px;
     margin-top: 12px;
-  }
-  .appearance-setting>span {
-    font-size: 10px;
-  }
-  .theme-options button {
-    min-height: 58px;
-    padding: 11px 13px;
   }
   .theme-options b {
     font-size: 15px;
@@ -2708,7 +2431,6 @@ input:disabled {
 }
 
 .playlist-card {
-  min-width: 0;
   border: 0;
   border-radius: 10px;
   background: transparent;
@@ -2781,10 +2503,6 @@ input:disabled {
   font-size: 10px;
 }
 
-.playlist-card:active .playlist-cover {
-  transform: scale(.96);
-}
-
 .playlist-card[aria-busy="true"] .playlist-cover {
   box-shadow: 0 0 0 2px var(--green),0 12px 25px #0008;
 }
@@ -2847,7 +2565,6 @@ input:disabled {
 
 /* Keep every theme label and description readable instead of truncating it. */
 .theme-options button {
-  display: flex;
   flex-direction: column;
   justify-content: center;
   line-height: 1.15;
@@ -2868,10 +2585,6 @@ input:disabled {
     display: block;
     margin: 0 0 5px;
     line-height: 1;
-  }
-  .theme-options button {
-    min-height: 54px;
-    padding: 7px 9px;
   }
   .theme-options b {
     font-size: 13px;
@@ -2916,10 +2629,6 @@ input:disabled {
   grid-column: 1/-1;
 }
 
-.lyric-style-options {
-  grid-template-columns: repeat(5,minmax(0,1fr));
-}
-
 .lyrics-lines.lyric-stage-mode {
   display: grid;
   place-items: center;
@@ -2947,9 +2656,6 @@ input:disabled {
 }
 
 .lyric-stage-karaoke,
-.lyric-stage-reveal {
-  font-size: clamp(22px,3.7vw,39px)!important;
-}
 
 .lyric-stage span {
   display: inline;
@@ -3001,14 +2707,10 @@ input:disabled {
   max-width: 25%;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: clamp(15px,2vw,24px);
   color: #ffffff38;
 }
 
 @media (orientation:landscape) and (max-height:500px) and (max-width:1200px) {
-  .lyric-style-options {
-    grid-template-columns: repeat(3,minmax(0,1fr));
-  }
   .lyric-style-options button {
     min-height: 44px;
   }
@@ -3020,34 +2722,18 @@ input:disabled {
   z-index: 24;
   right: max(12px,env(safe-area-inset-right));
   bottom: max(10px,env(safe-area-inset-bottom));
-  width: 42px;
-  height: 42px;
   display: grid;
   place-items: center;
   padding: 0;
-  border: 1px solid #ffffff24;
-  border-radius: 11px;
-  background: #111d;
-  color: var(--white);
-  box-shadow: 0 8px 22px #0009,inset 0 1px #ffffff14;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
   transition: transform .18s ease,background .18s ease,border-color .18s ease,opacity .18s ease;
 }
 
-.queue-toggle:active {
-  transform: scale(.93);
-}
-
 .device.queue-open .queue-toggle {
-  background: #173621;
   border-color: #1ed76088;
 }
 
 .queue-icon {
   position: relative;
-  width: 21px;
-  height: 18px;
   display: block;
 }
 
@@ -3055,9 +2741,7 @@ input:disabled {
   position: absolute;
   right: 0;
   width: 15px;
-  height: 2px;
   border-radius: 2px;
-  background: currentColor;
 }
 
 .queue-icon i:nth-child(1) {
@@ -3082,7 +2766,6 @@ input:disabled {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--green);
 }
 
 .queue-backdrop {
@@ -3263,13 +2946,6 @@ input:disabled {
 }
 
 @media (orientation:landscape) and (max-height:500px) and (max-width:1200px) {
-  .queue-toggle {
-    right: max(10px,env(safe-area-inset-right));
-    bottom: max(8px,env(safe-area-inset-bottom));
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-  }
   .queue-drawer {
     width: min(43vw,340px);
     min-width: 278px;
@@ -3420,7 +3096,6 @@ input:disabled {
   }
   .device[data-control="bar"] .transport {
     padding-left: calc(10px + env(safe-area-inset-left));
-    padding-right: calc(70px + env(safe-area-inset-right));
   }
 }
 
@@ -3534,11 +3209,9 @@ input:disabled {
     z-index: 5;
     left: 0;
     right: 0;
-    bottom: 47px;
     top: auto;
     width: auto;
     max-width: none!important;
-    height: 20px;
     margin: 0;
     transform: none;
     pointer-events: none;
@@ -3547,9 +3220,7 @@ input:disabled {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -9px;
     width: 100%;
-    height: 28px;
     margin: 0;
     pointer-events: auto;
   }
@@ -3570,7 +3241,6 @@ input:disabled {
   }
   .device[data-playback-bar="divider"] .transport {
     border-top: 0;
-    padding-top: 5px;
   }
   .device[data-playback-bar="divider"] .player-info h2 {
     font-size: clamp(34px,5.6vw,52px);
@@ -3586,7 +3256,6 @@ input:disabled {
   }
   .device[data-playback-bar="divider"][data-display="lyrics"] .lyrics-panel {
     height: 196px;
-    max-width: calc(100% - 56px);
     padding: 9px 14px;
   }
   .device[data-playback-bar="divider"] .lyrics-lines p {
@@ -3981,7 +3650,6 @@ input:disabled {
 
 .appearance-setting>span {
   color: #9a9a9a;
-  font-size: 9px;
   letter-spacing: .13em;
 }
 
@@ -4028,7 +3696,6 @@ input:disabled {
 }
 
 .theme-options button b {
-  font-size: 12px!important;
   line-height: 1.1;
   white-space: nowrap;
 }
@@ -4063,15 +3730,9 @@ input:disabled {
   .theme-options button {
     min-height: 34px!important;
   }
-  .theme-options button b {
-    font-size: 11px!important;
-  }
 }
 
 /* Organized setting groups and a full-width Lyric Style slider. */
-.controls-view .theme-picker {
-  display: block;
-}
 
 .settings-group {
   display: grid;
@@ -4095,7 +3756,6 @@ input:disabled {
 
 .settings-group-heading strong {
   color: var(--text-dim);
-  font-size: 11px;
   font-weight: 600;
 }
 
@@ -4130,9 +3790,6 @@ input:disabled {
   }
   .settings-group-heading {
     margin-bottom: 0;
-  }
-  .settings-group-heading strong {
-    font-size: 9px;
   }
   .theme-picker .settings-group-layout .appearance-setting:last-child,
   .theme-picker .settings-group-lyrics .lyric-offset-setting:last-child {
@@ -4254,25 +3911,7 @@ input:disabled {
 }
 
 .update-log-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(5,auto);
-  grid-auto-flow: column;
   gap: 0;
-  margin: 0;
-  padding: 6px 12px 12px;
-  overflow: auto;
-  max-height: calc(100dvh - 105px);
-  list-style: none;
-}
-
-.update-log-list li {
-  display: grid;
-  grid-template-columns: 78px minmax(0,1fr);
-  gap: 8px;
-  align-items: start;
-  padding: 9px 7px;
-  border-bottom: 1px solid #ffffff0b;
 }
 
 .update-log-list b {
@@ -4285,14 +3924,6 @@ input:disabled {
   color: #ccc;
   font-size: 10px;
   line-height: 1.3;
-}
-
-@media(max-width:620px) {
-  .update-log-list {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
-    grid-auto-flow: row;
-  }
 }
 
 .device.queue-open .queue-toggle,
@@ -4783,10 +4414,6 @@ input:disabled {
   height: 5px;
 }
 
-.device[data-layout-resolved="wide"] .playlist-grid {
-  grid-template-columns: repeat(auto-fill,minmax(160px,1fr));
-}
-
 .device[data-layout-resolved="wide"] .devices-layout {
   grid-template-columns: minmax(0,1.5fr) minmax(280px,.7fr);
 }
@@ -4848,61 +4475,15 @@ input:disabled {
 }
 
 /* Keep compact update versions separate from their descriptions. */
-.update-log-list li {
-  grid-template-columns: 58px minmax(0,1fr);
-  gap: 7px;
-}
-
-.update-log-list li>b {
-  min-width: 0;
-  font-size: calc(8px * var(--ui-font-scale));
-  line-height: 1.25;
-  white-space: nowrap;
-}
-
-.update-log-list li>span {
-  min-width: 0;
-}
-
-@media(orientation:landscape) and (max-height:500px) {
-  .update-log-list li {
-    grid-template-columns: 54px minmax(0,1fr);
-    gap: 6px;
-  }
-  .update-log-list li>b {
-    font-size: calc(7px * var(--ui-font-scale));
-  }
-}
 
 /* Update-log typography stays compact regardless of the UI Text scale. */
 .update-log-list li {
-  grid-template-columns: 55px minmax(0,1fr);
   gap: 9px;
-  padding: 9px 7px;
-}
-
-.update-log-list li>b {
-  font-size: 7px;
-  line-height: 1.35;
-  letter-spacing: .02em;
-}
-
-.update-log-list li>span {
-  font-size: 8px;
-  line-height: 1.42;
 }
 
 @media(orientation:landscape) and (max-height:500px) {
   .update-log-list li {
-    grid-template-columns: 52px minmax(0,1fr);
     gap: 8px;
-    padding: 8px 6px;
-  }
-  .update-log-list li>b {
-    font-size: 7px;
-  }
-  .update-log-list li>span {
-    font-size: 8px;
   }
 }
 
@@ -4918,27 +4499,16 @@ input:disabled {
   grid-template-columns: 60px minmax(0,1fr)!important;
   column-gap: 10px!important;
   align-items: start!important;
-  padding: 9px 7px!important;
 }
 
 .update-log-list li>b {
-  display: block!important;
   width: auto!important;
   min-width: 0!important;
-  margin: 0!important;
-  font-size: 7px!important;
-  line-height: 1.35!important;
   letter-spacing: .01em!important;
-  white-space: nowrap!important;
 }
 
 .update-log-list li>span {
-  display: block!important;
   min-width: 0!important;
-  margin: 0!important;
-  font-size: 8px!important;
-  line-height: 1.42!important;
-  overflow-wrap: break-word!important;
   word-break: normal!important;
 }
 
@@ -4946,13 +4516,6 @@ input:disabled {
   .update-log-list li {
     grid-template-columns: 56px minmax(0,1fr)!important;
     column-gap: 9px!important;
-    padding: 8px 6px!important;
-  }
-  .update-log-list li>b {
-    font-size: 7px!important;
-  }
-  .update-log-list li>span {
-    font-size: 8px!important;
   }
 }
 
@@ -5168,10 +4731,6 @@ input:disabled {
 }
 
 /* Preserve glyph descenders in every title layout while retaining truncation. */
-.player-info h2 {
-  box-sizing: content-box;
-  padding-bottom: .12em;
-}
 
 /* Official Turntable Remote brand mark. */
 .brand-logo {
@@ -5394,7 +4953,6 @@ input:disabled {
 
 .redirect-uri {
   display: flex;
-  gap: .5rem;
   align-items: center;
 }
 
@@ -5679,11 +5237,6 @@ input:disabled {
   text-align: left;
 }
 
-.playlist-card.dragging {
-  opacity: .5;
-  transform: scale(.96);
-}
-
 .playlist-card[draggable="true"] .playlist-play {
   cursor: grab;
 }
@@ -5716,9 +5269,6 @@ input:disabled {
 .playlist-play>b,
 .playlist-play>small {
   display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .playlist-play>b {
@@ -5729,7 +5279,6 @@ input:disabled {
 
 .playlist-play>small {
   margin-top: 3px;
-  color: #8d8d8d;
   font-size: 10px;
 }
 
@@ -5806,7 +5355,6 @@ input:disabled {
   z-index: 4;
   left: 0;
   right: 0;
-  height: 3px;
   border-radius: 999px;
   background: var(--green);
   box-shadow: 0 0 12px var(--green);
@@ -5950,7 +5498,5 @@ input:disabled {
 @keyframes lyrics-track-marquee {
   from {
     transform: translateX(0);
-  }
-  to {
   }
 }

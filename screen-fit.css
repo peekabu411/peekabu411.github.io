@@ -92,7 +92,6 @@
 .controls-view .settings-group-display {
   display: grid!important;
   margin-top: 7px!important;
-  padding: 8px 10px!important;
   gap: 4px 10px!important;
 }
 
@@ -220,9 +219,6 @@
   .controls-view .settings-group {
     grid-template-columns: repeat(2,minmax(0,1fr));
   }
-  .controls-view .settings-group-display {
-    padding: 7px 9px!important;
-  }
   .controls-view .theme-options button span {
     font-size: 7px!important;
   }
@@ -302,7 +298,6 @@
 
 /* Display follows the same open divider layout as every other Settings group. */
 .controls-view .settings-group-display {
-  margin: 0!important;
   padding: 6px 0 8px!important;
   border: 0!important;
   border-top: 1px solid #ffffff12!important;

@@ -2,11 +2,6 @@
   display: none!important;
 }
 
-.settings-help-preview-item {
-  flex-basis: 118px;
-  max-width: 170px;
-}
-
 .settings-help-device {
   position: relative;
   aspect-ratio: 1.76;
@@ -70,11 +65,9 @@
 
 .preview-copy b {
   font-size: 8px;
-  line-height: 1.15;
 }
 
 .preview-copy small {
-  margin-top: 3px;
   color: var(--text-dim);
   font-size: 6px;
 }
@@ -176,9 +169,6 @@
   display: block;
   position: absolute;
   z-index: 5;
-  right: -16%;
-  top: 12%;
-  width: 48%;
   aspect-ratio: 1;
   border: 8px solid #0c0c0c;
   border-radius: 50%;
@@ -187,13 +177,6 @@
 }
 
 .visual-dial .preview-copy,
-.visual-dial .preview-progress {
-  right: 20%;
-}
-
-.visual-dial .preview-controls {
-  right: 18%;
-}
 
 .visual-control-bar .preview-volume-bar {
   display: block;
@@ -338,12 +321,6 @@
 
 .visual-text-large .preview-copy small {
   font-size: 8px;
-}
-
-@media(orientation:landscape) and (max-height:500px) {
-  .settings-help-preview-item {
-    flex-basis: 105px;
-  }
 }
 
 /* Refined visual-guide proportions and breathing room. */

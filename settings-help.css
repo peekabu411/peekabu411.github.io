@@ -122,7 +122,6 @@
 
 .settings-help-preview {
   display: flex;
-  gap: 9px;
   margin: 12px 0;
   overflow-x: auto;
   padding: 2px 1px 6px;
@@ -135,12 +134,10 @@
 
 .settings-help-preview-item {
   flex: 1 0 98px;
-  max-width: 145px;
   margin: 0;
 }
 
 .settings-help-preview-item figcaption {
-  margin-top: 5px;
   color: var(--text-dim);
   font-size: 9px;
   font-weight: 800;
@@ -148,13 +145,10 @@
 }
 
 .settings-help-device {
-  position: relative;
   width: 100%;
-  aspect-ratio: 1.75;
   overflow: hidden;
   border: 1px solid #ffffff1f;
   border-radius: 9px;
-  background: linear-gradient(135deg,#302018,#090909 70%);
   box-shadow: inset 0 1px #ffffff10;
 }
 
@@ -196,11 +190,6 @@
   bottom: 8%;
   height: 9%;
   background: radial-gradient(circle at 50%,var(--white) 0 10%,transparent 12%),radial-gradient(circle at 25%,var(--text-dim) 0 7%,transparent 9%),radial-gradient(circle at 75%,var(--text-dim) 0 7%,transparent 9%);
-}
-
-.visual-vinyl .preview-art {
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 8px #111,0 4px 9px var(--black);
 }
 
 .visual-dial::after {
@@ -268,21 +257,6 @@
 
 .visual-artwork-bg {
   background: linear-gradient(135deg,#a4562c,#15100d 70%);
-}
-
-.visual-solid-bg {
-  background: #38251d;
-}
-
-.visual-progress-default .preview-progress {
-  bottom: 25%;
-}
-
-.visual-progress-divider .preview-progress {
-  left: 0;
-  right: 0;
-  bottom: 18%;
-  height: 3px;
 }
 
 .visual-weight-light .preview-progress {
@@ -402,7 +376,6 @@
 
 .settings-help-details {
   display: grid;
-  gap: 5px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -413,7 +386,6 @@
   padding-left: 13px;
   color: #a5a5a5;
   font-size: 10px;
-  line-height: 1.35;
 }
 
 .settings-help-details li::before {
@@ -462,14 +434,9 @@
   }
   .settings-help-preview {
     margin: 8px 0;
-    gap: 7px;
-  }
-  .settings-help-preview-item {
-    flex-basis: 88px;
   }
   .settings-help-details {
     grid-template-columns: 1fr 1fr;
-    gap: 4px 15px;
   }
   .settings-help-details li {
     font-size: 8px;
@@ -495,9 +462,6 @@
   }
   .settings-help-card {
     max-height: calc(100dvh - 30px);
-  }
-  .settings-help-preview-item {
-    flex-basis: 110px;
   }
 }
 

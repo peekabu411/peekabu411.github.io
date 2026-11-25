@@ -771,7 +771,6 @@
     padding: 10px 16px!important;
   }
   .now-playing-guide-card {
-    width: min(820px,calc(100vw - 32px))!important;
     max-height: calc(100svh - 20px)!important;
     padding: 14px 18px!important;
     border-radius: 18px!important;
@@ -827,7 +826,6 @@
   .guide-demo-target-body {
     grid-template-columns: 78px minmax(115px,1fr) 36px 38px!important;
     gap: 8px!important;
-    padding-right: 42px!important;
   }
   .guide-demo-target-art {
     width: 78px!important;
@@ -870,7 +868,6 @@
     font-size: 6px!important;
   }
   .guide-demo-target-dial {
-    width: 42px!important;
     height: 80px!important;
   }
   .guide-demo-target-dial>div {
@@ -884,8 +881,6 @@
     border-width: 2px!important;
   }
   .guide-demo-target-dial i {
-    right: 6px!important;
-    bottom: 9px!important;
     width: 6px!important;
     height: 22px!important;
   }
@@ -917,7 +912,6 @@
 @media (orientation:landscape) and (max-height:540px) {
   .now-playing-guide-visual>.guide-demo-target-layout {
     justify-self: stretch!important;
-    width: calc(100% - 36px)!important;
   }
 }
 
@@ -925,13 +919,6 @@
 @media (orientation:landscape) and (max-height:540px) {
   .now-playing-guide-visual {
     position: relative!important;
-  }
-  .now-playing-guide-visual .guide-demo-target-body {
-    position: static!important;
-  }
-  .now-playing-guide-visual .guide-demo-target-dial {
-    right: 0!important;
-    top: 65%!important;
   }
 }
 
