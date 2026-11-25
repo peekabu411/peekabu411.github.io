@@ -145,21 +145,41 @@ async function swipe(page, x, y, dy) {
     // Divider playback bar: row under the song (D1), progress line pinned to the bottom edge.
     await page.evaluate(() => applyAppearance(albumStyle, controlStyle, "info", lyricsBackground, playerBackgroundStyle, lyricStyle, "divider"));
     assert.equal(await parentOf(page, ".transport"), ".track-copy");
-    const seek = await box(page, "#seek"), artist = await box(page, "#artist"), dividerRow = await box(page, ".transport"), dividerArt = await box(page, ".art-stage");
-    const line = await page.evaluate(() => {
-      const timeline = document.querySelector(".timeline"), before = getComputedStyle(timeline, "::before"), box = timeline.getBoundingClientRect();
-      return { bottom: box.bottom, height: parseFloat(before.height), width: box.width, image: before.backgroundImage, progress: timeline.style.getPropertyValue("--seek-progress") };
-    });
-    assert(line.bottom >= 389 && line.height === 6 && line.width >= 840, "progress line spans the bottom edge");
-    assert(line.image.includes("gradient") && line.progress, "progress line is drawn by the timeline and follows the song position");
-    assert(seek.y + seek.height >= 388 && seek.width >= 840, "seek area covers the line when there is no home bar");
-    // iPhone home bar (simulated 21px): the line sits just above the strip and the touch area covers the line
-    // without reaching into the strip, so a drag on the line never begins where iOS switches apps.
+    const artist = await box(page, "#artist"), dividerRow = await box(page, ".transport"), dividerArt = await box(page, ".art-stage");
+    // Mini player pill: centred on the screen, just above the bottom edge (or the home bar), clear of the artwork.
+    const pill = await box(page, ".timeline");
+    assert(Math.abs(pill.x + pill.width / 2 - 422) < 1 && pill.width < 320 && pill.y + pill.height <= 387 && pill.y + pill.height >= 380, `pill centred above the bottom edge (${JSON.stringify(pill)})`);
+    assert(pill.y >= dividerArt.y + dividerArt.height || pill.x >= dividerArt.x + dividerArt.width, "pill clears the artwork");
+    assert(await page.locator("#elapsed").isVisible() && await page.locator("#duration").isVisible(), "pill shows the times");
     await page.evaluate(() => document.querySelector(".timeline").style.setProperty("--home-bar", "21px"));
-    const homeSeek = await box(page, "#seek"), homeLine = await page.evaluate(() => document.querySelector(".timeline").getBoundingClientRect().bottom);
-    assert(Math.abs(homeLine - 366) < 1.5, `line sits just above the home bar (${homeLine})`);
-    assert(Math.abs(homeSeek.y + homeSeek.height - 369) < 1 && homeSeek.y < homeLine - 6 - 8, `touch area starts above the home bar (${JSON.stringify(homeSeek)})`);
+    const homePill = await box(page, ".timeline");
+    assert(homePill.y + homePill.height <= 390 - 21 - 2, `pill sits fully above the home bar (${JSON.stringify(homePill)})`);
     await page.evaluate(() => document.querySelector(".timeline").style.removeProperty("--home-bar"));
+    // Dragging the pill straight away lifts it into the full scrubber and seeks from where the song was.
+    const seeksBefore = calls.filter(call => call.path.endsWith("/seek")).length;
+    const valueBefore = Number(await page.locator("#seek").inputValue());
+    await page.mouse.move(pill.x + pill.width / 2, pill.y + pill.height / 2);
+    await page.mouse.down();
+    assert(await page.evaluate(() => document.querySelector(".timeline").classList.contains("lifted")), "pressing the pill lifts the scrubber");
+    for (let step = 1; step <= 6; step += 1) await page.mouse.move(pill.x + pill.width / 2 + step * 25, pill.y + pill.height / 2);
+    await page.mouse.up();
+    const valueAfter = Number(await page.locator("#seek").inputValue());
+    assert(valueAfter > valueBefore && valueAfter - valueBefore < Number(await page.locator("#seek").getAttribute("max")) * .4, `drag scrubs forward relative to the song position (${valueBefore} -> ${valueAfter})`);
+    await page.waitForTimeout(400);
+    assert.equal(calls.filter(call => call.path.endsWith("/seek")).length, seeksBefore + 1, "drag sends one seek");
+    const lifted = await box(page, ".timeline");
+    assert(lifted.width >= 800 && lifted.y + lifted.height <= 387, `lifted scrubber spans the screen (${JSON.stringify(lifted)})`);
+    await page.waitForFunction(() => !document.querySelector(".timeline").classList.contains("lifted"), null, { timeout: 4000 });
+    // A plain tap only lifts it (no seek); a tap on the lifted scrubber seeks to that point.
+    await page.mouse.click(pill.x + pill.width / 2, pill.y + pill.height / 2);
+    assert(await page.evaluate(() => document.querySelector(".timeline").classList.contains("lifted")), "tap lifts the scrubber");
+    await page.waitForTimeout(400);
+    assert.equal(calls.filter(call => call.path.endsWith("/seek")).length, seeksBefore + 1, "tap to lift does not seek");
+    const liftedSeek = await box(page, "#seek");
+    await page.mouse.click(liftedSeek.x + liftedSeek.width * .75, liftedSeek.y + liftedSeek.height / 2);
+    const tapped = Number(await page.locator("#seek").inputValue()), maximum = Number(await page.locator("#seek").getAttribute("max"));
+    assert(Math.abs(tapped / maximum - .75) < .03, `tap on the lifted scrubber seeks there (${tapped / maximum})`);
+    await page.waitForFunction(() => !document.querySelector(".timeline").classList.contains("lifted"), null, { timeout: 4000 });
     assert(dividerRow.y >= artist.y + artist.height, "row sits under the artist");
     assert(dividerRow.x >= dividerArt.x + dividerArt.width, "row does not overlap the artwork");
     await page.evaluate(() => applyAppearance(albumStyle, controlStyle, "lyrics", lyricsBackground, playerBackgroundStyle, lyricStyle, "divider"));

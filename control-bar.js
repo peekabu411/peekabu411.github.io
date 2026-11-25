@@ -78,7 +78,7 @@
   const SHOW_ZONE = 76;
   let gesture = null;
   let suppressClickUntil = 0;
-  function isInteractive(target) { return !!target.closest("button,input,a[href],.album-art,.dial-rail,.queue-drawer"); }
+  function isInteractive(target) { return !!target.closest("button,input,a[href],.album-art,.dial-rail,.queue-drawer,.timeline"); }
   remoteShell.addEventListener("pointerdown", (event) => {
     gesture = null;
     if (remoteShell.dataset.currentView !== "player" || remoteShell.classList.contains("queue-open")) return;
@@ -155,22 +155,66 @@
     playButton.click();
   });
 
-  // Divider playback bar while hidden: the visible line is drawn by the timeline itself so the
-  // invisible slider can sit above the iPhone home bar. Mirror the slider's progress onto it.
+  // Divider playback bar while hidden: the progress line is a small pill centred above the home bar.
+  // Tapping it lifts a full-width scrubber; dragging it lifts and scrubs straight away (relative to
+  // where the finger started, so the song does not jump). Once lifted, a tap or drag seeks to the
+  // finger position. It tucks back into the pill shortly after the finger lifts.
   const seekInput = document.getElementById("seek");
   const timelineEl = seekInput?.closest(".timeline");
   if (seekInput && timelineEl) {
-    const mirrorProgress = () => {
-      const value = seekInput.style.getPropertyValue("--seek-progress");
-      if (value) timelineEl.style.setProperty("--seek-progress", value);
+    let scrub = null;
+    let tuckTimer = 0;
+    const pillActive = () => state === "hidden" && remoteShell.dataset.playbackBar === "divider";
+    const tuck = (delay) => {
+      clearTimeout(tuckTimer);
+      tuckTimer = setTimeout(() => { if (!scrub) timelineEl.classList.remove("lifted"); }, delay);
     };
-    new MutationObserver(mirrorProgress).observe(seekInput, { attributes: true, attributeFilter: ["style"] });
-    mirrorProgress();
-    const endSeek = () => timelineEl.classList.remove("seeking");
-    seekInput.addEventListener("pointerdown", () => timelineEl.classList.add("seeking"));
-    seekInput.addEventListener("pointerup", endSeek);
-    seekInput.addEventListener("pointercancel", endSeek);
-    seekInput.addEventListener("blur", endSeek);
+    const valueAt = (clientX) => {
+      const box = seekInput.getBoundingClientRect();
+      const fraction = Math.max(0, Math.min(1, (clientX - box.left) / (box.width || 1)));
+      return fraction * (Number(seekInput.max) || 0);
+    };
+    const setSeek = (value) => {
+      const maximum = Number(seekInput.max) || 0;
+      seekInput.value = String(Math.max(0, Math.min(maximum, value)));
+      seekInput.dispatchEvent(new Event("input", { bubbles: true }));
+    };
+    timelineEl.addEventListener("pointerdown", (event) => {
+      if (!pillActive() || seekInput.disabled || (event.pointerType === "mouse" && event.button !== 0)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      try { timelineEl.setPointerCapture(event.pointerId); } catch {}
+      const wasLifted = timelineEl.classList.contains("lifted");
+      clearTimeout(tuckTimer);
+      timelineEl.classList.add("lifted");
+      scrub = { id: event.pointerId, x: event.clientX, start: Number(seekInput.value), wasLifted, moved: false };
+      if (wasLifted) setSeek(valueAt(event.clientX));
+    });
+    timelineEl.addEventListener("pointermove", (event) => {
+      if (!scrub || scrub.id !== event.pointerId) return;
+      const dx = event.clientX - scrub.x;
+      if (!scrub.moved && Math.abs(dx) < 4) return;
+      scrub.moved = true;
+      if (scrub.wasLifted) setSeek(valueAt(event.clientX));
+      else setSeek(scrub.start + dx / (seekInput.getBoundingClientRect().width || 1) * (Number(seekInput.max) || 0));
+    });
+    const endScrub = (event, cancelled) => {
+      if (!scrub || scrub.id !== event.pointerId) return;
+      const { moved, wasLifted } = scrub;
+      scrub = null;
+      if (cancelled) { seekInput.onpointercancel?.(event); tuck(1500); return; }
+      if (moved || wasLifted) {
+        seekInput.dispatchEvent(new Event("change", { bubbles: true }));
+        if (typeof physicalFeedback === "function") physicalFeedback("press");
+        tuck(1800);
+      } else {
+        tuck(3500);
+      }
+    };
+    timelineEl.addEventListener("pointerup", (event) => endScrub(event, false));
+    timelineEl.addEventListener("pointercancel", (event) => endScrub(event, true));
+    window.addEventListener("turntable:control-bar", () => { if (!pillActive()) timelineEl.classList.remove("lifted"); });
+    new MutationObserver(() => { if (!pillActive()) timelineEl.classList.remove("lifted"); }).observe(remoteShell, { attributes: true, attributeFilter: ["data-playback-bar"] });
   }
 
   applyControlBarState(state);
