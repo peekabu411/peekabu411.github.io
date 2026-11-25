@@ -602,46 +602,4 @@
 .lyrics-track-marquee span{display:block;width:max-content;min-width:100%;transform:translateX(0);text-align:right}
 .device[data-current-view="player"][data-display="lyrics"] .lyrics-track-marquee{visibility:visible}
 .lyrics-track-marquee.is-overflowing span{animation:lyrics-track-marquee 18s linear infinite}.lyrics-track-marquee.is-overflowing span::after{content:attr(data-loop-text);display:inline-block;margin-left:34px}
-@keyframes lyrics-track-marquee{from{transform:translateX(0)}to{transform:translateX(var(--lyrics-marquee-shift)}}}
-@media (orientation:landscape) and (max-height:500px){.lyrics-track-marquee{top:calc(max(7px,env(safe-area-inset-top)) + 7px);right:calc(40px + env(safe-area-inset-right));width:min(34vw,240px);font-size:9px;line-height:14px}}
-
-/* Match the volume reveal language with a restrained downward top-bar arrow. */
-.bar-handle span{display:none!important}
-.bar-handle::after{content:"\2304";display:block;color:#fff;font-size:29px;font-weight:700;line-height:1;text-shadow:0 2px 8px #000,0 0 2px #000;opacity:.25;transform:translateY(-10px)}
-/* Dashboard shortcuts stay compact so setup instructions remain easy to scan. */
-.setup-step{position:relative}
-.dashboard-step>div{padding-right:44px}
-.setup-step .dashboard-action{position:absolute;top:12px;right:12px;width:34px;min-height:34px;padding:0;border-radius:10px;justify-content:center}
-.setup-step .dashboard-action i{font-size:18px}
-/* Force the compact dashboard actions above legacy full-width setup-button rules. */
-.setup-steps .dashboard-step .dashboard-action{position:absolute!important;top:12px!important;right:12px!important;display:grid!important;place-items:center!important;width:34px!important;min-width:34px!important;max-width:34px!important;height:34px!important;min-height:34px!important;margin:0!important;padding:0!important;border-radius:10px!important}
-.setup-steps .dashboard-step .dashboard-action i{margin:0!important;font-size:18px!important;line-height:1!important}
-.setup-steps .dashboard-step .dashboard-note{display:block!important;margin:8px 0 0!important;color:#ff4f5d!important;font-size:11px!important;font-weight:800!important;line-height:1.4!important}
-/* Compact interaction hints remain optional through the existing guide setting. */
-.topbar-hint{position:absolute;z-index:12;top:29px;left:50%;display:none;margin:0;transform:translateX(-50%);color:#fff;font-size:8px;font-weight:800;letter-spacing:.12em;line-height:1;white-space:nowrap;opacity:.45;pointer-events:none}
-.device.topbar-hidden .topbar-hint{display:block}
-@media (orientation:landscape) and (max-height:500px) and (max-width:1200px){.topbar-hint{top:25px}.device[data-control="dial"] .dial-rail>.dial-swipe-hint{display:block;position:absolute;top:calc(50% + 105px);left:0;right:0;margin:0;text-align:center;color:#777;font-size:8px;letter-spacing:.12em;line-height:1.3}}
-/* Keep the reveal chevron, lyrics title, and direct interaction hints independent of tab state. */
-.bar-handle::after{display:none!important}
-.device .bar-handle>.topbar-chevron{display:block!important;width:auto!important;height:auto!important;margin:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;color:#fff;font-size:29px;font-weight:700;line-height:1;text-shadow:0 2px 8px #000,0 0 2px #000;opacity:.25;transform:translateY(-10px)}
-.device.topbar-hidden .topbar-hint{display:block!important}
-@media (orientation:landscape) and (max-width:1200px){.device[data-control="dial"] .dial-rail>.dial-swipe-hint{display:block!important;position:absolute;top:calc(50% + 105px);left:0;right:0;margin:0;text-align:center;color:#777;font-size:8px;font-weight:700;letter-spacing:.12em;line-height:1.3}}
-/* Dashboard actions are true square icon buttons. */
-.setup-steps .dashboard-step .dashboard-action{inline-size:36px!important;block-size:36px!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;aspect-ratio:1/1!important;border-radius:8px!important;overflow:hidden!important}
-/* Persistent direct labels: no tab state or optional-guide setting can hide them. */
-.device .topbar-hint{display:block!important;top:29px!important}
-.device .dial-rail>.dial-swipe-hint{display:block!important;margin:0;text-align:center;color:#777;font-size:8px;font-weight:700;letter-spacing:.12em;line-height:1.3}
-@media (orientation:landscape) and (max-width:1200px){.device .topbar-hint{top:25px!important}.device .dial-rail>.dial-swipe-hint{position:absolute;top:calc(50% + 105px);left:0;right:0}}
-/* I.9.7.21: force title fallback while lyrics are unresolved or unavailable. */
-.device[data-lyrics-fallback="true"] .lyrics-panel,.lyrics-panel[hidden]{display:none!important}
-.device[data-lyrics-fallback="true"] #context,.device[data-lyrics-fallback="true"] #title,.device[data-lyrics-fallback="true"] #artist{display:block!important}
-/* I.9.7.24: smooth title/lyrics availability handoff. */
-.device[data-display="info"] .track-copy{animation:track-copy-arrive .24s cubic-bezier(.22,.61,.36,1) both}
-.device[data-display="lyrics"] .lyrics-panel{animation:lyrics-panel-arrive .26s cubic-bezier(.22,.61,.36,1) both}
-@keyframes track-copy-arrive{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
-@keyframes lyrics-panel-arrive{from{opacity:0;transform:translateY(7px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
-@media (prefers-reduced-motion:reduce){.device[data-display="info"] .track-copy,.device[data-display="lyrics"] .lyrics-panel{animation:none}}
-/* I.9.7.25: Spotify request-rate warning. */
-.rate-warning[hidden]{display:none!important}.rate-warning{position:fixed;z-index:10020;inset:0;display:grid;place-items:center;padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));background:#000b;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.rate-warning-card{width:min(420px,100%);padding:22px;border:1px solid #1ed76066;border-radius:18px;background:linear-gradient(145deg,#1b251e,#0a0d0b);box-shadow:0 28px 80px #000}.rate-warning-card small{display:block;color:var(--green);font-size:9px;font-weight:800;letter-spacing:.15em}.rate-warning-card h2{margin:7px 0 0;color:#fff;font-size:24px;letter-spacing:-.03em}.rate-warning-card p{margin:9px 0 18px;color:#c1c1c1;font-size:13px;line-height:1.45}.rate-warning-card button{width:100%;min-height:44px;border:0;border-radius:11px;background:var(--green);color:#06150b;font-weight:850}
-@media (orientation:landscape) and (max-height:500px){.rate-warning-card{width:min(520px,calc(100vw - 36px));padding:16px}.rate-warning-card h2{font-size:20px}.rate-warning-card p{margin:6px 0 12px;font-size:11px}.rate-warning-card button{min-height:38px}}
-.connection-message { font: 16px system-ui; padding: 2rem; background: #050505; color: #fff; }
+@keyframes lyrics-track-marquee{from{transform:translateX(0)}to{}}
