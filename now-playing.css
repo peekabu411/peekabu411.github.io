@@ -1,0 +1,61 @@
+/* I.10.8 Now Playing polish. Loaded last. */
+
+/* The Spotify shortcut matches the Liked Songs heart in the opposite corner: same size, ring and
+   background, so the two read as a pair. */
+#remote .spotify-track-link {
+  top: max(12px, env(safe-area-inset-top));
+  right: max(14px, env(safe-area-inset-right));
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ffffff24;
+  background: #0a0a0ac9;
+  color: #8a8a8a;
+  box-shadow: 0 3px 14px #0006;
+  opacity: 1;
+}
+
+#remote .spotify-track-link.track-available {
+  color: var(--green);
+}
+
+#remote .spotify-track-link svg {
+  width: 26px;
+  height: 26px;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  #remote .spotify-track-link {
+    top: max(7px, env(safe-area-inset-top));
+    right: max(8px, env(safe-area-inset-right));
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Gesture hints retire one at a time after the gesture has been used (gesture-hints.js). */
+#remote.hint-retired-skip .player-view .swipe-hint,
+#remote.hint-retired-adjust .dial-rail > .dial-swipe-hint,
+#remote.hint-retired-tabs .topbar-hint {
+  display: none !important;
+}
+
+/* iPhone SE in landscape is narrower than 760px, so an older narrow-screen rule placed the volume
+   control in a third grid row below the screen. That pushed the dial down over the control bar.
+   Landscape phones position it against the whole player instead, as on larger iPhones. */
+@media (orientation: landscape) and (max-height: 500px) {
+  #remote .dial-rail {
+    grid-row: auto;
+    border-top: 0;
+  }
+}
+
+/* Bar volume control on landscape phones: start it below the Spotify button so the two never touch. */
+@media (orientation: landscape) and (max-height: 500px) {
+  #remote[data-current-view="player"][data-control="bar"] .dial-rail {
+    top: 60px !important;
+  }
+  /* With the Divider playback line, end the bar above that line. */
+  #remote[data-current-view="player"][data-control="bar"][data-playback-bar="divider"]:not([data-control-bar="hidden"]) .dial-rail {
+    bottom: 82px !important;
+  }
+}

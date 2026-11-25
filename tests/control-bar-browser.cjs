@@ -82,7 +82,8 @@ async function swipe(page, x, y, dy) {
     await page.locator('[data-control-bar-choice="hidden"]').click();
     assert.equal(await page.locator("#remote").getAttribute("data-control-bar"), "hidden");
     assert.equal(await page.locator('[data-control-bar-choice="hidden"]').getAttribute("aria-pressed"), "true");
-    assert.equal(await page.locator("#preset-save").textContent(), "Save*");
+    // The preset's unsaved mark updates just after the click (preset-controls.js checks on a timer).
+    await page.waitForFunction(() => document.querySelector("#preset-save").textContent === "Save*", null, { timeout: 2000 });
     await page.locator("#preset-save").click();
     assert.equal(await page.locator("#preset-save").textContent(), "Saved");
     await page.reload();

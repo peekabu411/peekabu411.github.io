@@ -194,7 +194,7 @@ $("spotify-track-link").onclick = (event) => {
   else location.assign(destination);
 };
 $("playlist-organize").onclick = () => { playlistOrganizerMode = !playlistOrganizerMode; $("playlist-organize").classList.toggle("active", playlistOrganizerMode); $("playlist-organize").setAttribute("aria-pressed", String(playlistOrganizerMode)); $("playlist-organize").textContent = playlistOrganizerMode ? "Done" : "Organize"; $("playlist-reorder-hint").hidden = !playlistOrganizerMode; document.querySelector(".playlist-view").classList.toggle("organizing", playlistOrganizerMode); renderPlaylists(playlistLibrary); };
-$("bar-handle").onclick = () => { physicalFeedback("press"); setTopBarHidden(!remote.classList.contains("topbar-hidden")); };
+$("bar-handle").onclick = () => { physicalFeedback("press"); const opening = remote.classList.contains("topbar-hidden"); setTopBarHidden(!opening); if (opening) window.turntableHints?.used("tabs"); };
 document.addEventListener("pointerup", (event) => {
   if (!remote.classList.contains("topbar-hidden") || event.button !== 0 || event.target.closest("button,input,select,a[href],#fullscreen-prompt,#rate-warning")) return;
   const handleBounds = $("bar-handle").getBoundingClientRect();
@@ -203,6 +203,7 @@ document.addEventListener("pointerup", (event) => {
   if (!insideExpandedHandle) return;
   physicalFeedback("press");
   setTopBarHidden(false);
+  window.turntableHints?.used("tabs");
 });
 $("queue-toggle").onclick = () => { physicalFeedback("press"); const opening = !remote.classList.contains("queue-open"); setQueueDrawer(opening); if (opening) loadQueue(); };
 $("queue-close").onclick = $("queue-backdrop").onclick = () => setQueueDrawer(false);
@@ -283,7 +284,7 @@ screen.addEventListener("pointerdown", (event) => {
 screen.addEventListener("pointermove", (event) => { if (barGesture) barGesture.dy = event.clientY - barGesture.y; });
 screen.addEventListener("pointerup", () => {
   if (!barGesture) return;
-  if (barGesture.dy > 42) { physicalFeedback("press"); setTopBarHidden(false); }
+  if (barGesture.dy > 42) { physicalFeedback("press"); setTopBarHidden(false); window.turntableHints?.used("tabs"); }
   if (barGesture.dy < -42) { physicalFeedback("press"); setTopBarHidden(true); }
   barGesture = null;
 });
@@ -327,6 +328,7 @@ dial.addEventListener("pointerup", (event) => {
     updateVolume(dialVolumeFromDrag(event.clientY, dialStart));
     dialVolumeHoldUntil = performance.now() + 1800;
     setting({ volume_percent: Number($("volume").value) }, false);
+    window.turntableHints?.used("adjust");
   }
   else if (dialStart.pressZone) {
     physicalFeedback("tick"); dialTapCount += 1; dial.dataset.pendingTaps = String(dialTapCount);
@@ -417,6 +419,7 @@ async function finishAlbumSwipe() {
   albumCard.classList.remove("swiping");
   if (!action || blocked) { resetAlbumCard(); return; }
   physicalFeedback("press");
+  window.turntableHints?.used("skip");
   if (action === "next") previewQueuedTrack();
   if (albumStyle === "vinyl") {
     albumCard.style.transform = ""; albumCard.style.opacity = "";
