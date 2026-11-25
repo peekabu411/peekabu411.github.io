@@ -303,7 +303,7 @@
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
   // Download every app script at once; async=false still runs them in this order.
-  const APP_SCRIPTS = ["./app.js?v=I.10.2", "./viewport-resume.js?v=I.10.2", "./track-likes.js?v=I.10.2", "./control-bar.js?v=I.10.2", "./now-playing-tour.js?v=I.10.2", "./settings-help.js?v=I.10.2", "./preset-controls.js?v=I.10.2"];
+  const APP_SCRIPTS = ["./app.js?v=I.10.3", "./viewport-resume.js?v=I.10.3", "./track-likes.js?v=I.10.3", "./control-bar.js?v=I.10.3", "./now-playing-tour.js?v=I.10.3", "./settings-help.js?v=I.10.3", "./preset-controls.js?v=I.10.3"];
   callback().then(async handled => { if (handled) return; await Promise.all(APP_SCRIPTS.map(load)); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
 })();
 

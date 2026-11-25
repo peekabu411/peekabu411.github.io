@@ -1,29 +1,269 @@
 /* Now Playing spotlight tour (now-playing-tour.js). */
-.np-tour{position:fixed;inset:0;z-index:10001;color:#f8f8f8;font-family:inherit;touch-action:none}
-.np-tour-hole{position:fixed;border-radius:20px;box-shadow:0 0 0 200vmax rgba(0,0,0,.74);outline:2px solid #1ed760;outline-offset:2px;pointer-events:none;transition:left .32s cubic-bezier(.2,.8,.2,1),top .32s cubic-bezier(.2,.8,.2,1),width .32s cubic-bezier(.2,.8,.2,1),height .32s cubic-bezier(.2,.8,.2,1)}
-.np-tour-hole[hidden]{display:block;outline:0;width:0!important;height:0!important}
-.np-tour-card{position:fixed;box-sizing:border-box;padding:14px 16px 14px;border:1px solid #ffffff22;border-radius:20px;background:linear-gradient(145deg,#202020,#121212);box-shadow:0 20px 50px #000a;outline:0;transition:left .32s cubic-bezier(.2,.8,.2,1),top .32s cubic-bezier(.2,.8,.2,1)}
-.np-tour-card header{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.np-tour-card header small{color:#1ed760;font-size:10px;font-weight:800;letter-spacing:.15em}
-.np-tour-card header span{color:#9a9a9a;font-size:11px;font-weight:700;letter-spacing:.08em}
-.np-tour-card h2{margin:5px 0 6px;font-size:20px;line-height:1.1;letter-spacing:-.03em;font-weight:800}
-.np-tour-card p{margin:0;color:#d9d9d9;font-size:13.5px;line-height:1.4}
-.np-tour-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
-.np-tour-actions button{min-height:36px;padding:0 14px;border:1px solid #ffffff1f;border-radius:999px;background:#262626;color:#f2f2f2;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
-.np-tour-actions button[hidden]{display:none}
-.np-tour-actions button.primary{border-color:#1ed760;background:#1ed760;color:#000}
-.np-tour-actions button:first-child{margin-right:auto;background:transparent;border-color:transparent;color:#a8a8a8}
-.np-tour-card button:focus-visible{outline:2px solid #fff;outline-offset:2px}
-@media (min-width:1000px) and (min-height:650px){.np-tour-card{padding:18px 20px}.np-tour-card h2{font-size:24px}.np-tour-card p{font-size:15px}}
+.np-tour {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  color: var(--text);
+  font-family: inherit;
+  touch-action: none;
+}
+
+.np-tour-hole {
+  position: fixed;
+  border-radius: 20px;
+  box-shadow: 0 0 0 200vmax rgba(0,0,0,.74);
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+  pointer-events: none;
+  transition: left .32s cubic-bezier(.2,.8,.2,1),top .32s cubic-bezier(.2,.8,.2,1),width .32s cubic-bezier(.2,.8,.2,1),height .32s cubic-bezier(.2,.8,.2,1);
+}
+
+.np-tour-hole[hidden] {
+  display: block;
+  outline: 0;
+  width: 0!important;
+  height: 0!important;
+}
+
+.np-tour-card {
+  position: fixed;
+  box-sizing: border-box;
+  padding: 14px 16px 14px;
+  border: 1px solid #ffffff22;
+  border-radius: 20px;
+  background: linear-gradient(145deg,#202020,#121212);
+  box-shadow: 0 20px 50px #000a;
+  outline: 0;
+  transition: left .32s cubic-bezier(.2,.8,.2,1),top .32s cubic-bezier(.2,.8,.2,1);
+}
+
+.np-tour-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.np-tour-card header small {
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .15em;
+}
+
+.np-tour-card header span {
+  color: #9a9a9a;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.np-tour-card h2 {
+  margin: 5px 0 6px;
+  font-size: 20px;
+  line-height: 1.1;
+  letter-spacing: -.03em;
+  font-weight: 800;
+}
+
+.np-tour-card p {
+  margin: 0;
+  color: #d9d9d9;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.np-tour-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.np-tour-actions button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid #ffffff1f;
+  border-radius: 999px;
+  background: #262626;
+  color: #f2f2f2;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.np-tour-actions button[hidden] {
+  display: none;
+}
+
+.np-tour-actions button.primary {
+  border-color: var(--green);
+  background: var(--green);
+  color: var(--black);
+}
+
+.np-tour-actions button:first-child {
+  margin-right: auto;
+  background: transparent;
+  border-color: transparent;
+  color: #a8a8a8;
+}
+
+.np-tour-card button:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
+}
+
+@media (min-width:1000px) and (min-height:650px) {
+  .np-tour-card {
+    padding: 18px 20px;
+  }
+  .np-tour-card h2 {
+    font-size: 24px;
+  }
+  .np-tour-card p {
+    font-size: 15px;
+  }
+}
+
 /* Animated fingertip that acts out each step's gesture. */
-.np-tour-finger{position:fixed;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff,#e6e6e6 60%,#cfcfcf);box-shadow:0 0 0 6px #ffffff2e,0 6px 18px #0008;pointer-events:none;opacity:0;z-index:1;animation:np-swipe 1.9s cubic-bezier(.45,0,.25,1) .35s infinite}
-.np-tour-finger[hidden]{display:none}
-.np-tour-finger::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid #1ed760;opacity:0}
-.np-tour-finger[data-kind="updown"]{animation-name:np-updown;animation-duration:2.2s}
-.np-tour-finger[data-kind="tap"]{animation-name:np-tap;animation-duration:1.6s}
-.np-tour-finger[data-kind="tap"]::after{animation:np-ring 1.6s ease-out .35s infinite}
-@keyframes np-swipe{0%{opacity:0;transform:translate(calc(var(--dx) * -1),calc(var(--dy) * -1)) scale(1.15)}14%{opacity:.95;transform:translate(calc(var(--dx) * -1),calc(var(--dy) * -1)) scale(.92)}70%{opacity:.95;transform:translate(var(--dx),var(--dy)) scale(.92)}86%,100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.1)}}
-@keyframes np-updown{0%{opacity:0;transform:translateY(0) scale(1.15)}10%{opacity:.95;transform:translateY(0) scale(.92)}35%{transform:translateY(calc(var(--travel) * -1)) scale(.92)}70%{transform:translateY(var(--travel)) scale(.92)}82%{opacity:.95;transform:translateY(0) scale(.92)}92%,100%{opacity:0;transform:translateY(0) scale(1.1)}}
-@keyframes np-tap{0%{opacity:0;transform:scale(1.25)}18%{opacity:.95;transform:scale(1)}30%{transform:scale(.78)}42%{transform:scale(1)}75%{opacity:.95}100%{opacity:0;transform:scale(1)}}
-@keyframes np-ring{0%,25%{opacity:0;transform:scale(.8)}32%{opacity:1;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.9)}}
-@media (prefers-reduced-motion:reduce){.np-tour-hole,.np-tour-card{transition:none}.np-tour-finger,.np-tour-finger::after{animation:none!important;opacity:.9}}
+.np-tour-finger {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%,var(--white),#e6e6e6 60%,#cfcfcf);
+  box-shadow: 0 0 0 6px #ffffff2e,0 6px 18px #0008;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 1;
+  animation: np-swipe 1.9s cubic-bezier(.45,0,.25,1) .35s infinite;
+}
+
+.np-tour-finger[hidden] {
+  display: none;
+}
+
+.np-tour-finger::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  opacity: 0;
+}
+
+.np-tour-finger[data-kind="updown"] {
+  animation-name: np-updown;
+  animation-duration: 2.2s;
+}
+
+.np-tour-finger[data-kind="tap"] {
+  animation-name: np-tap;
+  animation-duration: 1.6s;
+}
+
+.np-tour-finger[data-kind="tap"]::after {
+  animation: np-ring 1.6s ease-out .35s infinite;
+}
+
+@keyframes np-swipe {
+  0% {
+    opacity: 0;
+    transform: translate(calc(var(--dx) * -1),calc(var(--dy) * -1)) scale(1.15);
+  }
+  14% {
+    opacity: .95;
+    transform: translate(calc(var(--dx) * -1),calc(var(--dy) * -1)) scale(.92);
+  }
+  70% {
+    opacity: .95;
+    transform: translate(var(--dx),var(--dy)) scale(.92);
+  }
+  86%,
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx),var(--dy)) scale(1.1);
+  }
+}
+
+@keyframes np-updown {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(1.15);
+  }
+  10% {
+    opacity: .95;
+    transform: translateY(0) scale(.92);
+  }
+  35% {
+    transform: translateY(calc(var(--travel) * -1)) scale(.92);
+  }
+  70% {
+    transform: translateY(var(--travel)) scale(.92);
+  }
+  82% {
+    opacity: .95;
+    transform: translateY(0) scale(.92);
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translateY(0) scale(1.1);
+  }
+}
+
+@keyframes np-tap {
+  0% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+  18% {
+    opacity: .95;
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(.78);
+  }
+  42% {
+    transform: scale(1);
+  }
+  75% {
+    opacity: .95;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes np-ring {
+  0%,
+  25% {
+    opacity: 0;
+    transform: scale(.8);
+  }
+  32% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .np-tour-hole,
+  .np-tour-card {
+    transition: none;
+  }
+  .np-tour-finger,
+  .np-tour-finger::after {
+    animation: none!important;
+    opacity: .9;
+  }
+}
