@@ -17,17 +17,17 @@
     <link rel="icon" href="./icons/turntable-remote.ico" sizes="any">
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
     <title>Turntable</title>
-    <link rel="stylesheet" href="./styles.css?v=I.10.1">
-    <link rel="stylesheet" href="./settings-help.css?v=I.10.1">
-    <link rel="stylesheet" href="./settings-help-previews.css?v=I.10.1">
-    <link rel="stylesheet" href="./screen-fit.css?v=I.10.1">
-    <link rel="stylesheet" href="./preset-controls.css?v=I.10.1">
-    <link rel="stylesheet" href="./desktop-layout.css?v=I.10.1">
-    <link rel="stylesheet" href="./track-likes.css?v=I.10.1">
-    <link rel="stylesheet" href="./viewport-resume.css?v=I.10.1">
-    <link rel="stylesheet" href="./control-bar.css?v=I.10.1">
-    <link rel="stylesheet" href="./now-playing-tour.css?v=I.10.1">
-    <link rel="stylesheet" href="./refinements.css?v=I.10.1">
+    <link rel="stylesheet" href="./styles.css?v=I.10.2">
+    <link rel="stylesheet" href="./settings-help.css?v=I.10.2">
+    <link rel="stylesheet" href="./settings-help-previews.css?v=I.10.2">
+    <link rel="stylesheet" href="./screen-fit.css?v=I.10.2">
+    <link rel="stylesheet" href="./preset-controls.css?v=I.10.2">
+    <link rel="stylesheet" href="./desktop-layout.css?v=I.10.2">
+    <link rel="stylesheet" href="./track-likes.css?v=I.10.2">
+    <link rel="stylesheet" href="./viewport-resume.css?v=I.10.2">
+    <link rel="stylesheet" href="./control-bar.css?v=I.10.2">
+    <link rel="stylesheet" href="./now-playing-tour.css?v=I.10.2">
+    <link rel="stylesheet" href="./refinements.css?v=I.10.2">
   </head>
   <body>
     <main class="shell">
@@ -147,7 +147,7 @@
           </section>
 
           <section class="view controls-view" data-panel="settings">
-            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Turntable version I.10.1"><small>REMOTE VERSION</small><b>ver(I.10.1)</b></button></div>
+            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Turntable version I.10.2"><small>REMOTE VERSION</small><b>ver(I.10.2)</b></button></div>
             <div class="settings-columns">
               <div class="settings-controls">
                 <section class="theme-picker" aria-labelledby="theme-title">
@@ -388,6 +388,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
+            <li><b>ver(I.10.2)</b><span>Behind-the-scenes cleanup: Turntable now talks to Spotify directly. The old stand-in for the retired PC server, which pretended to be a local server inside the page, is gone. Every button sends exactly the same requests to Spotify as before, and nothing looks or works differently.</span></li>
             <li><b>ver(I.10.1)</b><span>Behind-the-scenes cleanup: removed about 300 unused style rules and 9 MB of unused images, and every file now updates together with the version, so a new release no longer leaves old files stuck in Safari or the Home Screen app. Nothing looks or works differently.</span></li>
             <li><b>ver(I.10.0)</b><span>Polish pass: removed leftover PC and LAN wording (Now Playing shows "Now playing" when Spotify gives no playlist or album, and the old pairing card in Devices is now a simple Disconnect Spotify card). Long song titles stop at two lines with "…", stay clear of the volume dial on iPhone, and no longer leave stray marks on iPad. The iPad artwork is larger in Song info mode, the logo no longer sits under the queue button, the "Press for tabs" hint no longer covers the Settings preset buttons on small iPhones, and small option labels are easier to read. The app also starts faster by loading its files in parallel, and every style file now updates reliably on the Home Screen app. Hidden control bar, Divider style: the progress line is now a small mini player pill with the times, centred above the home bar. Tap it, or just drag it, to lift a full-width scrubber that tucks away after you let go, so seeking no longer swipes to another app on iPhone.</span></li>
             <li><b>ver(I.9.9.2)</b><span>Hidden control bar refinements: play/pause is now a plain icon like the other buttons, the compact controls are spaced further apart, the Divider progress line sits closer to the bottom edge, and under lyrics the controls stay anchored to the lyric text when the volume control is swiped away instead of shifting right. The Now Playing tour now keeps the tab row hidden and acts out each gesture with an animated fingertip.</span></li>
@@ -458,7 +459,7 @@
           </section>
         </section>
       </div>    </main>
-    <script src="./bridge.js?v=I.10.1"></script>
+    <script src="./bridge.js?v=I.10.2"></script>
   </body>
 </html>
 
