@@ -1,4 +1,4 @@
-/* I.9.9.3 refinements. Loaded last so these scoped fixes win over the older layered rules. */
+/* I.10.0 refinements. Loaded last so these scoped fixes win over the older layered rules. */
 
 /* Song title: at most two lines that end in "…". The old padding below the title let the top of a
    hidden third line peek out as small marks, so the spacing now comes from the line height instead. */

@@ -1,9 +1,9 @@
-const CACHE = "turntable-ios-i993-refine";
+const CACHE = "turntable-ios-i100-refine";
 const ASSETS = [
-  "./", "./index.html", "./styles.css?v=I.9.8-song-likes", "./settings-help.css?v=I.9.9.3-refine", "./settings-help-previews.css?v=I.9.9.3-refine",
-  "./screen-fit.css?v=I.9.9.3-refine", "./preset-controls.css?v=I.9.9.3-refine", "./desktop-layout.css?v=I.9.8-ipad-mini-layout",
-  "./bridge.js?v=I.9.9.3-refine", "./app.js?v=I.9.9.3-refine", "./viewport-resume.js?v=I.9.8-viewport-resume", "./viewport-resume.css?v=I.9.8-viewport-resume", "./track-likes.js?v=I.9.8-song-likes", "./track-likes.css?v=I.9.8-song-likes-corners",
-  "./settings-help.js?v=I.9.9-control-bar", "./preset-controls.js?v=I.9.9-control-bar", "./control-bar.js?v=I.9.9-control-bar", "./control-bar.css?v=I.9.9.2-control-bar", "./now-playing-tour.js?v=I.9.9-tour-tabs", "./now-playing-tour.css?v=I.9.9-tour-tabs", "./refinements.css?v=I.9.9.3-refine", "./manifest.json",
+  "./", "./index.html", "./styles.css?v=I.9.8-song-likes", "./settings-help.css?v=I.10.0-refine", "./settings-help-previews.css?v=I.10.0-refine",
+  "./screen-fit.css?v=I.10.0-refine", "./preset-controls.css?v=I.10.0-refine", "./desktop-layout.css?v=I.9.8-ipad-mini-layout",
+  "./bridge.js?v=I.10.0-refine", "./app.js?v=I.10.0-refine", "./viewport-resume.js?v=I.9.8-viewport-resume", "./viewport-resume.css?v=I.9.8-viewport-resume", "./track-likes.js?v=I.9.8-song-likes", "./track-likes.css?v=I.9.8-song-likes-corners",
+  "./settings-help.js?v=I.9.9-control-bar", "./preset-controls.js?v=I.9.9-control-bar", "./control-bar.js?v=I.9.9-control-bar", "./control-bar.css?v=I.9.9.2-control-bar", "./now-playing-tour.js?v=I.9.9-tour-tabs", "./now-playing-tour.css?v=I.9.9-tour-tabs", "./refinements.css?v=I.10.0-refine", "./manifest.json",
   "./icons/turntable-remote-192.png", "./icons/apple-touch-icon.png"
 ];
 self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
