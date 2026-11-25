@@ -65,7 +65,7 @@ async function fixtures(context) {
     await page.evaluate(auth => {
       localStorage.setItem("turntable-ios-oauth", JSON.stringify(auth));
       localStorage.setItem("turntable-session", "github-pages");
-      localStorage.setItem("turntable-now-playing-guide-v1", "completed");
+      localStorage.setItem("turntable-now-playing-guide-v2", "completed");
       sessionStorage.setItem("turntable-fullscreen-dismissed", "true");
     }, fakeAuth);
     await page.reload();
@@ -178,7 +178,7 @@ async function fixtures(context) {
       Object.defineProperty(window.visualViewport, "height", { configurable: true, get: reportedHeight });
       localStorage.setItem("turntable-ios-oauth", JSON.stringify(auth));
       localStorage.setItem("turntable-session", "github-pages");
-      localStorage.setItem("turntable-now-playing-guide-v1", "completed");
+      localStorage.setItem("turntable-now-playing-guide-v2", "completed");
       sessionStorage.setItem("turntable-fullscreen-dismissed", "true");
     }, fakeAuth);
     await iphoneContext.route("**/styles.css?*", route => route.fulfill({ contentType: "text/css", body: fs.readFileSync(path.join(root, "styles.css"), "utf8").replaceAll("height:100svh", "height:calc(100svh - 54px)").replaceAll("height:100dvh", "height:calc(100dvh - 54px)") }));
