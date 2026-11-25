@@ -30,6 +30,12 @@
       details: ["Default places the line below the title or lyrics.", "Divider turns the upper edge of the bottom control bar into the progress line."],
       visuals: [["Default", "progress-default"], ["Divider", "progress-divider"]]
     },
+    controlBar: {
+      title: "Control bar",
+      summary: "Shows or hides the full-width control bar at the bottom of Now Playing.",
+      details: ["Shown keeps the full bar with shuffle, previous, play, next, repeat and queue.", "Hidden moves those controls into one small row beside the song, makes the artwork larger, and lets you tap the artwork to play or pause.", "Swipe down on the bar to hide it, or swipe up from just above the bottom edge to bring it back. The choice is saved with each preset."],
+      visuals: []
+    },
     volumeWeight: {
       title: "Volume weight",
       summary: "Adjusts how much the volume moves for the same finger stroke.",
@@ -68,6 +74,7 @@
     ["[data-display-choice]", "display"],
     ["[data-player-background-choice]", "background"],
     ["[data-playback-bar-choice]", "playbackBar"],
+    ["[data-control-bar-choice]", "controlBar"],
     ["[data-volume-weight-choice]", "volumeWeight"],
     ["[data-lyric-style-choice]", "lyricStyle"],
     ["[data-lyrics-background-choice]", "lyricBackground"],

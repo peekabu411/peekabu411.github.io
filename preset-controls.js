@@ -6,7 +6,8 @@
     playerBackground: "artwork", backgroundColorMode: "auto", manualBackgroundColor: "#34261f",
     lyricStyle: "scroll", playbackBar: "default", guides: "shown",
     controlBarBackground: "transparent", volumeWeight: "heavy",
-    layoutProfile: "auto", uiFontScale: 100, lyricFontScale: 110, lyricOffset: -0.7
+    layoutProfile: "auto", uiFontScale: 100, lyricFontScale: 110, lyricOffset: -0.7,
+    controlBar: "shown"
   };
   const BUILT_IN_PRESETS = [
     { id: "default", name: "Vinyl \u00b7 Default", settings: { ...DEFAULT_SETTINGS, album: "vinyl", control: "dial", display: "info", playbackBar: "default" } },
@@ -35,7 +36,8 @@
       album: albumStyle, control: controlStyle, display: displayStyle,
       lyricsBackground, playerBackground: playerBackgroundStyle, backgroundColorMode, manualBackgroundColor, lyricStyle,
       playbackBar: playbackBarStyle, guides: guideText, controlBarBackground,
-      volumeWeight, layoutProfile, uiFontScale, lyricFontScale, lyricOffset
+      volumeWeight, layoutProfile, uiFontScale, lyricFontScale, lyricOffset,
+      controlBar: typeof getControlBarState === "function" ? getControlBarState() : "shown"
     };
   }
 
@@ -57,7 +59,8 @@
       layoutProfile: ["auto", "compact", "standard", "wide"].includes(merged.layoutProfile) ? merged.layoutProfile : "auto",
       uiFontScale: Math.max(90, Math.min(110, Math.round(Number(merged.uiFontScale) / 5) * 5)),
       lyricFontScale: Math.max(90, Math.min(130, Math.round(Number(merged.lyricFontScale) / 5) * 5)),
-      lyricOffset: Math.max(-1.2, Math.min(-0.2, Math.round(Number(merged.lyricOffset) * 10) / 10))
+      lyricOffset: Math.max(-1.2, Math.min(-0.2, Math.round(Number(merged.lyricOffset) * 10) / 10)),
+      controlBar: merged.controlBar === "hidden" ? "hidden" : "shown"
     };
   }
 
@@ -135,6 +138,7 @@
     applyUIFontScale(settings.uiFontScale);
     applyLyricFontScale(settings.lyricFontScale);
     setLyricOffset(settings.lyricOffset);
+    if (typeof applyControlBar === "function") applyControlBar(settings.controlBar);
     dirty = false;
     persist();
     syncControls();
@@ -224,7 +228,7 @@
     "[data-album-choice]", "[data-control-choice]", "[data-display-choice]", "[data-player-background-choice]",
     "[data-background-color-mode]", "#background-color-picker", "[data-playback-bar-choice]", "[data-volume-weight-choice]", "[data-control-bar-background-choice]",
     "[data-lyric-style-choice]", "[data-lyrics-background-choice]", "[data-guide-choice]",
-    "[data-layout-profile-choice]", "#lyric-offset", "#ui-font-size", "#lyric-font-size"
+    "[data-layout-profile-choice]", "[data-control-bar-choice]", "#lyric-offset", "#ui-font-size", "#lyric-font-size"
   ].join(",");
   let dirtyFrame = null;
   function scheduleDirtyUpdate() {
@@ -242,6 +246,7 @@
   });
   window.addEventListener("keydown", (event) => { if (event.key === "Escape" && !modal.hidden) closeModal(); });
 
+  window.turntablePresetDirtyCheck = updateDirty;
   persist();
   syncControls();
 })();
