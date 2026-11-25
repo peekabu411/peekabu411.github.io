@@ -17,17 +17,17 @@
     <link rel="icon" href="./icons/turntable-remote.ico" sizes="any">
     <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
     <title>Turntable</title>
-    <link rel="stylesheet" href="./styles.css?v=I.10.3">
-    <link rel="stylesheet" href="./settings-help.css?v=I.10.3">
-    <link rel="stylesheet" href="./settings-help-previews.css?v=I.10.3">
-    <link rel="stylesheet" href="./screen-fit.css?v=I.10.3">
-    <link rel="stylesheet" href="./preset-controls.css?v=I.10.3">
-    <link rel="stylesheet" href="./desktop-layout.css?v=I.10.3">
-    <link rel="stylesheet" href="./track-likes.css?v=I.10.3">
-    <link rel="stylesheet" href="./viewport-resume.css?v=I.10.3">
-    <link rel="stylesheet" href="./control-bar.css?v=I.10.3">
-    <link rel="stylesheet" href="./now-playing-tour.css?v=I.10.3">
-    <link rel="stylesheet" href="./refinements.css?v=I.10.3">
+    <link rel="stylesheet" href="./styles.css?v=I.10.4">
+    <link rel="stylesheet" href="./settings-help.css?v=I.10.4">
+    <link rel="stylesheet" href="./settings-help-previews.css?v=I.10.4">
+    <link rel="stylesheet" href="./screen-fit.css?v=I.10.4">
+    <link rel="stylesheet" href="./preset-controls.css?v=I.10.4">
+    <link rel="stylesheet" href="./desktop-layout.css?v=I.10.4">
+    <link rel="stylesheet" href="./track-likes.css?v=I.10.4">
+    <link rel="stylesheet" href="./viewport-resume.css?v=I.10.4">
+    <link rel="stylesheet" href="./control-bar.css?v=I.10.4">
+    <link rel="stylesheet" href="./now-playing-tour.css?v=I.10.4">
+    <link rel="stylesheet" href="./refinements.css?v=I.10.4">
   </head>
   <body>
     <main class="shell">
@@ -147,7 +147,7 @@
           </section>
 
           <section class="view controls-view" data-panel="settings">
-            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Turntable version I.10.3"><small>REMOTE VERSION</small><b>ver(I.10.3)</b></button></div>
+            <div class="section-heading settings-heading"><p>REMOTE SETTINGS</p><h2>Controls</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div><button id="version-indicator" class="version-indicator" type="button" aria-label="Turntable version I.10.4"><small>REMOTE VERSION</small><b>ver(I.10.4)</b></button></div>
             <div class="settings-columns">
               <div class="settings-controls">
                 <section class="theme-picker" aria-labelledby="theme-title">
@@ -388,6 +388,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
+            <li><b>ver(I.10.4)</b><span>Behind-the-scenes cleanup: your settings are now read and saved in one place for both the app and presets, and the app's main code is split into smaller files by area (lyrics, queue, playlists, devices, player and so on). Everything works the same as before.</span></li>
             <li><b>ver(I.10.3)</b><span>Behind-the-scenes cleanup: the stylesheets are now readable, with one shared set of colours and fonts, and 330 style lines that could never take effect are gone. Every screen looks exactly the same as before.</span></li>
             <li><b>ver(I.10.2)</b><span>Behind-the-scenes cleanup: Turntable now talks to Spotify directly. The old stand-in for the retired PC server, which pretended to be a local server inside the page, is gone. Every button sends exactly the same requests to Spotify as before, and nothing looks or works differently.</span></li>
             <li><b>ver(I.10.1)</b><span>Behind-the-scenes cleanup: removed about 300 unused style rules and 9 MB of unused images, and every file now updates together with the version, so a new release no longer leaves old files stuck in Safari or the Home Screen app. Nothing looks or works differently.</span></li>
@@ -460,7 +461,7 @@
           </section>
         </section>
       </div>    </main>
-    <script src="./bridge.js?v=I.10.3"></script>
+    <script src="./bridge.js?v=I.10.4"></script>
   </body>
 </html>
 

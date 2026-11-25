@@ -62,8 +62,9 @@ Turntable is a standalone, installable GitHub Pages web app for iPhone/iPad. It 
 ## Important files
 
 - `index.html` — page structure, setup flow, current version text, update log.
-- `app.js` — controller behavior, Spotify integration, displays, playlists, lyrics, settings.
-- `bridge.js` — API/lyrics bridge behavior and request normalization.
+- `app/*.js` — the app, split by area and loaded in order by `bridge.js` (`APP_SCRIPTS`): `core.js` (state, `api()` wrapper, snapshot), `artwork.js`, `lyrics.js`, `shell.js` (views, dialogs, appearance), `queue.js`, `playlists.js`, `devices.js`, `player.js` (rendering, status refresh, playback), `controls.js` (buttons, gestures, startup). They are classic scripts sharing top-level names, so a top-level statement may only call functions from its own or earlier files.
+- `settings-schema.js` — every setting once (key, values, default, limits); used by the app and presets.
+- `bridge.js` — sign-in (PKCE) and `window.turntableSpotify`, the only Spotify client.
 - `styles.css` — primary app styles.
 - `viewport-resume.js`, `viewport-resume.css` — narrowly scoped iPhone Home Screen startup/resume measured-height recovery; CSS loaded last, no API requests.
 - `desktop-layout.css` — final stylesheet loaded by `index.html`; use this for critical iOS layout overrides.
