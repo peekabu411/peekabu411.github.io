@@ -25,7 +25,8 @@
     <link rel="stylesheet" href="./desktop-layout.css?v=I.9.8-ipad-mini-layout">
     <link rel="stylesheet" href="./track-likes.css?v=I.9.8-song-likes-corners">
     <link rel="stylesheet" href="./viewport-resume.css?v=I.9.8-viewport-resume">
-    <link rel="stylesheet" href="./control-bar.css?v=I.9.9-control-bar">
+    <link rel="stylesheet" href="./control-bar.css?v=I.9.9-control-bar-2">
+    <link rel="stylesheet" href="./now-playing-tour.css?v=I.9.9-spotlight-tour">
     <link rel="stylesheet" href="./smart-mix.css?v=I.9.9-smart-mix">
   </head>
   <body>
@@ -270,7 +271,7 @@
                     </div>
                     <div class="appearance-setting guide-replay-setting">
                       <span>OVERVIEW</span>
-                      <button id="start-now-playing-guide" class="guide-replay-button" type="button"><b>Now Playing guide</b><span>Replay the visual walkthrough</span><i aria-hidden="true">&#8594;</i></button>
+                      <button id="start-now-playing-guide" class="guide-replay-button" type="button"><b>Now Playing tour</b><span>Highlights each control on your player</span><i aria-hidden="true">&#8594;</i></button>
                     </div>
                   </section>
                 </section>
@@ -327,10 +328,10 @@
       <div id="now-playing-guide" class="now-playing-guide" role="dialog" aria-modal="true" aria-labelledby="now-playing-guide-title" hidden>
         <div class="now-playing-guide-backdrop" aria-hidden="true"></div>
         <section id="now-playing-guide-card" class="now-playing-guide-card" tabindex="-1">
-          <header><div><small id="now-playing-guide-kicker">WELCOME TO TURNTABLE</small><h2 id="now-playing-guide-title">A quick Now Playing tour</h2></div><span id="now-playing-guide-count" aria-live="polite">Overview</span></header>
-          <div id="now-playing-guide-visual" class="now-playing-guide-visual" aria-hidden="true"></div>
-          <p id="now-playing-guide-copy"></p>
-          <div class="now-playing-guide-actions"><button id="now-playing-guide-dismiss" type="button">Not now</button><button id="now-playing-guide-back" type="button" hidden>Back</button><button id="now-playing-guide-next" class="primary" type="button">Start guide</button></div>
+          <header><div><small id="now-playing-guide-kicker">WELCOME TO TURNTABLE</small><h2 id="now-playing-guide-title">A quick Now Playing tour</h2></div><span id="now-playing-guide-count">Under a minute</span></header>
+          <div id="now-playing-guide-visual" class="now-playing-guide-visual" aria-hidden="true"><div class="guide-demo guide-demo-welcome"><div class="guide-demo-welcome-disc"><span></span></div><div><b>NOW PLAYING</b><small>Skip, save, seek, playback, volume and tabs</small></div></div></div>
+          <p id="now-playing-guide-copy">We'll highlight each control on your own player, one at a time. You can replay the tour from Settings anytime.</p>
+          <div class="now-playing-guide-actions"><button id="now-playing-guide-dismiss" type="button">Not now</button><button id="now-playing-guide-next" class="primary" type="button">Start tour</button></div>
         </section>
       </div>
       <div id="rate-warning" class="rate-warning" role="alertdialog" aria-modal="true" aria-labelledby="rate-warning-title" hidden>
@@ -388,6 +389,7 @@
           <div class="update-log-tabs" role="tablist" aria-label="Update and diagnostics views"><button id="updates-tab" class="active" type="button" role="tab" aria-selected="true" aria-controls="updates-panel">Updates</button><button id="diagnostics-tab" type="button" role="tab" aria-selected="false" aria-controls="diagnostics-panel">Live diagnostics</button></div>
           <div id="updates-panel" class="update-log-panel" role="tabpanel" aria-labelledby="updates-tab">
           <ol class="update-log-list">
+            <li><b>ver(I.9.9)</b><span>Rebuilt the Now Playing tour as a spotlight on your real player: it highlights each control in place, follows your album, volume, playback bar and control bar styles, and now covers Liked Songs, the queue, the Spotify shortcut, tap-to-play, and the dial and bar tap gestures.</span></li>
             <li><b>ver(I.9.9)</b><span>Added an option to hide the bottom control bar: the controls move into one small row beside the song, the artwork grows, the volume control moves down, and tapping the artwork plays or pauses. Divider moves its thicker progress line to the bottom edge. Saved with each preset; swipe down on the bar to hide it and up from the bottom to bring it back.</span></li>
             <li><b>ver(I.9.8)</b><span>Extended Wide layout to iPad mini and larger tablets, added Liked Songs playback and a separate top-left heart, hardened connection security, and added iPhone Home Screen startup/resume layout recovery.</span></li>
             <li><b>ver(I.9.7.39)</b><span>Fixed Wide mode on large touch tablets: tabs collapse correctly, the volume dial stays half-visible at the right edge, and the tab arrow opens and closes cleanly.</span></li>

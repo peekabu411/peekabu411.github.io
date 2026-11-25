@@ -14,11 +14,11 @@
 @media (prefers-reduced-motion:reduce){.art-tap-feedback.show{animation-duration:.01ms}}
 
 /* Compact control row. */
-#remote[data-control-bar="hidden"] .player-view .transport{position:relative!important;inset:auto!important;z-index:3;display:flex!important;align-items:center!important;justify-content:center!important;gap:clamp(4px,.9vw,12px)!important;width:auto!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transform:none!important;isolation:auto!important}
+#remote[data-control-bar="hidden"] .player-view .transport{position:relative!important;inset:auto!important;z-index:3;display:flex!important;align-items:center!important;justify-content:center!important;gap:clamp(10px,2.2vw,20px)!important;width:auto!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transform:none!important;isolation:auto!important}
 #remote[data-control-bar="hidden"] .player-view .transport::before{display:none!important}
 #remote[data-control-bar="hidden"] .player-view .transport button{position:relative!important;inset:auto!important;top:0!important;flex:none;width:30px!important;height:30px!important;min-width:0!important;margin:0!important;padding:0!important;display:grid!important;place-items:center!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;font-size:13px!important;line-height:1!important}
 #remote[data-control-bar="hidden"] .player-view .transport #previous,#remote[data-control-bar="hidden"] .player-view .transport #next{font-size:10px!important;letter-spacing:-.14em}
-#remote[data-control-bar="hidden"] .player-view .transport .play-button{width:34px!important;height:34px!important;margin:0 2px!important;background:#fff!important;color:#090909!important;font-size:11px!important;letter-spacing:-.08em;box-shadow:0 3px 10px #0009!important}
+#remote[data-control-bar="hidden"] .player-view .transport .play-button{color:#fff!important;font-size:13px!important;letter-spacing:-.08em}
 #remote[data-control-bar="hidden"] .player-view .transport .play-button:disabled{opacity:.45}
 #remote[data-control-bar="hidden"] .player-view .transport .queue-toggle{opacity:1!important;pointer-events:auto!important;transform:none;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 #remote[data-control-bar="hidden"] .player-view .transport .queue-toggle .queue-icon{transform:scale(.62)!important}
@@ -32,8 +32,8 @@
 #remote[data-control-bar="hidden"] .transport[data-compact-placement="copy"]{justify-content:flex-start!important;margin:14px 0 0 -4px!important}
 #remote[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"]{margin:10px 0 0!important}
 
-/* Divider playback bar: a thicker progress line on the bottom edge, above the iPhone home indicator. */
-#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline{position:absolute!important;z-index:7!important;left:0!important;right:0!important;top:auto!important;bottom:env(safe-area-inset-bottom)!important;width:auto!important;max-width:none!important;height:18px!important;margin:0!important;transform:none!important;pointer-events:none}
+/* Divider playback bar: a thicker progress line hugging the bottom edge (a few px above it on iPhones with a home bar). */
+#remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline{position:absolute!important;z-index:7!important;left:0!important;right:0!important;top:auto!important;bottom:max(0px,calc(env(safe-area-inset-bottom) - 18px))!important;width:auto!important;max-width:none!important;height:18px!important;margin:0!important;transform:none!important;pointer-events:none}
 #remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]{position:absolute!important;left:0!important;right:0!important;top:auto!important;bottom:-12px!important;width:100%!important;height:30px!important;margin:0!important;transform:none!important;pointer-events:auto}
 #remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-webkit-slider-runnable-track{height:6px!important}
 #remote[data-control-bar="hidden"][data-playback-bar="divider"] .timeline input[type="range"]::-webkit-slider-thumb{margin-top:-11px!important}
@@ -64,10 +64,10 @@
        (min-width:1000px) and (min-height:650px) and (orientation:landscape) and (any-pointer:coarse){
   #remote[data-control-bar="hidden"] .player-view{padding-bottom:clamp(36px,5vh,60px)!important}
   #remote[data-control-bar="hidden"][data-current-view="player"] .art-stage{width:min(41.6vw,72vh,810px)!important}
-  #remote[data-control-bar="hidden"] .player-view .transport{gap:clamp(8px,1.2vw,18px)!important}
+  #remote[data-control-bar="hidden"] .player-view .transport{gap:clamp(16px,2vw,30px)!important}
   #remote[data-control-bar="hidden"] .player-view .transport button{width:38px!important;height:38px!important;font-size:16px!important}
   #remote[data-control-bar="hidden"] .player-view .transport #previous,#remote[data-control-bar="hidden"] .player-view .transport #next{font-size:13px!important}
-  #remote[data-control-bar="hidden"] .player-view .transport .play-button{width:46px!important;height:46px!important;font-size:15px!important}
+  #remote[data-control-bar="hidden"] .player-view .transport .play-button{font-size:17px!important}
   #remote[data-control-bar="hidden"] .player-view .transport .queue-toggle .queue-icon{transform:scale(.8)!important}
   #remote[data-control-bar="hidden"] .transport[data-compact-placement="copy"]{margin-top:clamp(18px,2.4vh,30px)!important}
   #remote[data-control-bar="hidden"][data-current-view="player"] .dial-rail{bottom:0!important}

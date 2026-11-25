@@ -3,7 +3,7 @@ const ASSETS = [
   "./", "./index.html", "./styles.css?v=I.9.8-song-likes", "./settings-help.css", "./settings-help-previews.css",
   "./screen-fit.css", "./preset-controls.css", "./desktop-layout.css?v=I.9.8-ipad-mini-layout",
   "./bridge.js?v=I.9.9-smart-mix", "./app.js?v=I.9.9-smart-mix", "./viewport-resume.js?v=I.9.8-viewport-resume", "./viewport-resume.css?v=I.9.8-viewport-resume", "./track-likes.js?v=I.9.8-song-likes", "./track-likes.css?v=I.9.8-song-likes-corners",
-  "./settings-help.js?v=I.9.9-control-bar", "./preset-controls.js?v=I.9.9-control-bar", "./control-bar.js?v=I.9.9-control-bar", "./control-bar.css?v=I.9.9-control-bar", "./smart-mix.js?v=I.9.9-smart-mix", "./smart-mix.css?v=I.9.9-smart-mix", "./manifest.webmanifest", "./manifest.json",
+  "./settings-help.js?v=I.9.9-control-bar", "./preset-controls.js?v=I.9.9-control-bar", "./control-bar.js?v=I.9.9-control-bar", "./control-bar.css?v=I.9.9-control-bar-2", "./now-playing-tour.js?v=I.9.9-spotlight-tour", "./now-playing-tour.css?v=I.9.9-spotlight-tour", "./smart-mix.js?v=I.9.9-smart-mix", "./smart-mix.css?v=I.9.9-smart-mix", "./manifest.webmanifest", "./manifest.json",
   "./icons/turntable-remote-192.png", "./icons/apple-touch-icon.png"
 ];
 self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));

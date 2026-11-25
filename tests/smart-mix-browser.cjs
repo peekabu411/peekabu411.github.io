@@ -70,6 +70,7 @@ async function open(browser, origin, s, viewport = { width: 844, height: 390 }) 
     localStorage.setItem("turntable-ios-oauth", JSON.stringify({ client_id: "c", access_token: "a", refresh_token: "r", expires_at: Date.now() + 600000, scope: scopes }));
     localStorage.setItem("turntable-session", "github-pages");
     localStorage.setItem("turntable-now-playing-guide-v1", "completed");
+    localStorage.setItem("turntable-now-playing-guide-v2", "completed");
     sessionStorage.setItem("turntable-fullscreen-dismissed", "true");
   }, s.scopes);
   const page = await context.newPage();
