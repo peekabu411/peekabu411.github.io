@@ -280,5 +280,20 @@
   // Re-check after the timeline finishes animating (lift and tuck).
   document.querySelector(".player-view .timeline")?.addEventListener("transitionend", schedulePlace);
 
+  // The top "Press for tabs" arrow and the volume "bring back" arrow share the chip's look and
+  // its light-then-dim behaviour (control-bar.css).
+  for (const id of ["bar-handle", "side-control-reveal"]) {
+    const arrow = document.getElementById(id);
+    if (!arrow) continue;
+    let timer = 0;
+    arrow.addEventListener("pointerdown", () => { clearTimeout(timer); arrow.classList.remove("dim"); arrow.classList.add("lit"); });
+    arrow.addEventListener("click", () => {
+      clearTimeout(timer);
+      arrow.classList.remove("dim");
+      arrow.classList.add("lit");
+      timer = setTimeout(() => { arrow.classList.remove("lit"); arrow.classList.add("dim"); }, 1000);
+    });
+  }
+
   applyControlBarState(state);
 })();

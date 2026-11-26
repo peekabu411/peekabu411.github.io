@@ -518,3 +518,73 @@
   opacity: 0;
   pointer-events: none;
 }
+
+/* One arrow family (I.10.11): the "Press for tabs" arrow at the top, the volume "bring back"
+   arrow on the right edge and the control bar chevron all use the same small chip with a thin
+   chevron. Each lights up when pressed and dims a second later (control-bar.js). */
+#remote {
+  --arrow-chip-bg: #ffffff10;
+  --arrow-chip-border: #ffffff1f;
+  --arrow-chip-lit: #ffffff26;
+  --arrow-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23ffffffa0' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --arrow-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='12' viewBox='0 0 7 12'%3E%3Cpath d='M6 1L1 6l5 5' fill='none' stroke='%23ffffffa0' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+#remote .bar-handle>.topbar-chevron {
+  width: 30px!important;
+  height: 18px!important;
+  margin: 0 auto!important;
+  box-sizing: border-box!important;
+  border: 1px solid var(--arrow-chip-border)!important;
+  border-radius: 9px!important;
+  background: var(--arrow-chip-bg) var(--arrow-down) center / 12px 7px no-repeat!important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: none!important;
+  color: transparent!important;
+  font-size: 0!important;
+  text-shadow: none!important;
+  opacity: 1!important;
+  transform: translateY(-6px)!important;
+  transition: opacity .2s ease, background-color .2s ease;
+}
+
+#remote:not(.topbar-hidden) .bar-handle>.topbar-chevron {
+  transform: translateY(14px) rotate(180deg)!important;
+}
+
+#remote .bar-handle:active>.topbar-chevron,
+#remote .bar-handle.lit>.topbar-chevron {
+  background-color: var(--arrow-chip-lit)!important;
+}
+
+#remote .bar-handle.dim>.topbar-chevron {
+  opacity: .35!important;
+  transition: opacity .6s ease, background-color .6s ease;
+}
+
+@media (orientation:landscape) and (max-height:500px) and (max-width:1200px) {
+  #remote .side-control-reveal::before {
+    content: ""!important;
+    width: 18px;
+    height: 30px;
+    box-sizing: border-box;
+    border: 1px solid var(--arrow-chip-border);
+    border-radius: 9px;
+    background: var(--arrow-chip-bg) var(--arrow-left) center / 7px 12px no-repeat;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    text-shadow: none;
+    transition: opacity .6s ease, background-color .2s ease;
+  }
+  #remote.side-controls-hidden[data-current-view="player"] .side-control-reveal {
+    opacity: 1!important;
+  }
+  #remote .side-control-reveal:active::before,
+  #remote .side-control-reveal.lit::before {
+    background-color: var(--arrow-chip-lit);
+  }
+  #remote .side-control-reveal.dim::before {
+    opacity: .35;
+  }
+}
