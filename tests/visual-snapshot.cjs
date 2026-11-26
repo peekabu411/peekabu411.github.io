@@ -52,7 +52,10 @@ const arts = { a: ["#e2553a", "#7b2d6b", "#1d2a5c"], b: ["#2a9d8f", "#264653", "
 const T = (name, artist, img) => ({ type: "track", id: name.replace(/\W/g, ""), uri: "spotify:track:" + name.replace(/\W/g, ""), name, duration_ms: 214000, artists: [{ name: artist }], album: { name: "Album", images: [{ url: "https://i.scdn.co/image/" + img }] }, external_urls: { spotify: "https://open.spotify.com/track/x" } });
 const track = T("Midnight Static", "The Night Owls", "a");
 const queue = [T("Glass Harbor", "Lumen Bay", "b"), T("Paper Moons", "Ivy Ferris", "c"), T("Slow Arcade", "The Night Owls", "d")];
-const device = { id: "d1", name: "Living room", type: "Speaker", is_active: true, supports_volume: true, volume_percent: 55 };
+// SNAPSHOT_PHONE_PLAYBACK=1 plays on an iPhone, which Spotify reports as unable to take volume changes.
+const device = process.env.SNAPSHOT_PHONE_PLAYBACK
+  ? { id: "d1", name: "iPhone", type: "Smartphone", is_active: true, supports_volume: false, volume_percent: 100 }
+  : { id: "d1", name: "Living room", type: "Speaker", is_active: true, supports_volume: true, volume_percent: 55 };
 const devices = [device, { id: "d2", name: "Office laptop", type: "Computer", is_active: false, supports_volume: true, volume_percent: 30 }];
 const playlists = [1, 2, 3, 4, 5].map(i => ({ id: "p" + i, uri: "spotify:playlist:p" + i, name: ["Morning Drive", "Focus", "Late Night", "Road Trip", "Rainy Day"][i - 1], description: "", images: [{ url: "https://i.scdn.co/image/" + "abcd"[i % 4] }], owner: { display_name: "You" }, items: { total: 20 * i } }));
 const LYRICS = "[00:10.00]First line of the song\n[00:50.00]Second line rolls in\n[01:20.00]Third line is current\n[01:40.00]Fourth line waits";

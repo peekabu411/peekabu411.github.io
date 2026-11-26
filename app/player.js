@@ -9,6 +9,23 @@ function updateVolume(value, send = false) {
   $("dial").setAttribute("aria-valuenow", volume);
   if (send) setting({ volume_percent: volume }, false);
 }
+// The volume control hides itself while the active Spotify device cannot take volume changes
+// (Spotify reports supports_volume: false, as it does when the iPhone or iPad itself is playing:
+// the phone keeps its own volume and a web app cannot change it). It uses the same tucked-away
+// layout as swiping the control away, and comes back when playback moves to a device that can.
+let sideControlsUserHidden = false;
+let volumeUnavailable = false;
+function applySideControlsVisibility() {
+  const hide = volumeUnavailable || (sideControlsUserHidden && remote.dataset.currentView === "player");
+  remote.classList.toggle("side-controls-hidden", hide);
+  remote.classList.toggle("volume-unavailable", volumeUnavailable);
+  document.querySelector(".dial-rail").setAttribute("aria-hidden", String(hide));
+}
+function setVolumeUnavailable(unavailable) {
+  if (volumeUnavailable === !!unavailable) return;
+  volumeUnavailable = !!unavailable;
+  applySideControlsVisibility();
+}
 function dialVolumeFromDrag(clientY, start) {
   const sensitivity = VOLUME_WEIGHT_SENSITIVITY[volumeWeight] || VOLUME_WEIGHT_SENSITIVITY.heavy;
   return Math.max(0, Math.min(100, start.volume + (start.y - clientY) * sensitivity));
@@ -179,8 +196,10 @@ function render(data) {
 
   setButtonAvailability($("repeat"), displayedRepeat === "off" ? disallowed("toggling_repeat_context") : displayedRepeat === "track" ? disallowed("toggling_repeat_track") : disallowed("toggling_repeat_context") && disallowed("toggling_repeat_track"), "Repeat is unavailable for the current context.");
 
-  setButtonAvailability($("volume"), playback?.device?.supports_volume === false, "This Spotify device controls its own volume.");
-  $("dial").disabled = playback?.device?.supports_volume === false;
+  const volumeLocked = playback?.device?.supports_volume === false;
+  setButtonAvailability($("volume"), volumeLocked, "This Spotify device controls its own volume.");
+  $("dial").disabled = volumeLocked;
+  setVolumeUnavailable(volumeLocked);
 
 }
 

@@ -59,3 +59,19 @@
     bottom: 82px !important;
   }
 }
+
+/* Volume hidden automatically while the playing device keeps its own volume (app/player.js,
+   setVolumeUnavailable). Phones reuse the swiped-away layout; there is nothing to bring back,
+   so the reveal arrow stays away. */
+#remote.volume-unavailable .side-control-reveal {
+  display: none!important;
+}
+/* iPad and larger screens have no swiped-away layout, so the control slides off the edge
+   the same way and the rest of the player stays where it is. */
+#remote.volume-unavailable .dial-rail {
+  transform: translate3d(calc(100% + 24px + env(safe-area-inset-right)),0,0)!important;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform .46s cubic-bezier(.22,.61,.36,1),opacity .28s ease,visibility 0s linear .46s;
+}
