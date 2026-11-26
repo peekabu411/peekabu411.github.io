@@ -15,19 +15,28 @@
     });
   }
 
-  let pinnedUntil = 0;
+  // While a tapped jump is scrolling, keep the tapped section highlighted. iOS smooth scrolling
+  // can run longer than a fixed delay, so the pin holds until the scrolling has stopped.
+  let pinned = false, pinTimer = null;
+  const releasePinSoon = (delay = 160) => { clearTimeout(pinTimer); pinTimer = setTimeout(() => { pinned = false; }, delay); };
+
   links.forEach(link => link.addEventListener("click", () => {
     const section = sectionFor(link);
     if (!section) return;
-    if (typeof physicalFeedback === "function") physicalFeedback("press");
     markActive(link);
-    pinnedUntil = Date.now() + 700; // keep the tapped section highlighted while the scroll runs
-    scroller.scrollTo({ top: section.offsetTop - scroller.firstElementChild.offsetTop, behavior: "smooth" });
+    pinned = true;
+    releasePinSoon(1500);
+    // Measure at tap time from where the section is now, so a layout change since the page
+    // opened (fonts, text size) cannot send the jump to the wrong place.
+    const top = scroller.scrollTop + section.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+    scroller.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
   }));
+  scroller.addEventListener("scrollend", () => { if (pinned) releasePinSoon(60); });
 
   let frame = null;
   scroller.addEventListener("scroll", () => {
-    if (frame || Date.now() < pinnedUntil) return;
+    if (pinned) { releasePinSoon(); return; }
+    if (frame) return;
     frame = requestAnimationFrame(() => {
       frame = null;
       const top = scroller.getBoundingClientRect().top + 24;
