@@ -1,34 +1,64 @@
 /* I.10.8 Now Playing polish. Loaded last. */
 
-/* The Spotify shortcut matches the Liked Songs heart in the opposite corner: same size, ring and
-   background, so the two read as a pair. */
-#remote .spotify-track-link {
-  top: max(12px, env(safe-area-inset-top));
-  right: max(14px, env(safe-area-inset-right));
-  width: 44px;
-  height: 44px;
-  border: 1px solid #ffffff24;
-  background: #0a0a0ac9;
-  color: #8a8a8a;
-  box-shadow: 0 3px 14px #0006;
-  opacity: 1;
+/* The Liked Songs heart matches the Spotify shortcut in the opposite corner: the same small dark
+   ring, soft shadow and quiet half-strength look, brightening when pressed. A wider invisible edge
+   keeps it easy to tap. */
+#remote > .track-like {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #ffffff16;
+  background: #090909b8;
+  color: #858585;
+  box-shadow: 0 4px 14px #0008;
+  opacity: .5;
+  transition: color .16s ease, opacity .16s ease, transform .12s ease;
 }
 
-#remote .spotify-track-link.track-available {
+#remote > .track-like::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+}
+
+#remote > .track-like svg {
+  width: 18px;
+  height: 18px;
+}
+
+#remote > .track-like[aria-pressed="true"] {
   color: var(--green);
+  background: #090909b8;
 }
 
-#remote .spotify-track-link svg {
-  width: 26px;
-  height: 26px;
+#remote > .track-like:active:not(:disabled) {
+  opacity: 1;
+  transform: scale(.9);
+}
+
+#remote > .track-like:disabled {
+  opacity: .5;
+}
+
+#remote > .track-like[aria-busy="true"] {
+  opacity: .35;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  #remote > .track-like:hover:not(:disabled) {
+    opacity: 1;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 500px) {
-  #remote .spotify-track-link {
-    top: max(7px, env(safe-area-inset-top));
-    right: max(8px, env(safe-area-inset-right));
-    width: 44px;
-    height: 44px;
+  #remote > .track-like {
+    width: 28px;
+    height: 28px;
+  }
+  #remote > .track-like svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -49,11 +79,8 @@
   }
 }
 
-/* Bar volume control on landscape phones: start it below the Spotify button so the two never touch. */
+/* Bar volume control on landscape phones. */
 @media (orientation: landscape) and (max-height: 500px) {
-  #remote[data-current-view="player"][data-control="bar"] .dial-rail {
-    top: 60px !important;
-  }
   /* With the Divider playback line, end the bar above that line. */
   #remote[data-current-view="player"][data-control="bar"][data-playback-bar="divider"]:not([data-control-bar="hidden"]) .dial-rail {
     bottom: 82px !important;

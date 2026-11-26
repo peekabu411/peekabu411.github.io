@@ -91,7 +91,7 @@ async function fixtures(context) {
       const player = await page.locator("#remote").boundingBox(), spotify = await page.locator("#spotify-track-link").boundingBox();
       assert(heart && spotify && player && Math.abs(heart.y - spotify.y) < 2, "heart and Spotify control share a top edge");
       assert(Math.abs((heart.x - player.x) - (player.x + player.width - spotify.x - spotify.width)) < 2, "heart mirrors the Spotify corner inset");
-      assert.equal(heart.width, 44, "keep the larger heart size");
+      assert(Math.abs(heart.width - spotify.width) < 1 && Math.abs(heart.height - spotify.height) < 1, "heart matches the Spotify button size");
       assert(heart.x + heart.width <= art.x || heart.x >= art.x + art.width || heart.y + heart.height <= art.y || heart.y >= art.y + art.height, "heart does not overlap artwork");
       assert.equal(await page.locator(".art-stage #track-like").count(), 0);
       assert(heart.x >= 0 && heart.y >= 0 && heart.x + heart.width <= viewport.width);
