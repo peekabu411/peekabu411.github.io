@@ -300,6 +300,8 @@ function showRateWarning(detail = {}) {
 $("rate-warning-dismiss").onclick = () => { $("rate-warning").hidden = true; };
 window.addEventListener("turntable:api-rate-warning", event => showRateWarning(event.detail));
 function setTopBarHidden(hidden) {
+  // Settings has its own back button, so the top tabs stay closed there.
+  if (currentView === "settings") hidden = true;
   remote.classList.toggle("topbar-hidden", hidden);
   $("bar-handle").setAttribute("aria-label", hidden ? "Show quick views" : "Hide quick views");
   localStorage.setItem("turntable-topbar-hidden", String(hidden));
