@@ -32,6 +32,7 @@
     <link rel="stylesheet" href="./settings.css?v=I.10.13">
     <link rel="stylesheet" href="./devices.css?v=I.10.13">
     <link rel="stylesheet" href="./now-playing.css?v=I.10.13">
+    <link rel="stylesheet" href="./gesture-hints.css?v=I.10.13">
   </head>
   <body>
     <main class="shell">
@@ -333,7 +334,7 @@
         </button>
         <button id="queue-backdrop" class="queue-backdrop" aria-label="Close playback queue" tabindex="-1"></button>
         <aside id="queue-drawer" class="queue-drawer" aria-label="Playback queue" aria-hidden="true">
-          <header><div><small>COMING UP</small><h2>Queue</h2></div><button id="queue-close" aria-label="Close playback queue">&#10005;</button></header>
+          <header><div><small>COMING UP</small><h2>Queue</h2></div><p class="queue-swipe-hint guide-copy" aria-hidden="true">SWIPE <span>&rarr;</span> TO CLOSE</p><button id="queue-close" aria-label="Close playback queue">&#10005;</button></header>
           <div id="queue-list" class="queue-list"><p class="empty">Your Spotify queue will appear here.</p></div>
           <p class="queue-api-note">Play Next advances to your selection after the current song ends or is skipped forward. Spotify does not allow queue removal or reordering here.</p>
         </aside>
@@ -345,6 +346,7 @@
             <span class="dial-marker"></span><span class="dial-center"></span><span class="bar-button-label guide-copy">PRESS</span>
           </button>
           <p class="dial-swipe-hint guide-copy"><span aria-hidden="true">&#8593;</span> SWIPE TO ADJUST <span aria-hidden="true">&#8595;</span></p>
+          <p class="dial-press-hint guide-copy" aria-hidden="true">TAP PLAY &middot; 2&times; NEXT &middot; 3&times; BACK</p>
         </aside>
         <p id="message" class="message" role="status"></p>
       </section>

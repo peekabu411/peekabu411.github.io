@@ -105,6 +105,7 @@
       suppressClickUntil = performance.now() + 450;
       if (typeof physicalFeedback === "function") physicalFeedback("press");
       applyControlBarState("hidden");
+      window.turntableHints?.used("bar");
       window.turntablePresetDirtyCheck?.();
       if (typeof setMessage === "function") setMessage("Control bar hidden. Swipe up from the bottom to bring it back.");
       return true;
@@ -114,6 +115,7 @@
       suppressClickUntil = performance.now() + 450;
       if (typeof physicalFeedback === "function") physicalFeedback("press");
       applyControlBarState("shown");
+      window.turntableHints?.used("bar");
       window.turntablePresetDirtyCheck?.();
       return true;
     }
@@ -204,6 +206,7 @@
       scrub = null;
       if (cancelled) { seekInput.onpointercancel?.(event); tuck(1500); return; }
       if (moved || wasLifted) {
+        window.turntableHints?.used("seek");
         seekInput.dispatchEvent(new Event("change", { bubbles: true }));
         if (typeof physicalFeedback === "function") physicalFeedback("press");
         tuck(1800);
@@ -264,6 +267,7 @@
     dimTimer = setTimeout(() => { toggleButton.classList.remove("lit"); toggleButton.classList.add("dim"); }, 1000);
     if (typeof physicalFeedback === "function") physicalFeedback("press");
     applyControlBarState(state === "hidden" ? "shown" : "hidden");
+    window.turntableHints?.used("bar");
     window.turntablePresetDirtyCheck?.();
   });
   let placeFrame = 0;

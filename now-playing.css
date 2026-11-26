@@ -65,6 +65,7 @@
 /* Gesture hints retire one at a time after the gesture has been used (gesture-hints.js). */
 #remote.hint-retired-skip .player-view .swipe-hint,
 #remote.hint-retired-adjust .dial-rail > .dial-swipe-hint,
+#remote.hint-retired-press .dial-rail > .dial-press-hint,
 #remote.hint-retired-tabs .topbar-hint {
   display: none !important;
 }

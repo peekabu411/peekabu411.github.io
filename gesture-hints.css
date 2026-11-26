@@ -1,0 +1,130 @@
+/* Gesture hints (gesture-hints.js). Every hint shares one look: 9px grey capitals with wide
+   spacing, arrows a shade lighter. Each one retires after its gesture is used three times
+   (#remote.hint-retired-<kind>), and Settings > Gesture hints > Hide text hides them all. */
+
+/* Hints placed next to a moving control (Shuffle, control bar chip, Divider pill, volume arrow). */
+.placed-hints {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+}
+
+.placed-hint {
+  position: absolute;
+  margin: 0;
+  color: #626262;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: .13em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Volume control: a second line beside "swipe to adjust" for the press gestures
+   (1 tap play or pause, 2 taps next song, 3 taps previous song). */
+.device .dial-rail > .dial-press-hint {
+  display: none;
+  color: #626262;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: .13em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.device[data-current-view="player"] .dial-rail > .dial-press-hint {
+  display: block;
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  left: -34px;
+  margin: 0;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%) rotate(180deg);
+  pointer-events: none;
+}
+
+.device[data-guides="hidden"] .dial-rail > .dial-press-hint {
+  display: none;
+}
+
+/* iPad and desktop: plenty of height, so the press line continues the "swipe to adjust" line
+   (same column, above it) instead of standing beside it, keeping clear of the progress line. */
+@media (min-width:1200px) and (min-height:650px) and (hover:hover) and (pointer:fine), (min-width:1000px) and (min-height:650px) and (orientation:landscape) and (any-pointer:coarse) {
+  .device[data-current-view="player"] .dial-rail > .dial-press-hint {
+    left: -20px;
+    top: calc(50% - 72px);
+    transform: translateY(-100%) rotate(180deg);
+  }
+}
+
+/* Landscape phones: the two volume hint lines need a little room, so lyrics and the compact
+   control row end before them instead of running underneath. */
+@media (orientation: landscape) and (max-height: 500px) {
+  #remote[data-current-view="player"][data-display="lyrics"]:not(.side-controls-hidden):not(.volume-unavailable):not([data-guides="hidden"]):not(.hint-retired-adjust.hint-retired-press) .lyrics-panel,
+  #remote[data-current-view="player"][data-display="lyrics"][data-playback-bar="default"]:not(.side-controls-hidden):not(.volume-unavailable):not([data-guides="hidden"]):not(.hint-retired-adjust.hint-retired-press) .timeline {
+    width: calc(100% - 28px - 58px);
+    margin-right: 58px;
+  }
+  #remote[data-current-view="player"][data-display="lyrics"][data-playback-bar="divider"]:not(.side-controls-hidden):not(.volume-unavailable):not([data-guides="hidden"]):not(.hint-retired-adjust.hint-retired-press) .lyrics-panel {
+    width: calc(100% - 23px - 53px);
+    margin-right: 53px;
+  }
+  #remote[data-current-view="player"][data-control-bar="hidden"]:not(.side-controls-hidden):not(.volume-unavailable):not([data-guides="hidden"]):not(.hint-retired-adjust.hint-retired-press) .transport[data-compact-placement="lyrics"] {
+    width: calc(100% - 98px) !important;
+    margin-right: 75px !important;
+  }
+}
+
+/* Queue drawer: swipe right to close. */
+.queue-drawer header .queue-swipe-hint {
+  margin: 0 12px 0 auto;
+  align-self: center;
+  color: #626262;
+  font-size: 9px;
+  letter-spacing: .13em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.queue-drawer header .queue-swipe-hint span {
+  color: #999;
+  padding: 0 2px;
+}
+
+#remote.hint-retired-queue .queue-swipe-hint {
+  display: none !important;
+}
+
+/* iPhone SE and other narrow landscape phones, control bar hidden with the Default playback bar:
+   six buttons do not fit between the two times, so the times sit under the progress line at
+   either end and the buttons get their own row below, inside the text column. */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 720px) {
+  #remote[data-control-bar="hidden"] .timeline > div:has(> .transport[data-compact-placement="row"]) {
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    row-gap: 2px;
+  }
+  #remote[data-control-bar="hidden"] .timeline > div > .transport[data-compact-placement="row"] {
+    order: 3;
+    flex: 1 0 100% !important;
+    justify-content: space-between !important;
+    gap: 0 !important;
+    margin-left: -8px !important;
+    margin-right: -8px !important;
+  }
+}
+
+/* Narrow phones, lyrics with the control bar hidden: the six buttons start at the lyrics panel's
+   edge rather than the lyric text, so the row ends before the volume hints. */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 720px) {
+  #remote[data-control-bar="hidden"] .transport[data-compact-placement="lyrics"] {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+}
