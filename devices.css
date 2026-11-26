@@ -60,7 +60,8 @@
 
 #remote .devices-panel .device-item small {
   color: var(--muted);
-  font: 500 13px/1.2 var(--font-ui);
+  font: 500 11px/1.2 var(--font-ui);
+  opacity: .7;
 }
 
 #remote .devices-panel .device-item button {
@@ -102,7 +103,8 @@
 .devices-help {
   margin: 12px 0 0;
   color: var(--muted);
-  font: 500 13px/1.4 var(--font-ui);
+  font: 500 11px/1.4 var(--font-ui);
+  opacity: .6;
 }
 
 .this-device-card {
@@ -125,7 +127,8 @@
 .this-device-card .this-device-note {
   margin: 0;
   color: var(--muted);
-  font: 500 12px/1.4 var(--font-ui);
+  font: 500 11px/1.4 var(--font-ui);
+  opacity: .6;
 }
 
 /* Phones in landscape: tighter rows */
@@ -149,7 +152,7 @@
     font-size: 14px;
   }
   #remote .devices-panel .device-item small {
-    font-size: 12px;
+    font-size: 10px;
   }
   #remote .devices-panel .device-item button {
     min-height: 30px;
@@ -158,9 +161,12 @@
   }
   .devices-help {
     margin-top: 9px;
-    font-size: 12px;
+    font-size: 10px;
   }
   .this-device-card {
     margin-top: 10px;
+  }
+  .this-device-card .this-device-note {
+    font-size: 10px;
   }
 }

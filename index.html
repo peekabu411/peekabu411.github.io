@@ -130,13 +130,13 @@
           </section>
 
           <section class="view list-view playlist-view" data-panel="playlists">
-            <div class="section-heading playlist-heading"><div><p>YOUR LIBRARY</p><h2>Playlists</h2></div><button id="playlist-organize" class="playlist-organize" type="button" aria-pressed="false">Organize</button></div>
+            <div class="section-heading playlist-heading"><button class="view-back" type="button" aria-label="Back to Now Playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button><div><p>YOUR LIBRARY</p><h2>Playlists</h2></div><button id="playlist-organize" class="playlist-organize" type="button" aria-pressed="false">Organize</button></div>
             <p id="playlist-reorder-hint" class="playlist-reorder-hint" hidden>Drag to reorder</p>
             <div id="playlist-grid" class="playlist-grid"><p class="empty">Choose this tab to load your Spotify playlists.</p></div>
           </section>
 
           <section class="view list-view devices-view" data-panel="devices">
-            <div class="section-heading"><p>SPOTIFY CONNECT</p><h2>Devices</h2></div>
+            <div class="section-heading devices-heading"><button class="view-back" type="button" aria-label="Back to Now Playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button><div><p>SPOTIFY CONNECT</p><h2>Devices</h2></div></div>
             <section id="connection-status-card" class="connection-status-card" aria-live="polite">
               <span id="connection-status-dot" class="connection-status-dot waiting"></span>
               <div class="connection-status-copy"><small>REMOTE CONNECTION</small><strong id="connection-status-title">Checking connection</strong><p id="connection-status-detail">Contacting Spotify...</p><p class="connection-recommendation"><span>Recommended action</span><b id="connection-recommended-action">Wait for the current connection check to finish.</b></p></div>
@@ -153,7 +153,7 @@
           </section>
 
           <section class="view controls-view" data-panel="settings">
-            <div class="section-heading settings-heading"><button id="back" class="settings-back" type="button" aria-label="Back to Now Playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button><h2>Settings</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div></div>
+            <div class="section-heading settings-heading"><button id="back" class="view-back settings-back" type="button" aria-label="Back to Now Playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button><h2>Settings</h2><div class="settings-preset-tools" aria-label="Preset controls"><div class="preset-selector-shell"><select id="settings-preset-select" class="preset-selector" aria-label="Select visual preset"></select></div><button id="preset-save" type="button" disabled>Saved</button><button id="preset-manage" type="button" aria-label="Create or rename presets">&#8943;</button></div></div>
             <div class="settings-layout">
               <nav class="settings-nav" aria-label="Settings sections">
                 <button type="button" data-settings-link="layout" class="active" aria-current="true">Layout</button>

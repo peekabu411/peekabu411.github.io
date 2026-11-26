@@ -121,6 +121,10 @@ async function fixtures(context) {
     await page.locator('[data-view="playlists"]').click();
     assert(await page.locator("#track-like").isHidden());
     await page.getByText("Liked Songs", { exact: true }).waitFor();
+    // Playlists keeps the top tabs closed; its back button returns to Now Playing.
+    assert.equal(await page.evaluate(() => (setTopBarHidden(false), document.getElementById("remote").classList.contains("topbar-hidden"))), true);
+    await page.locator(".playlist-view .view-back").click();
+    await page.waitForFunction(() => document.getElementById("remote").dataset.currentView === "player");
     await page.evaluate(() => setTopBarHidden(false));
     await page.locator('[data-view="devices"]').click();
     await page.getByText("Test device", { exact: true }).waitFor();

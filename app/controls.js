@@ -59,7 +59,7 @@ $("pair").onclick = async () => {
   }
 };$("pin").addEventListener("keydown", (event) => { if (event.key === "Enter") $("pair").click(); });
 document.querySelectorAll("[data-view]").forEach((button) => button.onclick = () => { switchView(button.dataset.view); setTopBarHidden(true); });
-if ($("back")) $("back").onclick = () => { switchView("player"); setTopBarHidden(true); };
+document.querySelectorAll(".view-back").forEach((button) => button.onclick = () => { switchView("player"); setTopBarHidden(true); });
 // Reloads the newest published Turntable, checking first that the site answers so a
 // failed download leaves the current app running instead of a blank page.
 $("refresh").onclick = async () => {

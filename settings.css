@@ -492,15 +492,15 @@
   }
 }
 
-/* Back to Now Playing. While Settings is open the top tabs, their arrow and hint are off, so this
+/* Back to Now Playing (Playlists, Devices and Settings). While one of them is open the top tabs, their arrow and hint are off, so this
    button is the way out. */
-#remote[data-current-view="settings"] .preset-bar,
-#remote[data-current-view="settings"] .bar-handle,
-#remote[data-current-view="settings"] .topbar-hint {
+#remote:not([data-current-view="player"]) .preset-bar,
+#remote:not([data-current-view="player"]) .bar-handle,
+#remote:not([data-current-view="player"]) .topbar-hint {
   display: none !important;
 }
 
-#remote .settings-heading .settings-back {
+#remote .section-heading .view-back {
   display: grid;
   place-items: center;
   flex: none;
@@ -517,7 +517,7 @@
   transition: transform .12s ease, background-color .16s ease;
 }
 
-#remote .settings-heading .settings-back svg {
+#remote .section-heading .view-back svg {
   width: 20px;
   height: 20px;
   fill: none;
@@ -527,18 +527,35 @@
   stroke-linejoin: round;
 }
 
-#remote .settings-heading .settings-back:active {
+#remote .section-heading .view-back:active {
   transform: scale(.92);
   background: rgba(255, 255, 255, .08);
 }
 
-#remote .settings-heading .settings-back:focus-visible {
+#remote .section-heading .view-back:focus-visible {
   outline: 2px solid var(--green);
   outline-offset: 3px;
 }
 
+/* The back button sits left of the title; Organize stays on the right in Playlists */
+#remote .playlist-view .section-heading.playlist-heading,
+#remote .devices-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#remote .playlist-heading > div,
+#remote .devices-heading > div {
+  min-width: 0;
+}
+
+#remote .playlist-heading > #playlist-organize {
+  margin-left: auto;
+}
+
 @media (orientation: landscape) and (max-height: 500px) {
-  #remote .settings-heading .settings-back {
+  #remote .section-heading .view-back {
     width: 36px;
     height: 36px;
   }
