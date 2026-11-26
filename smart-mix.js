@@ -164,6 +164,7 @@
       holdTimer = null;
       suppressClickUntil = performance.now() + 900;
       if (typeof physicalFeedback === "function") physicalFeedback("press");
+      window.turntableHints?.used("hold");
       openMenu();
     }, HOLD_MS);
   });

@@ -213,7 +213,7 @@ $("queue-drawer").addEventListener("pointerup", (event) => {
   const dx = event.clientX - queueDrawerGesture.x;
   const dy = event.clientY - queueDrawerGesture.y;
   queueDrawerGesture = null;
-  if (dx > 55 && Math.abs(dx) > Math.abs(dy)) setQueueDrawer(false);
+  if (dx > 55 && Math.abs(dx) > Math.abs(dy)) { setQueueDrawer(false); window.turntableHints?.used("queue"); }
 });
 $("queue-drawer").addEventListener("pointercancel", () => { queueDrawerGesture = null; });
 document.addEventListener("keydown", (event) => { if (event.key === "Escape") setQueueDrawer(false); });
@@ -232,6 +232,7 @@ function setSideControlsHidden(hidden) {
 }
 $("side-control-reveal").onclick = () => {
   physicalFeedback("press");
+  window.turntableHints?.used("volume");
   setSideControlsHidden(false);
 };
 
@@ -268,6 +269,7 @@ remote.addEventListener("pointerup", (event) => {
   if (mode === "show" && !volumeUnavailable && dx < -46 && Math.abs(dx) > Math.abs(dy) * 1.15) {
     physicalFeedback("press");
     setSideControlsHidden(false);
+    window.turntableHints?.used("volume");
   }
 }, true);
 remote.addEventListener("pointercancel", () => { sideControlGesture = null; }, true);
@@ -331,6 +333,7 @@ dial.addEventListener("pointerup", (event) => {
     window.turntableHints?.used("adjust");
   }
   else if (dialStart.pressZone) {
+    window.turntableHints?.used("press");
     physicalFeedback("tick"); dialTapCount += 1; dial.dataset.pendingTaps = String(dialTapCount);
     if (dialTapTimer) clearTimeout(dialTapTimer);
     dialTapTimer = setTimeout(() => {
