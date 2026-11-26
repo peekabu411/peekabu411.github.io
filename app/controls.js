@@ -296,7 +296,8 @@ const dial = $("dial");
 dial.addEventListener("pointerdown", (event) => {
   dial.setPointerCapture(event.pointerId);
   const rect = dial.getBoundingClientRect();
-  const pressZone = controlStyle !== "bar" || event.clientY <= rect.top + 70;
+  // A tap anywhere on the dial or the bar counts as a press (a swipe changes the volume).
+  const pressZone = true;
   dial.classList.toggle("pressing-button", pressZone);
   dialStart = {
     x: event.clientX,

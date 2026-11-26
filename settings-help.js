@@ -9,7 +9,7 @@
     control: {
       title: "Volume control",
       summary: "Changes the physical-style volume control on the right side of Now Playing.",
-      details: ["Dial uses repeated weighted strokes like turning a physical knob.", "Bar uses a vertical track with a pressable button at the top."],
+      details: ["Dial uses repeated weighted strokes like turning a physical knob.", "Bar uses a thin vertical line: swipe it for volume, tap it to play or pause."],
       visuals: [["Dial", "dial"], ["Bar", "control-bar"]]
     },
     display: {

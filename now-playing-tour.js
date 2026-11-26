@@ -60,7 +60,7 @@
       target: () => $("#dial"),
       kicker: "VOLUME",
       title: () => isBar() ? "Swipe the bar. Press to play." : "Swipe the dial. Tap to play.",
-      copy: () => `Swipe up or down for volume. ${isBar() ? "Press the top button" : "Tap the dial"} once to play or pause, twice to skip ahead, three times to go back. Swipe it right to tuck it away; tap the arrow to bring it back.`,
+      copy: () => `Swipe up or down for volume. ${isBar() ? "Tap the bar" : "Tap the dial"} once to play or pause, twice to skip ahead, three times to go back. Swipe it right to tuck it away; tap the arrow to bring it back.`,
       gesture: () => ({ kind: "updown", el: $("#dial") })
     },
     {

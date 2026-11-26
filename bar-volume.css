@@ -1,7 +1,7 @@
-/* Bar volume control, "line and dot" design (I.10.15). The same #dial element and gestures as
-   before (app/controls.js): swipe up or down on the bar for volume; the round button at the top is
-   the press zone (1 press play or pause, 2 next, 3 previous). Only the drawing changes:
-   - .dial-center is the round play/pause button,
+/* Bar volume control, "line and dot" design (I.10.16, button removed in I.10.17). The same #dial element and gestures as
+   before (app/controls.js): swipe up or down on the bar for volume; a tap anywhere on it is the press
+   (1 tap play or pause, 2 next, 3 previous). Only the drawing changes:
+   - .dial-center (the old key) is hidden,
    - .dial-marker is a thin line that fills green up to the volume, with a white dot at the level
      (--volume is set by app/player.js). */
 #remote[data-control="bar"] .dial::after,
@@ -9,46 +9,19 @@
   display: none !important;
 }
 
+/* No separate button: a tap anywhere on the bar is the press (app/controls.js). */
 #remote[data-control="bar"] .dial-center {
-  inset: 4px auto auto 50% !important;
-  width: 36px !important;
-  height: 36px !important;
-  border: 1px solid #ffffff26 !important;
-  border-radius: 50% !important;
-  background: #ffffff14 !important;
-  box-shadow: 0 4px 12px #0007 !important;
-  transform: translateX(-50%) !important;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-}
-
-#remote[data-control="bar"] .dial-center::before {
-  width: 14px !important;
-  height: 14px !important;
-  border-radius: 0 !important;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M1 2l6 5-6 5z' fill='%23fff'/%3E%3Crect x='8.5' y='2' width='1.8' height='10' rx='.6' fill='%23fff'/%3E%3Crect x='11.6' y='2' width='1.8' height='10' rx='.6' fill='%23fff'/%3E%3C/svg%3E") center/contain no-repeat !important;
-  box-shadow: none !important;
-  opacity: .85;
-}
-
-#remote[data-control="bar"] .dial-center::after {
   display: none !important;
 }
 
-/* Pressed: the button sinks a little and lights up green. */
-#remote[data-control="bar"] .dial.pressing-button .dial-center {
-  transform: translateX(-50%) scale(.92) !important;
-  border-color: #1ed76080 !important;
-  background: #1ed76026 !important;
-  box-shadow: 0 0 12px #1ed76040 !important;
-}
-
-#remote[data-control="bar"] .dial.pressing-button .dial-center::before {
-  opacity: 1;
+/* Pressed: the dot grows and glows. */
+#remote[data-control="bar"] .dial.pressing-button .dial-marker::after {
+  transform: translateX(-50%) scale(1.25);
+  box-shadow: 0 0 0 6px #1ed76055, 0 0 14px #1ed76080;
 }
 
 #remote[data-control="bar"] .dial-marker {
-  top: 58px !important;
+  top: 14px !important;
   bottom: 14px !important;
   width: 4px !important;
   border: 0 !important;
@@ -72,6 +45,7 @@
   background: #fff;
   box-shadow: 0 0 0 4px #1ed76033, 0 2px 8px #000a;
   transform: translateX(-50%);
+  transition: transform .1s ease, box-shadow .1s ease;
 }
 
 /* Settings preview of the Bar control. */
@@ -100,10 +74,5 @@
 }
 
 .visual-control-bar .preview-volume-bar::before {
-  top: -14px;
-  width: 10px;
-  height: 10px;
-  border: 1px solid #ffffff40;
-  background: #ffffff14;
-  box-shadow: none;
+  display: none;
 }
