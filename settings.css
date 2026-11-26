@@ -482,3 +482,55 @@
     justify-self: start;
   }
 }
+
+/* Back to Now Playing. While Settings is open the top tabs, their arrow and hint are off, so this
+   button is the way out. */
+#remote[data-current-view="settings"] .preset-bar,
+#remote[data-current-view="settings"] .bar-handle,
+#remote[data-current-view="settings"] .topbar-hint {
+  display: none !important;
+}
+
+#remote .settings-heading .settings-back {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .12s ease, background-color .16s ease;
+}
+
+#remote .settings-heading .settings-back svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#remote .settings-heading .settings-back:active {
+  transform: scale(.92);
+  background: rgba(255, 255, 255, .08);
+}
+
+#remote .settings-heading .settings-back:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  #remote .settings-heading .settings-back {
+    width: 36px;
+    height: 36px;
+  }
+}
