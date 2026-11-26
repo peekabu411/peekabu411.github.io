@@ -295,5 +295,13 @@
     });
   }
 
+  // All three arrow chips start dimmed: they show at full strength for a moment when the app
+  // opens or refreshes, then fade like they do after a press.
+  setTimeout(() => {
+    for (const element of [toggleButton, document.getElementById("bar-handle"), document.getElementById("side-control-reveal")]) {
+      if (element && !element.classList.contains("lit")) element.classList.add("dim");
+    }
+  }, 1000);
+
   applyControlBarState(state);
 })();

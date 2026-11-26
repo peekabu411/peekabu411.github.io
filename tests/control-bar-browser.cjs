@@ -70,6 +70,10 @@ async function swipe(page, x, y, dy) {
     await page.goto(origin);
     await page.waitForFunction(() => document.querySelector("#title")?.textContent === "Control Bar Song" && typeof getControlBarState === "function" && typeof window.turntablePresetDirtyCheck === "function");
 
+    // The arrow chips dim on their own a second after the app opens.
+    await page.waitForTimeout(1200);
+    assert(await page.evaluate(() => ["control-bar-toggle", "bar-handle", "side-control-reveal"].every(id => document.getElementById(id).classList.contains("dim"))), "arrow chips start dimmed");
+
     // Shown by default: the original bar and queue button stay where they were.
     assert.equal(await page.locator("#remote").getAttribute("data-control-bar"), "shown");
     assert.equal(await parentOf(page, ".transport"), ".player-info");
