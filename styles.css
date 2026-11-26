@@ -4734,4 +4734,7 @@ input:disabled {
   from {
     transform: translateX(0);
   }
+  to {
+    transform: translateX(var(--lyrics-marquee-shift));
+  }
 }

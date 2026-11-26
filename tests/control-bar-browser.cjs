@@ -82,7 +82,8 @@ async function swipe(page, x, y, dy) {
     await page.locator('[data-control-bar-choice="hidden"]').click();
     assert.equal(await page.locator("#remote").getAttribute("data-control-bar"), "hidden");
     assert.equal(await page.locator('[data-control-bar-choice="hidden"]').getAttribute("aria-pressed"), "true");
-    assert.equal(await page.locator("#preset-save").textContent(), "Save*");
+    // The preset's unsaved mark updates just after the click (preset-controls.js checks on a timer).
+    await page.waitForFunction(() => document.querySelector("#preset-save").textContent === "Save*", null, { timeout: 2000 });
     await page.locator("#preset-save").click();
     assert.equal(await page.locator("#preset-save").textContent(), "Saved");
     await page.reload();
@@ -110,7 +111,12 @@ async function swipe(page, x, y, dy) {
     // Queue still opens from the compact row.
     await page.locator("#queue-toggle").click();
     assert.equal(await page.locator("#remote").evaluate(node => node.classList.contains("queue-open")), true);
+    // Wait for the drawer to finish sliding in: clicking the close button while it is still off screen
+    // makes the test browser scroll the whole player sideways to reach it, which a finger never does.
+    await page.waitForFunction(() => { const r = document.querySelector("#queue-close").getBoundingClientRect(); return r.width && r.left >= 0 && r.right <= innerWidth; });
+    await page.waitForTimeout(400);
     await page.locator("#queue-close").click();
+    assert.equal(await page.locator("#remote").evaluate(node => node.scrollLeft), 0, "the player stays in place");
     await page.waitForTimeout(350);
 
     // Tapping the artwork plays or pauses, and only while the bar is hidden.
