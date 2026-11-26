@@ -217,5 +217,68 @@
     new MutationObserver(() => { if (!pillActive()) timelineEl.classList.remove("lifted"); }).observe(remoteShell, { attributes: true, attributeFilter: ["data-playback-bar"] });
   }
 
+  // A small chevron chip that shows or hides the bar with one tap (swiping still works). It sits
+  // on the top edge of the bar when shown, at the bottom centre when hidden (just above the
+  // Divider pill), and points to where the bar will go.
+  const toggleButton = document.createElement("button");
+  toggleButton.type = "button";
+  toggleButton.id = "control-bar-toggle";
+  toggleButton.className = "control-bar-toggle";
+  toggleButton.innerHTML = '<svg width="12" height="7" viewBox="0 0 12 7" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  remoteShell.append(toggleButton);
+  function placeToggle() {
+    const hidden = state === "hidden";
+    const divider = remoteShell.dataset.playbackBar === "divider";
+    toggleButton.setAttribute("aria-label", hidden ? "Show control bar" : "Hide control bar");
+    toggleButton.dataset.direction = hidden ? "up" : "down";
+    let top = null;
+    const timeline = document.querySelector(".player-view .timeline");
+    if (divider && timeline && hidden) {
+      const box = timeline.getBoundingClientRect();
+      if (box.height) top = box.top - 11;
+    } else if (divider && seekInput) {
+      // Shown Divider: just above the thin progress line, which runs through the slider's middle.
+      const box = seekInput.getBoundingClientRect();
+      if (box.height) top = (box.top + box.bottom) / 2 - 15;
+    }
+    if (top === null && !hidden) {
+      const box = transport.getBoundingClientRect();
+      if (box.height) top = box.top;
+    }
+    const shell = remoteShell.getBoundingClientRect();
+    toggleButton.style.top = top === null ? "" : `${top - shell.top}px`;
+    toggleButton.classList.toggle("at-bottom", top === null);
+  }
+  // After a press the chip lights up, then dims one second later so it stays out of the way.
+  let dimTimer = 0;
+  toggleButton.addEventListener("pointerdown", () => {
+    clearTimeout(dimTimer);
+    toggleButton.classList.remove("dim");
+    toggleButton.classList.add("lit");
+  });
+  toggleButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    clearTimeout(dimTimer);
+    toggleButton.classList.remove("dim");
+    toggleButton.classList.add("lit");
+    dimTimer = setTimeout(() => { toggleButton.classList.remove("lit"); toggleButton.classList.add("dim"); }, 1000);
+    if (typeof physicalFeedback === "function") physicalFeedback("press");
+    applyControlBarState(state === "hidden" ? "shown" : "hidden");
+    window.turntablePresetDirtyCheck?.();
+  });
+  let placeFrame = 0;
+  const schedulePlace = () => { cancelAnimationFrame(placeFrame); placeFrame = requestAnimationFrame(placeToggle); };
+  window.addEventListener("turntable:control-bar", schedulePlace);
+  window.addEventListener("resize", schedulePlace);
+  new MutationObserver(schedulePlace).observe(remoteShell, { attributes: true, attributeFilter: ["data-playback-bar", "data-display", "data-layout-resolved", "data-current-view", "data-control", "class"] });
+  if (window.ResizeObserver) {
+    const resize = new ResizeObserver(schedulePlace);
+    resize.observe(transport);
+    const timeline = document.querySelector(".player-view .timeline");
+    if (timeline) resize.observe(timeline);
+  }
+  // Re-check after the timeline finishes animating (lift and tuck).
+  document.querySelector(".player-view .timeline")?.addEventListener("transitionend", schedulePlace);
+
   applyControlBarState(state);
 })();
