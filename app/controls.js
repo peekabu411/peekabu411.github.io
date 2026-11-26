@@ -225,10 +225,10 @@ $("update-log-close").onclick = $("update-log-backdrop").onclick = () => setUpda
 document.addEventListener("keydown", (event) => { if (event.key === "Escape") setUpdateLogOpen(false); });
 
 function setSideControlsHidden(hidden) {
-  const shouldHide = !!hidden && remote.dataset.currentView === "player";
-  remote.classList.toggle("side-controls-hidden", shouldHide);
-  document.querySelector(".dial-rail").setAttribute("aria-hidden", String(shouldHide));
-  if (shouldHide) physicalFeedback("press");
+  if (volumeUnavailable) return;
+  sideControlsUserHidden = !!hidden && remote.dataset.currentView === "player";
+  applySideControlsVisibility();
+  if (sideControlsUserHidden) physicalFeedback("press");
 }
 $("side-control-reveal").onclick = () => {
   physicalFeedback("press");
@@ -250,7 +250,7 @@ dialRail.addEventListener("pointerup", (event) => {
 dialRail.addEventListener("pointercancel", () => { if (sideControlGesture?.mode === "hide") sideControlGesture = null; }, true);
 
 remote.addEventListener("pointerdown", (event) => {
-  if (remote.dataset.currentView !== "player") return;
+  if (remote.dataset.currentView !== "player" || volumeUnavailable) return;
   const hidden = remote.classList.contains("side-controls-hidden");
   const bounds = remote.getBoundingClientRect();
   const startRatio = hidden ? (2 / 3) : SIDE_CONTROL_HIDE_ZONE_START;
@@ -265,7 +265,7 @@ remote.addEventListener("pointerup", (event) => {
   const dy = event.clientY - sideControlGesture.y;
   sideControlGesture = null;
   if (mode === "hide" && dx > 46 && Math.abs(dx) > Math.abs(dy) * 1.15) setSideControlsHidden(true);
-  if (mode === "show" && dx < -46 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+  if (mode === "show" && !volumeUnavailable && dx < -46 && Math.abs(dx) > Math.abs(dy) * 1.15) {
     physicalFeedback("press");
     setSideControlsHidden(false);
   }
@@ -277,7 +277,7 @@ const screen = document.querySelector(".screen");
 screen.addEventListener("pointerdown", (event) => {
   if (event.target.closest("button,input,a[href],.album-art,.dial")) return;
   if (sideControlGesture) return;
-  if (remote.classList.contains("side-controls-hidden") && remote.dataset.currentView === "player" && event.clientX >= innerWidth * (2 / 3)) return;
+  if (remote.classList.contains("side-controls-hidden") && !volumeUnavailable && remote.dataset.currentView === "player" && event.clientX >= innerWidth * (2 / 3)) return;
   if (event.clientX <= innerWidth * .24 || event.clientX >= innerWidth * .76) return;
   screen.setPointerCapture(event.pointerId); barGesture = { y: event.clientY, dy: 0 };
 });
