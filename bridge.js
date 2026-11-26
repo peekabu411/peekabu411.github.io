@@ -350,7 +350,7 @@
     const button = document.getElementById("copy-redirect-uri"); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy URL"; }, 1800);
   });
   // Download every app script at once; async=false still runs them in this order.
-  const APP_SCRIPTS = ["./settings-schema.js?v=I.10.8", "./app/core.js?v=I.10.8", "./app/artwork.js?v=I.10.8", "./app/lyrics.js?v=I.10.8", "./app/shell.js?v=I.10.8", "./app/queue.js?v=I.10.8", "./app/playlists.js?v=I.10.8", "./app/devices.js?v=I.10.8", "./app/player.js?v=I.10.8", "./app/controls.js?v=I.10.8", "./gesture-hints.js?v=I.10.8", "./viewport-resume.js?v=I.10.8", "./track-likes.js?v=I.10.8", "./smart-mix.js?v=I.10.8", "./control-bar.js?v=I.10.8", "./now-playing-tour.js?v=I.10.8", "./settings-help.js?v=I.10.8", "./settings-nav.js?v=I.10.8", "./preset-controls.js?v=I.10.8"];
+  const APP_SCRIPTS = ["./settings-schema.js?v=I.10.9", "./app/core.js?v=I.10.9", "./app/artwork.js?v=I.10.9", "./app/lyrics.js?v=I.10.9", "./app/shell.js?v=I.10.9", "./app/queue.js?v=I.10.9", "./app/playlists.js?v=I.10.9", "./app/devices.js?v=I.10.9", "./app/player.js?v=I.10.9", "./app/controls.js?v=I.10.9", "./gesture-hints.js?v=I.10.9", "./viewport-resume.js?v=I.10.9", "./track-likes.js?v=I.10.9", "./smart-mix.js?v=I.10.9", "./control-bar.js?v=I.10.9", "./now-playing-tour.js?v=I.10.9", "./settings-help.js?v=I.10.9", "./settings-nav.js?v=I.10.9", "./preset-controls.js?v=I.10.9"];
   callback().then(async handled => { if (handled) return; await Promise.all(APP_SCRIPTS.map(load)); }).catch(e => { showConnectionMessage(e.message || "Turntable could not start."); });
 })();
 

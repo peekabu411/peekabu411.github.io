@@ -455,3 +455,66 @@
     font-size: 14px!important;
   }
 }
+
+/* Show/hide chevron chip (control-bar.js). Quiet until pressed; only on the Now Playing view. */
+.control-bar-toggle {
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  width: 30px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  display: none;
+  place-items: center;
+  border: 1px solid #ffffff1f;
+  border-radius: 9px;
+  background: #ffffff10;
+  color: #ffffffa0;
+  transform: translate(-50%, -50%);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, opacity .2s ease;
+}
+
+/* A larger invisible touch area around the small chip. */
+.control-bar-toggle::after {
+  content: "";
+  position: absolute;
+  inset: -12px -14px;
+}
+
+.control-bar-toggle[data-direction="up"] svg {
+  transform: rotate(180deg);
+}
+
+.control-bar-toggle:active,
+.control-bar-toggle.lit {
+  background: #ffffff26;
+  color: var(--white, #fff);
+}
+
+/* One second after a press the chip fades back to a faint outline; it still works when dim. */
+.control-bar-toggle.dim {
+  opacity: .35;
+  transition: opacity .6s ease, background-color .6s ease, color .6s ease;
+}
+
+#remote[data-current-view="player"]:not(.queue-open) .control-bar-toggle {
+  display: grid;
+}
+
+.control-bar-toggle.at-bottom {
+  top: auto !important;
+  bottom: calc(env(safe-area-inset-bottom) + 6px);
+  transform: translateX(-50%);
+}
+
+/* The lifted Divider scrubber covers the chip's spot, so it steps aside while lifted. */
+#remote .timeline.lifted ~ .control-bar-toggle,
+#remote:has(.timeline.lifted) .control-bar-toggle {
+  opacity: 0;
+  pointer-events: none;
+}

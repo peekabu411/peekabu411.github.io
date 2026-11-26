@@ -192,6 +192,22 @@ async function swipe(page, x, y, dy) {
     await page.waitForFunction(() => document.querySelector("#remote").dataset.display === "lyrics");
     assert.equal(await page.evaluate(() => document.querySelector(".transport").previousElementSibling.id), "lyrics-panel");
 
+    // The chevron chip toggles the bar with one tap, in Divider and Default, and sits on screen.
+    const chip = await box(page, "#control-bar-toggle");
+    assert(chip && chip.y > 0 && chip.y + chip.height <= 390 && Math.abs(chip.x + chip.width / 2 - 422) < 2, `chip centred on screen (${JSON.stringify(chip)})`);
+    assert.equal(await page.locator("#control-bar-toggle").getAttribute("aria-label"), "Show control bar");
+    await page.locator("#control-bar-toggle").click();
+    assert.equal(await page.locator("#remote").getAttribute("data-control-bar"), "shown");
+    await page.waitForTimeout(100);
+    const shownChip = await box(page, "#control-bar-toggle"), shownSeek = await box(page, "#seek");
+    assert(shownChip.y + shownChip.height <= shownSeek.y + shownSeek.height / 2, "chip sits above the Divider line");
+    assert.equal(await page.locator("#control-bar-toggle").getAttribute("aria-label"), "Hide control bar");
+    await page.locator("#control-bar-toggle").click();
+    assert.equal(await page.locator("#remote").getAttribute("data-control-bar"), "hidden");
+    assert(await page.evaluate(() => document.querySelector("#control-bar-toggle").classList.contains("lit")), "chip lights up when pressed");
+    await page.waitForTimeout(1200);
+    assert(await page.evaluate(() => document.querySelector("#control-bar-toggle").classList.contains("dim")), "chip dims a second after the press");
+
     // Switching presets applies each preset's own choice.
     await page.evaluate(() => { setTopBarHidden(false); });
     await page.locator("#top-preset-select").selectOption("default");
