@@ -65,6 +65,7 @@
 /* Gesture hints retire one at a time after the gesture has been used (gesture-hints.js). */
 #remote.hint-retired-skip .player-view .swipe-hint,
 #remote.hint-retired-adjust .dial-rail > .dial-swipe-hint,
+#remote.hint-retired-press .dial-rail > .dial-press-hint,
 #remote.hint-retired-tabs .topbar-hint {
   display: none !important;
 }
@@ -84,6 +85,10 @@
   /* With the Divider playback line, end the bar above that line. */
   #remote[data-current-view="player"][data-control="bar"][data-playback-bar="divider"]:not([data-control-bar="hidden"]) .dial-rail {
     bottom: 82px !important;
+  }
+  /* The Bar control's knob is at its top, so the bar starts below the Spotify button. */
+  #remote[data-current-view="player"][data-control="bar"]:not([data-control-bar="hidden"]) .dial-rail {
+    top: calc(44px + env(safe-area-inset-top)) !important;
   }
 }
 
