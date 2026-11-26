@@ -2,6 +2,15 @@
    Each row has its name and a short note on the left and its choice on the right.
    Selected choices keep the green fill. On narrow screens the side list becomes a row of tabs. */
 
+/* iOS Safari can enlarge ("autosize") text in wide landscape layouts, and it re-measures that text
+   the first time the settings list scrolls. The jump in text size moved everything under the
+   finger, so the first tap on a side-list group seemed to only "fix the font". Settings text
+   keeps its designed size. */
+#remote .controls-view {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 #remote .controls-view.active {
   display: flex;
   flex-direction: column;
